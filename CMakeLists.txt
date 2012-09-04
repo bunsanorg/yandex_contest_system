@@ -49,6 +49,13 @@ add_library(${PROJECT_NAME} SHARED
     src/execution/ErrCall.cpp
     src/execution/AsyncProcess.cpp
 
+    src/cgroup/ControlGroup.cpp
+    src/cgroup/Freezer.cpp
+    src/cgroup/CpuSet.cpp
+    src/cgroup/CpuAccounting.cpp
+    src/cgroup/Memory.cpp
+    src/cgroup/MemorySwap.cpp
+
     src/lxc/Config.cpp
     src/lxc/LXC.c
     src/lxc/MountConfig.cpp
