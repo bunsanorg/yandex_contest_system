@@ -16,6 +16,34 @@ struct itimerval;
 
 namespace yandex{namespace contest{namespace system{namespace unistd
 {
+    /// Information for exceptions.
+    namespace info
+    {
+        typedef boost::error_info<struct pathTag, boost::filesystem::path> path;
+        typedef boost::error_info<struct modeTag, mode_t> mode;
+        typedef boost::error_info<struct accessIdTag, access::Id> accessId;
+        typedef boost::error_info<struct devMajorTag, int> devMajor;
+        typedef boost::error_info<struct devMinorTag, int> devMinor;
+        typedef boost::error_info<struct symLinkValueTag, boost::filesystem::path> symLinkValue;
+        typedef boost::error_info<struct uidTag, uid_t> uid;
+        typedef boost::error_info<struct ruidTag, uid_t> ruid;
+        typedef boost::error_info<struct euidTag, uid_t> euid;
+        typedef boost::error_info<struct suidTag, uid_t> suid;
+        typedef boost::error_info<struct gidTag, gid_t> gid;
+        typedef boost::error_info<struct rgidTag, gid_t> rgid;
+        typedef boost::error_info<struct egidTag, gid_t> egid;
+        typedef boost::error_info<struct sgidTag, gid_t> sgid;
+        typedef boost::error_info<struct openFlagsTag, int> openFlags;
+        typedef boost::error_info<struct fdTag, int> fd;
+        typedef boost::error_info<struct oldFdTag, int> oldfd;
+        typedef boost::error_info<struct newFdTag, int> newfd;
+        typedef boost::error_info<struct resourceTag, int> resource;
+        // TODO rlimit (how to do it without <sys/resource.h> include?
+        // TODO interval timer (the same...)
+        typedef boost::error_info<struct pidTag, pid_t> pid;
+        typedef boost::error_info<struct signalTag, int> signal;
+    }
+
     /// chmod(3)
     void chmod(const boost::filesystem::path &path, const mode_t mode);
 
