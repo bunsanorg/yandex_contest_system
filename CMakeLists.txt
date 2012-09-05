@@ -49,6 +49,7 @@ add_library(${PROJECT_NAME} SHARED
     src/execution/ErrCall.cpp
     src/execution/AsyncProcess.cpp
 
+    src/cgroup/MountPoint.cpp
     src/cgroup/ControlGroup.cpp
     src/cgroup/Freezer.cpp
     src/cgroup/CpuSet.cpp

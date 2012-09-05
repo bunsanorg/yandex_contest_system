@@ -4,7 +4,7 @@
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
-    class CpuSetBase: public SubsystemBase<CpuSetBase>
+    class CpuSetBase: virtual public SubsystemBase<CpuSetBase>
     {
     public:
         static const std::string SUBSYSTEM_NAME;

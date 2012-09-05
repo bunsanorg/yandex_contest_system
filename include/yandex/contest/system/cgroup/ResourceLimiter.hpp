@@ -5,7 +5,7 @@
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     template <typename Config>
-    class ResourceLimiter: public ResourceCounter<Config>
+    class ResourceLimiter: public virtual ResourceCounter<Config>
     {
     public:
         typedef typename ResourceCounter<Config>::uint_t uint_t;

@@ -1,10 +1,12 @@
 #pragma once
 
 #include "yandex/contest/system/cgroup/Error.hpp"
+#include "yandex/contest/system/cgroup/MountPoint.hpp"
 
 #include <string>
 #include <unordered_set>
 #include <utility>
+#include <functional>
 
 #include <boost/optional.hpp>
 #include <boost/filesystem/path.hpp>
@@ -22,13 +24,15 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     class ControlGroup
     {
     public:
-        typedef std::unordered_set<std::string> Tasks;
+        typedef std::unordered_set<pid_t> Tasks;
+        typedef std::function<void (std::istream &)> Reader;
+        typedef std::function<void (std::ostream &)> Writer;
 
     public:
         ControlGroup()=default;
 
-        ControlGroup(const boost::filesystem::path &root,
-                     const boost::filesystem::path &name);
+        explicit ControlGroup(const boost::filesystem::path &name,
+                              const boost::filesystem::path &root=getMountPoint());
 
         ControlGroup(ControlGroup &&);
         ControlGroup &operator=(ControlGroup &&);
@@ -46,12 +50,13 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         void create(Arg &&arg, Args &&...args)
         {
             // default constructor is not allowed
-            ControlGroup(std::forward<Arg>(arg), std::forward<Args>(args)...).swap(*this);
+            ControlGroup(std::forward<Arg>(arg),
+                         std::forward<Args>(args)...).swap(*this);
         }
 
-        void remove() noexcept; // FIXME NOEXCEPT???
+        void remove();
 
-        void terminate() noexcept; // FIXME NOEXCEPT???
+        void terminate();
 
         Tasks tasks();
 
@@ -78,6 +83,9 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
             return boost::lexical_cast<T>(readStringField(fieldName));
         }
 
+        void readFieldByReader(const std::string &fieldName, const Reader &reader);
+        void writeFieldByWriter(const std::string &fieldName, const Writer &writer);
+
     public:
         /// Get control group path.
         boost::filesystem::path path() const;
@@ -93,18 +101,18 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         void writeStringField(const std::string &fieldName, const std::string &data);
 
     private:
-        struct ControlGroupData;
-
-        /// \throws InvalidControlGroupError if control group is not initialized.
-        const ControlGroupData &data() const;
-
-    private:
         struct ControlGroupData
         {
             boost::filesystem::path root;
             boost::filesystem::path name;
         };
 
+    private:
+
+        /// \throws InvalidControlGroupError if control group is not initialized.
+        const ControlGroupData &data() const;
+
+    private:
         boost::optional<ControlGroupData> data_;
     };
 

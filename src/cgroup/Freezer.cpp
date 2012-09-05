@@ -11,7 +11,20 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
     void FreezerBase::setState(const State state_) const
     {
-        while (state() != state_)
+        do
+        {
             writeField("state", state_);
+        }
+        while (state() != state_);
+    }
+
+    void FreezerBase::freeze() const
+    {
+        setState(State::FROZEN);
+    }
+
+    void FreezerBase::unfreeze() const
+    {
+        setState(State::THAWED);
     }
 }}}}

@@ -16,7 +16,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         ))
     }
 
-    class FreezerBase: public SubsystemBase<FreezerBase>
+    class FreezerBase: public virtual SubsystemBase<FreezerBase>
     {
     public:
         static const std::string SUBSYSTEM_NAME;
@@ -27,12 +27,17 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     public:
         State state() const;
 
+        void freeze() const;
+
+        void unfreeze() const;
+
+    private:
         /*!
          * \warning State::FREEZING is not legal.
-         * \note loop until FROZEN THAWED
+         * \note loop until state() == state_
          */
-        void setState(const State state) const;
+        void setState(const State state_) const;
     };
 
-    typedef SubsystemBase<FreezerBase> Freezer;
+    typedef Subsystem<FreezerBase> Freezer;
 }}}}

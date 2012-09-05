@@ -9,7 +9,7 @@
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     template <typename Config>
-    class ResourceCounter: public SubsystemBase<Config>
+    class ResourceCounter: public virtual SubsystemBase<Config>
     {
     public:
         typedef std::uint64_t uint_t;
