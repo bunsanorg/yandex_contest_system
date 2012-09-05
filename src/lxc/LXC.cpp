@@ -160,7 +160,7 @@ namespace yandex{namespace contest{namespace system{namespace lxc
             {
                 unistd::Fstab fstab;
                 fstab.load(config.mount.get().fstab.get());
-                for (unistd::MountEntry &entry: fstab.entries)
+                for (unistd::MountEntry &entry: fstab)
                     prepare(entry);
                 const boost::filesystem::path fstab_ = dir_ / "fstab";
                 fstab.save(fstab_);
