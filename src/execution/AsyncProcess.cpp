@@ -108,6 +108,11 @@ namespace yandex{namespace contest{namespace system{namespace execution
         return pid_;
     }
 
+    AsyncProcess::Pid AsyncProcess::pid() const noexcept
+    {
+        return pid_;
+    }
+
     const Result &AsyncProcess::wait()
     {
         BOOST_ASSERT_MSG(*this, "Invalid AsyncProcess instance.");
