@@ -31,6 +31,9 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     public:
         ControlGroup()=default;
 
+        ControlGroup(const boost::filesystem::path &name, const mode_t mode,
+                     const boost::filesystem::path &root=getMountPoint());
+
         explicit ControlGroup(const boost::filesystem::path &name,
                               const boost::filesystem::path &root=getMountPoint());
 
@@ -74,13 +77,13 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         template <typename T>
         void writeField(const std::string &fieldName, const T &data)
         {
-            writeStringField(fieldName, boost::lexical_cast<std::string>(data));
+            writeField<std::string>(fieldName, boost::lexical_cast<std::string>(data));
         }
 
         template <typename T>
         T readField(const std::string &fieldName)
         {
-            return boost::lexical_cast<T>(readStringField(fieldName));
+            return boost::lexical_cast<T>(readField<std::string>(fieldName));
         }
 
         void readFieldByReader(const std::string &fieldName, const Reader &reader);
@@ -95,10 +98,6 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
         /// Get path to control group field.
         boost::filesystem::path field(const std::string &fieldName) const;
-
-    private:
-        std::string readStringField(const std::string &fieldName);
-        void writeStringField(const std::string &fieldName, const std::string &data);
 
     private:
         struct ControlGroupData
@@ -120,4 +119,10 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     {
         a.swap(b);
     }
+
+    template <>
+    void ControlGroup::writeField(const std::string &fieldName, const std::string &data);
+
+    template <>
+    std::string ControlGroup::readField(const std::string &fieldName);
 }}}}
