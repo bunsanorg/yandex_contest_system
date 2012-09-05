@@ -12,8 +12,8 @@
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     class CpuAccountingBase:
-        public ResourceCounter<CpuAccountingBase>,
-        public Stat<CpuAccountingBase, ResourceCounter<CpuAccountingBase>::uint_t>
+        public virtual ResourceCounter<CpuAccountingBase>,
+        public virtual Stat<CpuAccountingBase, ResourceCounter<CpuAccountingBase>::uint_t>
     {
     public:
         static const std::string SUBSYSTEM_NAME;

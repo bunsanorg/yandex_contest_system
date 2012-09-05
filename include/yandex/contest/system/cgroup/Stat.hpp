@@ -8,13 +8,24 @@
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     template <typename Config, typename T>
-    class Stat: public SubsystemBase<Config>
+    class Stat: public virtual SubsystemBase<Config>
     {
     public:
-        std::unordered_map<std::string, T> stat()
+        typedef std::unordered_map<std::string, T> Map;
+
+    public:
+        Map stat()
         {
-            const std::string stat_ = this->template readField<std::string>("stat");
-            // TODO
+            Map map;
+            readFieldByReader("stat",
+                [&map](std::istream &in)
+                {
+                    std::string key;
+                    T value;
+                    while (in >> key >> value)
+                        map.emplace(key, value);
+                });
+            return map;
         }
     };
 }}}}

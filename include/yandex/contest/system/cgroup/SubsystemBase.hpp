@@ -13,8 +13,8 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     template <typename Config>
     class SubsystemBase
     {
-    protected:
-        SubsystemBase()=default;
+    public:
+        virtual ControlGroup &controlGroup() const=0;
 
     protected:
         static inline std::string fieldName(const std::string &fieldName_)
@@ -39,14 +39,16 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
             return controlGroup().template readField<T>(fieldName(fieldName_));
         }
 
-    private:
-        inline ControlGroup &controlGroup() const
+        void readFieldByReader(const std::string &fieldName_,
+                               const ControlGroup::Reader &reader) const
         {
-            // TODO Think about such design,
-            // I don't like reinterpret_cast here.
-            // It is guaranteed that this object
-            // is instance of Subsystem<Config>.
-            return reinterpret_cast<const Subsystem<Config> *>(this)->controlGroup();
+            controlGroup().readFieldByReader(fieldName(fieldName_), reader);
+        }
+
+        void writeFieldByWriter(const std::string &fieldName_,
+                                const ControlGroup::Writer &writer) const
+        {
+            controlGroup().writeFieldByWriter(fieldName(fieldName_), writer);
         }
     };
 }}}}

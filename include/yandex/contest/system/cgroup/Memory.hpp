@@ -8,8 +8,8 @@
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     class MemoryBase:
-        public ResourceLimiter<MemoryBase>,
-        public Stat<MemoryBase, ResourceCounter<MemoryBase>::uint_t>
+        public virtual ResourceLimiter<MemoryBase>,
+        public virtual Stat<MemoryBase, ResourceCounter<MemoryBase>::uint_t>
     {
     public:
         static const std::string SUBSYSTEM_NAME;

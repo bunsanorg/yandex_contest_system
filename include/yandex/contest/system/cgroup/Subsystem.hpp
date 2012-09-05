@@ -5,7 +5,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     class ControlGroup;
 
     template <typename Base>
-    class Subsystem: public Base
+    class Subsystem: public virtual Base
     {
     public:
         explicit Subsystem(ControlGroup &controlGroup):
@@ -14,7 +14,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         Subsystem(const Subsystem &)=default;
         Subsystem &operator=(const Subsystem &)=default;
 
-        ControlGroup &controlGroup() const
+        ControlGroup &controlGroup() const override
         {
             return controlGroup_;
         }
@@ -23,37 +23,3 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         ControlGroup &controlGroup_;
     };
 }}}}
-#if 0
-#pragma once
-
-namespace yandex{namespace contest{namespace system{namespace cgroup
-{
-    class ControlGroup;
-
-    class BasicSubsystem
-    {
-    public:
-        explicit BasicSubsystem(ControlGroup &controlGroup):
-            controlGroup_(controlGroup) {}
-
-        BasicSubsystem(const BasicSubsystem &)=default;
-        BasicSubsystem &operator=(const BasicSubsystem &)=default;
-
-        ControlGroup &controlGroup() const
-        {
-            return controlGroup_;
-        }
-
-    private:
-        ControlGroup &controlGroup_;
-    };
-
-    template <typename Base>
-    class Subsystem: public Base, BasicSubsystem
-    {
-    public:
-        explicit Subsystem(ControlGroup &controlGroup):
-            BasicSubsystem(controlGroup) {}
-    };
-}}}}
-#endif
