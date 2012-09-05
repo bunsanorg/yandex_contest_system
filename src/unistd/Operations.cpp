@@ -65,6 +65,11 @@ namespace yandex{namespace contest{namespace system{namespace unistd
                            info::path(path) << info::mode(mode));
     }
 
+    void rmdir(const boost::filesystem::path &path)
+    {
+        YANDEX_UNISTD_WRAP(::rmdir(path.c_str()), info::path(path));
+    }
+
     void mknod(const boost::filesystem::path &path, const mode_t mode, const dev_t dev)
     {
         YANDEX_UNISTD_WRAP(::mknod(path.c_str(), mode, dev),
