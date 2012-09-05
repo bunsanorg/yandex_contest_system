@@ -18,4 +18,24 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         /// Save to file with fstab(5) syntax.
         void save(const boost::filesystem::path &fstab) const;
     };
+
+    inline std::vector<MountEntry>::iterator begin(Fstab &fstab)
+    {
+        return begin(fstab.entries);
+    }
+
+    inline std::vector<MountEntry>::const_iterator begin(const Fstab &fstab)
+    {
+        return begin(fstab.entries);
+    }
+
+    inline std::vector<MountEntry>::iterator end(Fstab &fstab)
+    {
+        return end(fstab.entries);
+    }
+
+    inline std::vector<MountEntry>::const_iterator end(const Fstab &fstab)
+    {
+        return end(fstab.entries);
+    }
 }}}}
