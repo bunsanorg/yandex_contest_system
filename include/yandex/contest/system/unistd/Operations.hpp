@@ -56,6 +56,9 @@ namespace yandex{namespace contest{namespace system{namespace unistd
     /// mkdir(3)
     void mkdir(const boost::filesystem::path &path, const mode_t mode);
 
+    /// rmdir(3)
+    void rmdir(const boost::filesystem::path &path);
+
     /// mknod(3)
     void mknod(const boost::filesystem::path &path, const mode_t mode, const dev_t dev);
 
