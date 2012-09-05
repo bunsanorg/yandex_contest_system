@@ -5,6 +5,8 @@
 #include "yandex/contest/system/unistd/FileStatus.hpp"
 #include "yandex/contest/system/unistd/Descriptor.hpp"
 
+#include <system_error>
+
 #include <boost/filesystem/path.hpp>
 
 #include <sys/types.h>
@@ -118,4 +120,14 @@ namespace yandex{namespace contest{namespace system{namespace unistd
 
     /// setitimer(3)
     void setitimer(const int which, const ::itimerval &new_value, ::itimerval &old_value);
+
+    /// kill(3)
+    void kill(const pid_t pid, const int sig);
+
+    /*!
+     * \brief kill(pid, 0)
+     *
+     * \return error if happened.
+     */
+    std::error_code kill0(const pid_t pid) noexcept;
 }}}}

@@ -2,6 +2,8 @@
 
 #include "yandex/contest/SystemError.hpp"
 
+#include <csignal>
+
 #include <boost/assert.hpp>
 
 #include <unistd.h>
@@ -229,5 +231,18 @@ namespace yandex{namespace contest{namespace system{namespace unistd
     void setitimer(const int which, const ::itimerval &new_value, ::itimerval &old_value)
     {
         YANDEX_UNISTD_WRAP(::setitimer(which, &new_value, &old_value));
+    }
+
+    void kill(const pid_t pid, const int sig)
+    {
+        YANDEX_UNISTD_WRAP(::kill(pid, sig));
+    }
+
+    std::error_code kill0(const pid_t pid) noexcept
+    {
+        if (::kill(pid, 0) < 0)
+            return std::error_code(errno, std::system_category());
+        else
+            return std::error_code();
     }
 }}}}
