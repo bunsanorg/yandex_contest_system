@@ -11,7 +11,7 @@
 
 #include <csignal>
 
-#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem/fstream.hpp>
@@ -20,15 +20,20 @@
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     ControlGroup::ControlGroup(const boost::filesystem::path &name,
+                               const mode_t mode,
                                const boost::filesystem::path &root):
         data_(ControlGroupData{root, name})
     {
         STREAM_DEBUG << "Attempt to create new control group at " <<
                         root << " named " << name << ".";
-        // TODO unistd::mkdir(root / name);
+        unistd::mkdir(root / name, mode);
         STREAM_DEBUG << "Control group " << name <<
                         " was successfully created at " << root;
     }
+
+    ControlGroup::ControlGroup(const boost::filesystem::path &name,
+                               const boost::filesystem::path &root):
+        ControlGroup::ControlGroup(name, 0777, root) {}
 
     ControlGroup::ControlGroup(ControlGroup &&controlGroup)
     {
@@ -88,7 +93,8 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
             STREAM_DEBUG << "Attempt to remove control group " <<
                             data_->name << " at " << data_->root << ".";
             terminate();
-            // TODO unistd::rmdir()
+            // TODO some processes may not terminate for this moment
+            unistd::rmdir(data_->root / data_->name);
             STREAM_DEBUG << "Control group " << data_->name <<
                             " was successfully removed from " << data_->root;
             data_.reset();
@@ -116,13 +122,12 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     ControlGroup::Tasks ControlGroup::tasks()
     {
         Tasks tasks_;
-        std::vector<std::string> tasksStrings;
-        std::string seq = readField<std::string>("tasks");
-        boost::algorithm::split(tasksStrings, seq,
-                                boost::algorithm::is_space(),
-                                boost::algorithm::token_compress_on);
-        for (const std::string &pid: tasksStrings)
-            tasks_.insert(boost::lexical_cast<pid_t>(pid));
+        readFieldByReader("tasks",
+            [&tasks_](std::istream &in)
+            {
+                tasks_.insert(std::istream_iterator<pid_t>(in),
+                              std::istream_iterator<pid_t>());
+            });
         return tasks_;
     }
 
@@ -183,7 +188,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
             BOOST_THROW_EXCEPTION(SystemError());
         reader(fin);
         fin.close();
-        if (!fin)
+        if (fin.bad())
             BOOST_THROW_EXCEPTION(SystemError());
     }
 
@@ -198,7 +203,8 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
             BOOST_THROW_EXCEPTION(SystemError());
     }
 
-    std::string ControlGroup::readStringField(const std::string &fieldName)
+    template <>
+    std::string ControlGroup::readField(const std::string &fieldName)
     {
         std::string data;
         readFieldByReader(fieldName,
@@ -207,10 +213,12 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
                 data.assign(std::istreambuf_iterator<char>(in),
                             std::istreambuf_iterator<char>());
             });
+        boost::algorithm::trim_right(data);
         return data;
     }
 
-    void ControlGroup::writeStringField(const std::string &fieldName, const std::string &data)
+    template <>
+    void ControlGroup::writeField(const std::string &fieldName, const std::string &data)
     {
         writeFieldByWriter(fieldName, [&data](std::ostream &out){out << data;});
     }
