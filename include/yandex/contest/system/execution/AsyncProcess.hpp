@@ -60,6 +60,13 @@ namespace yandex{namespace contest{namespace system{namespace execution
         /// If process has not terminated try to kill and wait.
         void stop();
 
+        /*!
+         * \brief Get process id.
+         *
+         * \warning Value is unspecified if !(*this).
+         */
+        Pid pid() const noexcept;
+
         void swap(AsyncProcess &process) noexcept;
 
     private:
