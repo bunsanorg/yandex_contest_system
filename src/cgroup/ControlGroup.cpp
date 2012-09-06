@@ -150,6 +150,22 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         return ControlGroup(name().parent_path(), Attach, root());
     }
 
+    ControlGroup ControlGroup::attachChild(const boost::filesystem::path &name_) const
+    {
+        return ControlGroup(name() / name_, Attach, root());
+    }
+
+    ControlGroup ControlGroup::createChild(const boost::filesystem::path &name_,
+                                           const mode_t mode) const
+    {
+        return ControlGroup(name() / name_, mode, root());
+    }
+
+    ControlGroup ControlGroup::createChild(const boost::filesystem::path &name_) const
+    {
+        return createChild(name_, 0777);
+    }
+
     void ControlGroup::terminate()
     {
         STREAM_DEBUG << "Attempt to terminate all running processes in " << data() << ".";

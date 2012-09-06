@@ -89,6 +89,15 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         /// Get parent ControlGroup (not-owning).
         ControlGroup parent() const;
 
+        /// Attach to existing child cgroup.
+        ControlGroup attachChild(const boost::filesystem::path &name) const;
+
+        /// Create new child cgroup.
+        ControlGroup createChild(const boost::filesystem::path &name, const mode_t mode) const;
+
+        /// \copydoc createChild()
+        ControlGroup createChild(const boost::filesystem::path &name) const;
+
         Tasks tasks();
 
         void attachTask(const pid_t pid);
