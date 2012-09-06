@@ -66,13 +66,13 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     ControlGroup::ControlGroup(ControlGroup &&controlGroup)
     {
         swap(controlGroup);
-        controlGroup.remove();
+        controlGroup.close();
     }
 
     ControlGroup &ControlGroup::operator=(ControlGroup &&controlGroup)
     {
         swap(controlGroup);
-        controlGroup.remove();
+        controlGroup.close();
         return *this;
     }
 
