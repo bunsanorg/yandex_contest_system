@@ -1,28 +1,25 @@
 #pragma once
 
 #include "yandex/contest/system/cgroup/SubsystemBase.hpp"
-
-#include <string>
-
-#include <cstdint>
+#include "yandex/contest/system/cgroup/Types.hpp"
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
-    template <typename Config>
+    template <typename Config, typename Units_=Count>
     class ResourceCounter: public virtual SubsystemBase<Config>
     {
     public:
-        typedef std::uint64_t uint_t;
+        typedef Units_ Units;
 
     public:
-        uint_t usage() const
+        Units usage() const
         {
-            return this->template readField<uint_t>(fieldNameInUnits("usage"));
+            return Units(this->template readField<Count>(fieldNameInUnits("usage")));
         }
 
-        uint_t maxUsage() const
+        Units maxUsage() const
         {
-            return this->template readField<uint_t>(fieldNameInUnits("max_usage"));
+            return Units(this->template readField<Count>(fieldNameInUnits("max_usage")));
         }
 
         void resetMaxUsageToUsage() const

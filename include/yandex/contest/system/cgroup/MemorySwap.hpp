@@ -6,8 +6,8 @@
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     class MemorySwapBase:
-        public virtual ResourceLimiter<MemorySwapBase>,
-        public virtual Stat<MemorySwapBase, ResourceCounter<MemorySwapBase>::uint_t>
+        public virtual ResourceLimiter<MemorySwapBase, Count>,
+        public virtual Stat<MemorySwapBase, Count>
     {
     public:
         static const std::string SUBSYSTEM_NAME;

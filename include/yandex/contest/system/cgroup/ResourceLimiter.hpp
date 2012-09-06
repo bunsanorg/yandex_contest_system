@@ -4,29 +4,30 @@
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
-    template <typename Config>
-    class ResourceLimiter: public virtual ResourceCounter<Config>
+    template <typename Config, typename Units_=Count>
+    class ResourceLimiter: public virtual ResourceCounter<Config, Units_>
     {
     public:
-        typedef typename ResourceCounter<Config>::uint_t uint_t;
+        typedef typename ResourceCounter<Config>::Units Units;
 
     public:
-        uint_t limit() const
+        Units limit() const
         {
-            return this->template readField<uint_t>(
-                ResourceCounter<Config>::fieldNameInUnits("limit"));
+            return Units(this->template readField<Count>(
+                ResourceCounter<Config>::fieldNameInUnits("limit")));
         }
 
-        void setLimit(const uint_t limit) const
+        // TODO support Units
+        void setLimit(const Count limit) const
         {
             this->template writeField(
                 ResourceCounter<Config>::fieldNameInUnits("limit"), limit);
             // TODO validate? kernel may not set it properly
         }
 
-        uint_t failcnt() const
+        Count failcnt() const
         {
-            return this->template readField<uint_t>("failcnt");
+            return this->template readField<Count>("failcnt");
         }
 
         void resetFailcnt() const
