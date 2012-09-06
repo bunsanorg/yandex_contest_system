@@ -6,7 +6,7 @@
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
-    struct ControlGroupIsNotMountedError: Error {};
+    struct ControlGroupIsNotMountedError: virtual Error {};
 
     /*!
      * \brief Returns the first mounted cgroup
