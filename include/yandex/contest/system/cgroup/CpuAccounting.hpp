@@ -1,30 +1,59 @@
 #pragma once
 
 #include "yandex/contest/system/cgroup/ResourceCounter.hpp"
-#include "yandex/contest/system/cgroup/Stat.hpp"
+#include "yandex/contest/system/cgroup/StructStat.hpp"
 
 #include "yandex/contest/StreamEnum.hpp"
 
 #include <vector>
 #include <chrono>
 
+#include <boost/serialization/access.hpp>
+#include <boost/serialization/nvp.hpp>
 #include <boost/optional.hpp>
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
+    namespace cpu_accounting_detail
+    {
+        /// \warning Precision of TickDuration may be higher than system precision.
+        typedef std::chrono::duration<Count, std::centi> TickDuration;
+
+        struct CpuAccountingStat
+        {
+            template <typename Archive>
+            void serialize(Archive &ar, const unsigned int)
+            {
+                ar & boost::serialization::make_nvp("user", userUsage);
+                ar & boost::serialization::make_nvp("system", systemUsage);
+            }
+
+            TickDuration userUsage;
+            TickDuration systemUsage;
+        };
+
+        struct TickDurationConverter
+        {
+            static TickDuration countToUnits(const Count count);
+            static Count unitsToCount(const TickDuration units);
+        };
+    }
+
     class CpuAccountingBase:
         public virtual ResourceCounter<CpuAccountingBase, std::chrono::nanoseconds>,
-        public virtual Stat<CpuAccountingBase, Count>
+        public virtual StructStat<CpuAccountingBase,
+                                  cpu_accounting_detail::TickDuration,
+                                  cpu_accounting_detail::CpuAccountingStat,
+                                  cpu_accounting_detail::TickDurationConverter>
     {
     public:
         static const std::string SUBSYSTEM_NAME;
         static const boost::optional<std::string> UNITS;
 
     public:
-        /// \warning Precision of TickDuration may be higher than system precision.
-        typedef std::chrono::milliseconds TickDuration;
-
         typedef std::chrono::nanoseconds Duration;
+        typedef cpu_accounting_detail::TickDuration TickDuration;
+        typedef cpu_accounting_detail::CpuAccountingStat Stat;
 
     public:
         std::vector<Duration> usagePerCpu() const;
@@ -33,11 +62,6 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         TickDuration systemUsage() const;
 
     private:
-        Count userUsageTicks() const;
-        Count systemUsageTicks() const;
-
-    private:
-        static TickDuration ticksToDuration(const Count ticks);
         static Duration uintToDuration(const Count n);
     };
 
