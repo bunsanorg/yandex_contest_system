@@ -8,11 +8,13 @@
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
-    template <typename Config, typename T=Count>
+    template <typename Config, typename Units_=Count,
+              typename Converter=detail::UnitsConverter<Units_>>
     class Stat: public virtual SubsystemBase<Config>
     {
     public:
-        typedef std::unordered_map<std::string, T> Map;
+        typedef Units_ Units;
+        typedef std::unordered_map<std::string, Units> Map;
 
     public:
         Map stat() const
@@ -22,9 +24,9 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
                 [&map](std::istream &in)
                 {
                     std::string key;
-                    T value;
+                    Count value;
                     while (in >> key >> value)
-                        map.emplace(key, value);
+                        map.emplace(key, Converter::countToUnits(value));
                 });
             return map;
         }

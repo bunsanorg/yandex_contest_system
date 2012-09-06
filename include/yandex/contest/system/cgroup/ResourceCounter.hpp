@@ -5,7 +5,8 @@
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
-    template <typename Config, typename Units_=Count>
+    template <typename Config, typename Units_=Count,
+              typename Converter=detail::UnitsConverter<Units_>>
     class ResourceCounter: public virtual SubsystemBase<Config>
     {
     public:
@@ -14,12 +15,14 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     public:
         Units usage() const
         {
-            return Units(this->template readField<Count>(fieldNameInUnits("usage")));
+            return Converter::countToUnits(
+                this->template readField<Count>(fieldNameInUnits("usage")));
         }
 
         Units maxUsage() const
         {
-            return Units(this->template readField<Count>(fieldNameInUnits("max_usage")));
+            return Converter::countToUnits(
+                this->template readField<Count>(fieldNameInUnits("max_usage")));
         }
 
         void resetMaxUsageToUsage() const
