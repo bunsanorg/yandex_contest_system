@@ -54,6 +54,12 @@ BOOST_AUTO_TEST_CASE(attached)
     acg.close();
 }
 
+BOOST_AUTO_TEST_CASE(parent)
+{
+    yac::ControlGroup pcg = cg.parent();
+    BOOST_CHECK_GT(pcg.tasks().size(), 0);
+}
+
 BOOST_AUTO_TEST_CASE(terminate)
 {
     ya::execution::AsyncProcess::Options opts;
