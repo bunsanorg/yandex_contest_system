@@ -19,13 +19,38 @@
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
+    std::ostream &operator<<(std::ostream &out, const ControlGroup::ControlGroupData &data)
+    {
+        out << "{ ControlGroup: name = " << data.name <<
+               "; root = " << data.root << "; " <<
+               (data.own ? "own" : "does not own") << " }";
+        return out;
+    }
+
+    std::ostream &operator<<(
+        std::ostream &out, const boost::optional<ControlGroup::ControlGroupData> &data)
+    {
+        if (data)
+            out << data.get();
+        else
+            out << "{ uninitialized ControlGroup }";
+        return out;
+    }
+
+    ControlGroup::ControlGroup(const boost::filesystem::path &name,
+                               const AttachType,
+                               const boost::filesystem::path &root):
+        data_(ControlGroupData{root, name, false})
+    {
+        STREAM_DEBUG << data_ << " was attached.";
+    }
+
     ControlGroup::ControlGroup(const boost::filesystem::path &name,
                                const mode_t mode,
                                const boost::filesystem::path &root):
-        data_(ControlGroupData{root, name})
+        data_(ControlGroupData{root, name, true})
     {
-        STREAM_DEBUG << "Attempt to create new control group at " <<
-                        root << " named " << name << ".";
+        STREAM_DEBUG << "Attempt to create new " << data_ << ".";
         unistd::mkdir(root / name, mode);
         STREAM_DEBUG << "Control group " << name <<
                         " was successfully created at " << root;
@@ -52,21 +77,19 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     {
         try
         {
-            remove();
+            close();
         }
         catch (std::exception &e)
         {
             if (data_)
             {
-                STREAM_ERROR << "Control group " << data_->name <<
-                                " was not removed from " << data_->root <<
-                                " due to error: \"" << e.what() <<
-                                "\" (ignoring).";
+                STREAM_ERROR << data_ << " was not closed due to error: \"" <<
+                                e.what() << "\" (ignoring).";
             }
             else
             {
-                STREAM_ERROR << "Unexpected error in uninitialized"
-                                " control group object: \"" << e.what() << "\".";
+                STREAM_ERROR << "Unexpected error in uninitialized ControlGroup: \"" <<
+                                e.what() << "\" (ignoring).";
             }
         }
         catch (...)
@@ -88,35 +111,45 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
     void ControlGroup::remove()
     {
+        STREAM_DEBUG << "Attempt to remove " << data() << ".";
+        terminate();
+        // TODO some processes may not terminate for this moment
+        unistd::rmdir(path());
+        STREAM_DEBUG << data_ << " was successfully removed.";
+        data_.reset();
+    }
+
+    void ControlGroup::detach()
+    {
+        STREAM_DEBUG << "Attempt to detach " << data_ << ".";
+        data_.reset();
+    }
+
+    void ControlGroup::close()
+    {
         if (data_)
         {
-            STREAM_DEBUG << "Attempt to remove control group " <<
-                            data_->name << " at " << data_->root << ".";
-            terminate();
-            // TODO some processes may not terminate for this moment
-            unistd::rmdir(data_->root / data_->name);
-            STREAM_DEBUG << "Control group " << data_->name <<
-                            " was successfully removed from " << data_->root;
-            data_.reset();
+            STREAM_DEBUG << "Attempt to close " << data_ << ".";
+            if (data_->own)
+                remove();
+            else
+                detach();
         }
     }
 
     void ControlGroup::terminate()
     {
-        STREAM_DEBUG << "Attempt to terminate all running processes in " <<
-                        data().name << " control group.";
+        STREAM_DEBUG << "Attempt to terminate all running processes in " << data() << ".";
         const Freezer freezer(*this);
         freezer.freeze();
-        STREAM_DEBUG << "Attempt to kill all frozen processes in " <<
-                        data().name << " control group.";
+        STREAM_DEBUG << "Attempt to kill all frozen processes in " << data() << ".";
         for (const pid_t pid: tasks())
             unistd::kill(pid, SIGKILL);
         freezer.unfreeze();
         // These tasks must somehow be terminated by OS.
         // SIGKILL may not be ignored.
         // User may wait for them (if needed).
-        STREAM_DEBUG << "All tasks from " << data().name <<
-                        " control group were successfully terminated.";
+        STREAM_DEBUG << "All tasks from " << data() << " were successfully terminated.";
     }
 
     ControlGroup::Tasks ControlGroup::tasks()

@@ -28,8 +28,14 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         typedef std::function<void (std::istream &)> Reader;
         typedef std::function<void (std::ostream &)> Writer;
 
+        enum AttachType { Attach };
+
     public:
         ControlGroup()=default;
+
+        /// Create not-owning ControlGroup object.
+        ControlGroup(const boost::filesystem::path &name, const AttachType,
+                     const boost::filesystem::path &root=getMountPoint());
 
         ControlGroup(const boost::filesystem::path &name, const mode_t mode,
                      const boost::filesystem::path &root=getMountPoint());
@@ -57,9 +63,26 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
                          std::forward<Args>(args)...).swap(*this);
         }
 
+        void terminate();
+
+        template <typename Arg, typename ... Args>
+        void attach(Arg &&arg, Args &&...args)
+        {
+            ControlGroup(std::forward<Arg>(arg), Attach,
+                         std::forward<Args>(args)...).swap(*this);
+        }
+
+        /// Make object invalid, but do not remove cgroup.
+        void detach();
+
         void remove();
 
-        void terminate();
+        /*!
+         * \brief If ControlGroup owns cgroup, call remove() else detach().
+         *
+         * Does nothing if object is not valid.
+         */
+        void close();
 
         Tasks tasks();
 
@@ -104,7 +127,14 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         {
             boost::filesystem::path root;
             boost::filesystem::path name;
+            bool own;
         };
+
+        friend std::ostream &operator<<(std::ostream &out,
+                                        const ControlGroupData &data);
+
+        friend std::ostream &operator<<(std::ostream &out,
+                                        const boost::optional<ControlGroupData> &data);
 
     private:
 
