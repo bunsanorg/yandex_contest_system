@@ -68,8 +68,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         template <typename Arg, typename ... Args>
         void attach(Arg &&arg, Args &&...args)
         {
-            ControlGroup(std::forward<Arg>(arg), Attach,
-                         std::forward<Args>(args)...).swap(*this);
+            create(std::forward<Arg>(arg), Attach, std::forward<Args>(args)...);
         }
 
         /// Make object invalid, but do not remove cgroup.
@@ -83,6 +82,9 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
          * Does nothing if object is not valid.
          */
         void close();
+
+        /// Get parent ControlGroup (not-owning).
+        ControlGroup parent() const;
 
         Tasks tasks();
 
@@ -113,13 +115,12 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         void writeFieldByWriter(const std::string &fieldName, const Writer &writer);
 
     public:
-        /// Get control group path.
         boost::filesystem::path path() const;
 
-        /// Get control group name.
         const boost::filesystem::path &name() const;
 
-        /// Get path to control group field.
+        const boost::filesystem::path &root() const;
+
         boost::filesystem::path field(const std::string &fieldName) const;
 
     private:
