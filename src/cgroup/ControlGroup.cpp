@@ -8,6 +8,8 @@
 #include "yandex/contest/detail/LogHelper.hpp"
 
 #include <iterator>
+#include <thread>
+#include <chrono>
 
 #include <csignal>
 
@@ -113,7 +115,12 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     {
         STREAM_DEBUG << "Attempt to remove " << data() << ".";
         terminate();
-        // TODO some processes may not terminate for this moment
+        // Some processes may not terminate at this moment,
+        // we need to wait for them.
+        // TODO Another solution it to move them to the parent cgroup
+        // but I am not sure how to implement it robust.
+        while (!tasks().empty())
+            std::this_thread::sleep_for(std::chrono::milliseconds(10)); // FIXME hardcode
         unistd::rmdir(path());
         STREAM_DEBUG << data_ << " was successfully removed.";
         data_.reset();
