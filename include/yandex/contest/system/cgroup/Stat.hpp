@@ -14,10 +14,10 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         typedef std::unordered_map<std::string, T> Map;
 
     public:
-        Map stat()
+        Map stat() const
         {
             Map map;
-            readFieldByReader("stat",
+            this->readFieldByReader("stat",
                 [&map](std::istream &in)
                 {
                     std::string key;
