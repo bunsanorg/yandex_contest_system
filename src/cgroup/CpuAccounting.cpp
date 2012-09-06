@@ -10,6 +10,20 @@
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
+    namespace cpu_accounting_detail
+    {
+        TickDuration TickDurationConverter::countToUnits(const Count ticks)
+        {
+            const long clkTck = unistd::sysconf(_SC_CLK_TCK);
+            constexpr Count den = TickDuration::period::den;
+            const Count num = TickDuration::period::num * clkTck;
+            BOOST_ASSERT_MSG(num <= den, "Precision of TickDuration is too low.");
+            return TickDuration((ticks * den) / num);
+        }
+
+        //Count TickDurationConverter::unitsToCount(const TickDuration units);
+    }
+
     const std::string CpuAccountingBase::SUBSYSTEM_NAME = "cpuacct";
     const boost::optional<std::string> CpuAccountingBase::UNITS;
 
@@ -30,35 +44,12 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
     CpuAccountingBase::TickDuration CpuAccountingBase::userUsage() const
     {
-        return ticksToDuration(userUsageTicks());
+        return stat().userUsage;
     }
 
     CpuAccountingBase::TickDuration CpuAccountingBase::systemUsage() const
     {
-        return ticksToDuration(systemUsageTicks());
-    }
-
-    Count CpuAccountingBase::userUsageTicks() const
-    {
-        const std::unordered_map<std::string, Count> stat_ = stat();
-        BOOST_ASSERT(stat_.find("user") != stat_.end());
-        return stat_.at("user");
-    }
-
-    Count CpuAccountingBase::systemUsageTicks() const
-    {
-        const std::unordered_map<std::string, Count> stat_ = stat();
-        BOOST_ASSERT(stat_.find("system") != stat_.end());
-        return stat_.at("system");
-    }
-
-    CpuAccountingBase::TickDuration CpuAccountingBase::ticksToDuration(const Count ticks)
-    {
-        const long clkTck = unistd::sysconf(_SC_CLK_TCK);
-        constexpr Count den = TickDuration::period::den;
-        const Count num = TickDuration::period::num * clkTck;
-        BOOST_ASSERT_MSG(num <= den, "Precision of TickDuration is too low.");
-        return TickDuration((ticks * den) / num);
+        return stat().systemUsage;
     }
 
     CpuAccountingBase::Duration CpuAccountingBase::uintToDuration(const Count n)
