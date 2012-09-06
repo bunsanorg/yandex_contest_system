@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE(terminate)
     opts.executable = "sleep";
     opts.arguments = {"sleep", "60"};
     ya::execution::AsyncProcess process(opts);
-    cg.attach(process.pid());
+    cg.attachTask(process.pid());
     cg.terminate();
     const ya::execution::Result result = process.wait();
     BOOST_CHECK(!result.exitStatus);
@@ -96,9 +96,9 @@ BOOST_AUTO_TEST_CASE(fork_bomb)
     opts.arguments = {"sh", "-c", cmd};
     // TODO better implementation will not move
     // itself into cgroup
-    cg.attach(getpid());
+    cg.attachTask(getpid());
     ya::execution::AsyncProcess process(opts);
-    cg.parent().attach(getpid());
+    cg.parent().attachTask(getpid());
     // let fork bomb spawn
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     BOOST_TEST_MESSAGE("Tasks has started: " << cg.tasks().size());

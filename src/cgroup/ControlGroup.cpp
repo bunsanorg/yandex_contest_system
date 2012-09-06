@@ -176,7 +176,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         return tasks_;
     }
 
-    void ControlGroup::attach(const pid_t pid)
+    void ControlGroup::attachTask(const pid_t pid)
     {
         writeField("tasks", pid);
     }
