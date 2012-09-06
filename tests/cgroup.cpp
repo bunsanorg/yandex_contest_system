@@ -8,6 +8,8 @@
 
 #include "yandex/contest/system/execution/AsyncProcess.hpp"
 
+#include "yandex/contest/system/unistd/Operations.hpp"
+
 #include <thread>
 #include <chrono>
 
@@ -17,6 +19,7 @@
 
 namespace ya = yandex::contest::system;
 namespace yac = ya::cgroup;
+namespace unistd = ya::unistd;
 
 BOOST_AUTO_TEST_SUITE(cgroup)
 
@@ -28,15 +31,21 @@ BOOST_AUTO_TEST_CASE(MountPoint)
 struct ControlGroupFixture
 {
     ControlGroupFixture():
+        pid(unistd::getpid()),
+        thisCG(yac::ControlGroup::getControlGroup(pid)),
         cg(boost::filesystem::unique_path())
     {
     }
 
     ~ControlGroupFixture()
     {
+        thisCG.attachTask(pid);
         cg.close();
+        thisCG.close();
     }
 
+    const pid_t pid;
+    yac::ControlGroup thisCG;
     yac::ControlGroup cg;
 };
 
@@ -61,6 +70,19 @@ BOOST_AUTO_TEST_CASE(parent)
 {
     yac::ControlGroup pcg = cg.parent();
     BOOST_CHECK_GT(pcg.tasks().size(), 0);
+}
+
+BOOST_AUTO_TEST_CASE(attachTask)
+{
+    cg.attachTask(pid);
+    const yac::ControlGroup::Tasks tasks = cg.tasks();
+    BOOST_CHECK(tasks.find(pid) != tasks.end());
+}
+
+BOOST_AUTO_TEST_CASE(getControlGroup)
+{
+    const yac::ControlGroup::Tasks tasks = thisCG.tasks();
+    BOOST_CHECK(tasks.find(pid) != tasks.end());
 }
 
 BOOST_AUTO_TEST_CASE(terminate)
@@ -96,9 +118,9 @@ BOOST_AUTO_TEST_CASE(fork_bomb)
     opts.arguments = {"sh", "-c", cmd};
     // TODO better implementation will not move
     // itself into cgroup
-    cg.attachTask(getpid());
+    cg.attachTask(pid);
     ya::execution::AsyncProcess process(opts);
-    cg.parent().attachTask(getpid());
+    cg.parent().attachTask(pid);
     // let fork bomb spawn
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     BOOST_TEST_MESSAGE("Tasks has started: " << cg.tasks().size());
