@@ -88,7 +88,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
         Tasks tasks();
 
-        void attach(const pid_t pid);
+        void attachTask(const pid_t pid);
 
         bool notifyOnRelease();
         void setNotifyOnRelease(const bool notifyOnRelease=true);
