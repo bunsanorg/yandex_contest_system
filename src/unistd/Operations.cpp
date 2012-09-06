@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include <sys/resource.h>
 #include <sys/time.h>
+#include <sys/syscall.h>
 
 // internal defines
 
@@ -271,5 +272,15 @@ namespace yandex{namespace contest{namespace system{namespace unistd
             return std::error_code(errno, std::system_category());
         else
             return std::error_code();
+    }
+
+    pid_t getpid() noexcept
+    {
+        return ::getpid();
+    }
+
+    pid_t gettid() noexcept
+    {
+        return ::syscall(SYS_gettid);
     }
 }}}}
