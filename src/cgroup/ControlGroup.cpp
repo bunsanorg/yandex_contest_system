@@ -8,6 +8,7 @@
 #include "yandex/contest/detail/LogHelper.hpp"
 
 #include <iterator>
+#include <sstream>
 #include <thread>
 #include <chrono>
 
@@ -279,5 +280,38 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
             return data_.get();
         else
             BOOST_THROW_EXCEPTION(InvalidControlGroupError());
+    }
+
+    ControlGroup ControlGroup::getControlGroup(const pid_t pid)
+    {
+        auto cgroups = getControlGroups(pid);
+        if (cgroups.size() > 1)
+            BOOST_THROW_EXCEPTION(MultipleControlGroupsError());
+        BOOST_ASSERT(!cgroups.empty());
+        return std::move(cgroups.front());
+    }
+
+    std::vector<ControlGroup> ControlGroup::getControlGroups(const pid_t pid)
+    {
+        std::vector<ControlGroup> cgroups;
+        std::ostringstream cgroupInfo;
+        cgroupInfo << "/proc/" << pid << "/cgroup";
+        boost::filesystem::ifstream fin(cgroupInfo.str());
+        if (!fin)
+            BOOST_THROW_EXCEPTION(SystemError("open"));
+        std::string line;
+        while (std::getline(fin, line))
+        {
+            std::vector<std::string> fields;
+            std::size_t pos1 = line.find(':');
+            BOOST_ASSERT(pos1 != std::string::npos);
+            //const std::string hierId = line.substr(0, pos1);
+            std::size_t pos2 = line.find(':', pos1 + 1);
+            BOOST_ASSERT(pos2 != std::string::npos);
+            //const std::string subsystems = line.substr(pos1 + 1, pos2);
+            const std::string name = line.substr(pos2 + 1);
+            cgroups.push_back(ControlGroup(name, Attach));
+        }
+        return cgroups;
     }
 }}}}
