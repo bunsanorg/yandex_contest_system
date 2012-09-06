@@ -16,7 +16,9 @@
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
-    struct InvalidControlGroupError: Error {};
+    struct ControlGroupError: virtual Error {};
+    struct InvalidControlGroupError: virtual ControlGroupError {};
+    struct MultipleControlGroupsError: virtual ControlGroupError {};
 
     /*!
      * \throws InvalidControlGroupError if control group is not initialized.
@@ -63,6 +65,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
                          std::forward<Args>(args)...).swap(*this);
         }
 
+        /// \warning Required freezer subsystem mounted.
         void terminate();
 
         template <typename Arg, typename ... Args>
@@ -123,6 +126,17 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
         boost::filesystem::path field(const std::string &fieldName) const;
 
+    public:
+        /*!
+         * \brief Get cgroup owning specified pid.
+         *
+         * \throw MultipleControlGroupsError If process is owned by multiple cgroups.
+         */
+        static ControlGroup getControlGroup(const pid_t pid);
+
+        /// Get cgroups owning specified pid.
+        static std::vector<ControlGroup> getControlGroups(const pid_t pid);
+
     private:
         struct ControlGroupData
         {
@@ -138,7 +152,6 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
                                         const boost::optional<ControlGroupData> &data);
 
     private:
-
         /// \throws InvalidControlGroupError if control group is not initialized.
         const ControlGroupData &data() const;
 
