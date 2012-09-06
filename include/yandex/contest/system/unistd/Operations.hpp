@@ -161,4 +161,10 @@ namespace yandex{namespace contest{namespace system{namespace unistd
      * \return error if happened.
      */
     std::error_code kill0(const pid_t pid) noexcept;
+
+    /// getpid(3)
+    pid_t getpid() noexcept;
+
+    /// gettid(2)
+    pid_t gettid() noexcept;
 }}}}
