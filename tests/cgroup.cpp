@@ -8,6 +8,9 @@
 
 #include "yandex/contest/system/execution/AsyncProcess.hpp"
 
+#include <thread>
+#include <chrono>
+
 #include <csignal>
 
 #include <boost/filesystem/operations.hpp>
@@ -31,7 +34,7 @@ struct ControlGroupFixture
 
     ~ControlGroupFixture()
     {
-        cg.remove();
+        cg.close();
     }
 
     yac::ControlGroup cg;
@@ -76,7 +79,7 @@ BOOST_AUTO_TEST_CASE(terminate)
     process.wait();
 }
 
-/*BOOST_AUTO_TEST_CASE(fork_bomb)
+BOOST_AUTO_TEST_CASE(fork_bomb)
 {
     ya::execution::AsyncProcess::Options opts;
     opts.executable = "sh";
@@ -88,10 +91,20 @@ BOOST_AUTO_TEST_CASE(terminate)
                 bomb
             done
         )
+        bomb
     )EOF";
     opts.arguments = {"sh", "-c", cmd};
-    // TODO attach before start
-}*/
+    // TODO better implementation will not move
+    // itself into cgroup
+    cg.attach(getpid());
+    ya::execution::AsyncProcess process(opts);
+    cg.parent().attach(getpid());
+    // let fork bomb spawn
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    BOOST_TEST_MESSAGE("Tasks has started: " << cg.tasks().size());
+    BOOST_CHECK_GT(cg.tasks().size(), 1);
+    cg.remove();
+}
 
 BOOST_AUTO_TEST_SUITE_END() // ControlGroup
 
