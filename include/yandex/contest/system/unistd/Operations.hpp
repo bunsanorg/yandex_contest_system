@@ -42,6 +42,7 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         // TODO interval timer (the same...)
         typedef boost::error_info<struct pidTag, pid_t> pid;
         typedef boost::error_info<struct signalTag, int> signal;
+        typedef boost::error_info<struct sysconfNameTag, int> sysconfName;
     }
 
     /// chmod(3)
@@ -167,4 +168,7 @@ namespace yandex{namespace contest{namespace system{namespace unistd
 
     /// gettid(2)
     pid_t gettid() noexcept;
+
+    /// sysconf(3)
+    long sysconf(const int name);
 }}}}

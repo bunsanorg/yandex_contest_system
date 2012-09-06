@@ -283,4 +283,9 @@ namespace yandex{namespace contest{namespace system{namespace unistd
     {
         return ::syscall(SYS_gettid);
     }
+
+    long sysconf(const int name)
+    {
+        YANDEX_UNISTD_RETURN(::sysconf(name), info::sysconfName(name));
+    }
 }}}}
