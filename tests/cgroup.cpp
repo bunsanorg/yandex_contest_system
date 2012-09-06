@@ -5,6 +5,7 @@
 
 #include "yandex/contest/system/cgroup/MountPoint.hpp"
 #include "yandex/contest/system/cgroup/ControlGroup.hpp"
+#include "yandex/contest/system/cgroup/CpuAccounting.hpp"
 
 #include "yandex/contest/system/execution/AsyncProcess.hpp"
 
@@ -135,5 +136,17 @@ BOOST_AUTO_TEST_CASE(fork_bomb)
 }
 
 BOOST_AUTO_TEST_SUITE_END() // ControlGroup
+
+BOOST_FIXTURE_TEST_SUITE(Subsystems, ControlGroupFixture)
+
+BOOST_AUTO_TEST_CASE(CpuAccounting)
+{
+    const yac::CpuAccounting cpuAcct(thisCG);
+    BOOST_TEST_MESSAGE("system: " << cpuAcct.systemUsage().count());
+    BOOST_TEST_MESSAGE("user: " << cpuAcct.userUsage().count());
+    BOOST_TEST_MESSAGE("usage: " << cpuAcct.usage().count());
+}
+
+BOOST_AUTO_TEST_SUITE_END() // Subsystems
 
 BOOST_AUTO_TEST_SUITE_END() // cgroup

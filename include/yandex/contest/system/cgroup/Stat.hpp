@@ -1,13 +1,14 @@
 #pragma once
 
 #include "yandex/contest/system/cgroup/SubsystemBase.hpp"
+#include "yandex/contest/system/cgroup/Types.hpp"
 
 #include <string>
 #include <unordered_map>
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
-    template <typename Config, typename T>
+    template <typename Config, typename T=Count>
     class Stat: public virtual SubsystemBase<Config>
     {
     public:
