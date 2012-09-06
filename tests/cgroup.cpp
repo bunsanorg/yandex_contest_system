@@ -33,7 +33,7 @@ struct ControlGroupFixture
     ControlGroupFixture():
         pid(unistd::getpid()),
         thisCG(yac::ControlGroup::getControlGroup(pid)),
-        cg(boost::filesystem::unique_path())
+        cg(thisCG.createChild(boost::filesystem::unique_path()))
     {
     }
 
@@ -70,6 +70,12 @@ BOOST_AUTO_TEST_CASE(parent)
 {
     yac::ControlGroup pcg = cg.parent();
     BOOST_CHECK_GT(pcg.tasks().size(), 0);
+}
+
+BOOST_AUTO_TEST_CASE(attachChild)
+{
+    yac::ControlGroup acg = thisCG.attachChild(cg.name());
+    BOOST_CHECK_EQUAL(acg.path(), cg.path());
 }
 
 BOOST_AUTO_TEST_CASE(attachTask)
