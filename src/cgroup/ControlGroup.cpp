@@ -8,7 +8,6 @@
 #include "yandex/contest/detail/LogHelper.hpp"
 
 #include <iterator>
-#include <sstream>
 #include <thread>
 #include <chrono>
 
@@ -16,6 +15,7 @@
 
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/classification.hpp>
+#include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -310,9 +310,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     std::vector<ControlGroup> ControlGroup::getControlGroups(const pid_t pid)
     {
         std::vector<ControlGroup> cgroups;
-        std::ostringstream cgroupInfo;
-        cgroupInfo << "/proc/" << pid << "/cgroup";
-        boost::filesystem::ifstream fin(cgroupInfo.str());
+        boost::filesystem::ifstream fin(str(boost::format("/proc/%1%/cgroup") % pid));
         if (!fin)
             BOOST_THROW_EXCEPTION(SystemError("open"));
         std::string line;
