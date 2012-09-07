@@ -266,7 +266,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
             BOOST_THROW_EXCEPTION(SystemError());
         writer(fout);
         fout.close();
-        if (!fout)
+        if (fout.bad())
             BOOST_THROW_EXCEPTION(SystemError());
     }
 
