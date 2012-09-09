@@ -30,6 +30,17 @@ BOOST_AUTO_TEST_CASE(construction)
     BOOST_CHECK_EQUAL(ent.passno, 1);
 }
 
+BOOST_AUTO_TEST_CASE(construction_leading_trailing_spaces)
+{
+    const ya::MountEntry ent(" \t/dev/sda3 /boot ext4 defaults 0 1\n \n");
+    BOOST_CHECK_EQUAL(ent.fsname, "/dev/sda3");
+    BOOST_CHECK_EQUAL(ent.dir, "/boot");
+    BOOST_CHECK_EQUAL(ent.type, "ext4");
+    BOOST_CHECK_EQUAL(ent.opts, "defaults");
+    BOOST_CHECK_EQUAL(ent.freq, 0);
+    BOOST_CHECK_EQUAL(ent.passno, 1);
+}
+
 BOOST_AUTO_TEST_CASE(string)
 {
     ya::MountEntry ent;
