@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <system_error>
 
 #include <boost/noncopyable.hpp>
 #include <boost/filesystem/path.hpp>
@@ -16,6 +17,11 @@ namespace yandex{namespace contest{namespace system{namespace unistd
     {
         typedef boost::error_info<struct keyTag, std::string> key;
     };
+
+    namespace info
+    {
+        typedef boost::error_info<struct executableTag, boost::filesystem::path> executable;
+    }
 
     class Exec: private boost::noncopyable
     {
@@ -33,16 +39,28 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         char **envp();
 
         /// System call, see exec(3).
-        int execv() const noexcept;
+        void execv(std::error_code &ec) const noexcept;
 
         /// \copydoc execv()
-        int execvp() const noexcept;
+        void execv() const;
 
         /// \copydoc execv()
-        int execve() const noexcept;
+        void execvp(std::error_code &ec) const noexcept;
 
         /// \copydoc execv()
-        int execvpe() const noexcept;
+        void execvp() const;
+
+        /// \copydoc execv()
+        void execve(std::error_code &ec) const noexcept;
+
+        /// \copydoc execv()
+        void execve() const;
+
+        /// \copydoc execv()
+        void execvpe(std::error_code &ec) const noexcept;
+
+        /// \copydoc execv()
+        void execvpe() const;
 
     private:
         /*!
