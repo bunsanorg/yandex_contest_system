@@ -1,28 +1,31 @@
 #include "yandex/contest/system/unistd/Exec.hpp"
 
-#include <unistd.h>
+#include "yandex/contest/SystemError.hpp"
 
-// FIXME throw exception
+#include <cerrno>
+
+#include <unistd.h>
 
 namespace yandex{namespace contest{namespace system{namespace unistd
 {
-    int Exec::execv() const noexcept
-    {
-        return ::execv(executable(), argv_());
+#define YANDEX_UNISTD_EXEC_IMPL(X, ...) \
+    void Exec::X(std::error_code &ec) const noexcept \
+    { \
+        ::X(executable(), argv_(), ##__VA_ARGS__); \
+        ec.assign(errno, std::system_category()); \
+    } \
+    void Exec::X() const \
+    { \
+        std::error_code ec; \
+        X(ec); \
+        BOOST_THROW_EXCEPTION(SystemError(ec, __func__) << info::executable(executable_)); \
     }
 
-    int Exec::execvp() const noexcept
-    {
-        return ::execvp(executable(), argv_());
-    }
+    YANDEX_UNISTD_EXEC_IMPL(execv)
 
-    int Exec::execve() const noexcept
-    {
-        return ::execve(executable(), argv_(), envp_());
-    }
+    YANDEX_UNISTD_EXEC_IMPL(execvp)
 
-    int Exec::execvpe() const noexcept
-    {
-        return ::execvpe(executable(), argv_(), envp_());
-    }
+    YANDEX_UNISTD_EXEC_IMPL(execve, envp_())
+
+    YANDEX_UNISTD_EXEC_IMPL(execvpe, envp_())
 }}}}
