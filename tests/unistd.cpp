@@ -129,3 +129,27 @@ BOOST_FIXTURE_TEST_CASE(ExecExecutableArgumentsEnvironment, ExecFixture)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+
+#include "yandex/contest/system/unistd/ProcessResult.hpp"
+
+BOOST_AUTO_TEST_SUITE(ProcessResult)
+
+BOOST_AUTO_TEST_CASE(operator_bool)
+{
+    ya::ProcessResult result;
+    result.exitStatus = 0;
+    result.termSig.reset();
+    BOOST_CHECK(result);
+    result.exitStatus = 1;
+    BOOST_CHECK(!result);
+    result.termSig = 1;
+    BOOST_CHECK(!result);
+    result.exitStatus.reset();
+    BOOST_CHECK(!result);
+    result.termSig.reset();
+    BOOST_CHECK(!result);
+    result.exitStatus = 0;
+    BOOST_CHECK(result);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
