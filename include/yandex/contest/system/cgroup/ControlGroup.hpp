@@ -77,6 +77,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         /// Make object invalid, but do not remove cgroup.
         void detach();
 
+        /// Terminate all processes and remove this group.
         void remove();
 
         /*!
