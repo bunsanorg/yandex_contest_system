@@ -1,6 +1,7 @@
 #include "yandex/contest/system/execution/AsyncProcess.hpp"
 
 #include "yandex/contest/system/unistd/Exec.hpp"
+#include "yandex/contest/system/unistd/Operations.hpp"
 
 #include "yandex/contest/SystemError.hpp"
 
@@ -42,27 +43,20 @@ namespace yandex{namespace contest{namespace system{namespace execution
 
     namespace
     {
-        const char *reopenDescriptor(const int descriptor, const int flags, const char *const path)
+        void reopenDescriptor(const int descriptor, const int flags,
+                              const boost::filesystem::path &path)
         {
-            const int fd = ::open(path, flags);
-            if (fd < 0)
-                return "open";
-            if (::dup2(fd, descriptor) < 0)
-                return "dup2";
-            return 0;
+            const unistd::Descriptor fd = unistd::open(path, flags);
+            unistd::dup2(fd.get(), descriptor);
         }
-        const char *prepareChild(const char *const in,
-                                 const char *const out,
-                                 const char *const err)
+
+        void prepareChild(const boost::filesystem::path &in,
+                          const boost::filesystem::path &out,
+                          const boost::filesystem::path &err)
         {
-            const char *what = 0;
-            if (!what)
-                what = reopenDescriptor(STDIN_FILENO, O_RDONLY, in);
-            if (!what)
-                what = reopenDescriptor(STDOUT_FILENO, O_WRONLY, out);
-            if (!what)
-                what = reopenDescriptor(STDERR_FILENO, O_WRONLY, err);
-            return what;
+            reopenDescriptor(STDIN_FILENO, O_RDONLY, in);
+            reopenDescriptor(STDOUT_FILENO, O_WRONLY, out);
+            reopenDescriptor(STDERR_FILENO, O_WRONLY, err);
         }
     }
 
@@ -82,24 +76,29 @@ namespace yandex{namespace contest{namespace system{namespace execution
         }
         else
         { // child
-            const char *what = prepareChild(in_.path().c_str(),
-                                            out_.path().c_str(),
-                                            err_.path().c_str());
-            if (!what)
+            try
             {
+                prepareChild(in_.path(), out_.path(), err_.path());
                 if (options.usePath)
                 {
                     exec.execvp();
-                    what = "execvp";
+                    BOOST_THROW_EXCEPTION(SystemError("execvp"));
                 }
                 else
                 {
                     exec.execv();
-                    what = "execv";
+                    BOOST_THROW_EXCEPTION(SystemError("execv"));
                 }
             }
-            ::perror(what);
-            ::_exit(1);
+            catch (std::exception &e)
+            {
+                std::cerr << e.what() << std::endl;
+                std::abort();
+            }
+            catch (...)
+            {
+                BOOST_ASSERT_MSG(false, "It should not happen, but should be checked.");
+            }
         }
     }
 
