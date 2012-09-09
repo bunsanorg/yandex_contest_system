@@ -5,14 +5,15 @@
 
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/classification.hpp>
 
 namespace yandex{namespace contest{namespace system{namespace unistd
 {
-    MountEntry::MountEntry(const std::string &line)
+    MountEntry::MountEntry(const std::string &line_)
     {
-        // TODO trim line
+        const std::string line = boost::algorithm::trim_copy(line_);
         std::vector<std::string> splitLine;
         boost::algorithm::split(splitLine, line, boost::is_any_of(" \t"), boost::token_compress_on);
         if (splitLine.size() != 6)
