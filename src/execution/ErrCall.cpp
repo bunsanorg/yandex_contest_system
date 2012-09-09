@@ -42,15 +42,9 @@ namespace yandex{namespace contest{namespace system{namespace execution
             {
                 executeChildInit(errPipe);
                 if (usePath)
-                {
                     exec.execvp();
-                    BOOST_THROW_EXCEPTION(SystemError("execvp"));
-                }
                 else
-                {
                     exec.execv();
-                    BOOST_THROW_EXCEPTION(SystemError("execv"));
-                }
             }
             catch (std::exception &e)
             {
