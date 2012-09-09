@@ -12,7 +12,9 @@ namespace yandex{namespace contest{namespace system{namespace execution
      * It is suitable for calling an utility
      * (Result::err can be used as error message in exception).
      */
-    Result getErrCallImpl(const std::string &executable, const ProcessArguments &arguments, const bool usePath=true);
+    Result getErrCallImpl(const std::string &executable,
+                          const ProcessArguments &arguments,
+                          const bool usePath=true);
 
     /// \copydoc getErrCallImpl
     template <typename ... Args>

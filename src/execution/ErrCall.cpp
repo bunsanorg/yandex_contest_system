@@ -2,6 +2,7 @@
 
 #include "yandex/contest/system/unistd/Pipe.hpp"
 #include "yandex/contest/system/unistd/Exec.hpp"
+#include "yandex/contest/system/unistd/Operations.hpp"
 
 #include "yandex/contest/SystemError.hpp"
 
@@ -21,48 +22,45 @@ namespace yandex{namespace contest{namespace system{namespace execution
 {
     namespace
     {
-        const char *executeChildInit(unistd::Pipe &errPipe) noexcept
+        void executeChildInit(unistd::Pipe &errPipe) noexcept
         {
-            std::error_code ec;
+            const unistd::Descriptor devNull = unistd::open("/dev/null", O_RDWR);
             // we do not allow child process to interfere with parent's stdin
-            const int infd = ::open("/dev/null", O_RDONLY);
-            if (infd < 0)
-                return "open";
+            unistd::dup2(devNull.get(), STDIN_FILENO);
             // we do not want to get annoying useless messages on console
-            const int outfd = ::open("/dev/null", O_WRONLY);
-            if (outfd < 0)
-                return "open";
-            errPipe.closeReadEnd(ec);
-            if (ec)
-                return "close";
-            if (::dup2(infd, STDIN_FILENO) < 0)
-                return "dup2";
-            if (::dup2(outfd, STDOUT_FILENO) < 0)
-                return "dup2";
-            if (::dup2(errPipe.writeEnd(), STDERR_FILENO) < 0)
-                return "dup2";
-            return nullptr;
+            unistd::dup2(devNull.get(), STDOUT_FILENO);
+            unistd::dup2(errPipe.writeEnd(), STDERR_FILENO);
+            errPipe.closeReadEnd();
         }
 
         /// Function never returns.
-        void executeChildFunction(const unistd::Exec &exec, const bool usePath, unistd::Pipe &errPipe) noexcept
+        void executeChildFunction(const unistd::Exec &exec,
+                                  const bool usePath,
+                                  unistd::Pipe &errPipe) noexcept
         {
-            const char *what = executeChildInit(errPipe);
-            if (!what)
+            try
             {
+                executeChildInit(errPipe);
                 if (usePath)
                 {
                     exec.execvp();
-                    what = "execvp";
+                    BOOST_THROW_EXCEPTION(SystemError("execvp"));
                 }
                 else
                 {
                     exec.execv();
-                    what = "execv";
+                    BOOST_THROW_EXCEPTION(SystemError("execv"));
                 }
             }
-            ::perror(what);
-            ::_exit(1);
+            catch (std::exception &e)
+            {
+                std::cerr << e.what() << std::endl;
+                std::abort();
+            }
+            catch (...)
+            {
+                BOOST_ASSERT_MSG(false, "It should not happen, but should be checked.");
+            }
         }
 
         void executeParentFunction(const ::pid_t pid, unistd::Pipe &errPipe, Result &result)
@@ -114,7 +112,9 @@ namespace yandex{namespace contest{namespace system{namespace execution
 
     constexpr std::string::size_type MAX_ERR_SIZE = 10000;
 
-    Result getErrCallImpl(const std::string &executable, const ProcessArguments &arguments, const bool usePath)
+    Result getErrCallImpl(const std::string &executable,
+                          const ProcessArguments &arguments,
+                          const bool usePath)
     {
         unistd::Pipe errPipe;
         Result result;
