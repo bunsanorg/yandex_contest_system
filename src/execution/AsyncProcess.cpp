@@ -80,15 +80,9 @@ namespace yandex{namespace contest{namespace system{namespace execution
             {
                 prepareChild(in_.path(), out_.path(), err_.path());
                 if (options.usePath)
-                {
                     exec.execvp();
-                    BOOST_THROW_EXCEPTION(SystemError("execvp"));
-                }
                 else
-                {
                     exec.execv();
-                    BOOST_THROW_EXCEPTION(SystemError("execv"));
-                }
             }
             catch (std::exception &e)
             {
