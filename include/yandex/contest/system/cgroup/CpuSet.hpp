@@ -15,6 +15,9 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
         std::string mems() const;
         void setMems(const std::string &mems) const;
+
+        bool memoryMigrate() const;
+        void setMemoryMigrate(const bool memoryMigrate=true) const;
     };
 
     typedef Subsystem<CpuSetBase> CpuSet;

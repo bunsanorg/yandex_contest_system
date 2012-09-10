@@ -23,4 +23,14 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     {
         writeField("mems", mems);
     }
+
+    bool CpuSetBase::memoryMigrate() const
+    {
+        return readField<int>("memory_migrate");
+    }
+
+    void CpuSetBase::setMemoryMigrate(const bool memoryMigrate) const
+    {
+        writeField<int>("memory_migrate", memoryMigrate);
+    }
 }}}}
