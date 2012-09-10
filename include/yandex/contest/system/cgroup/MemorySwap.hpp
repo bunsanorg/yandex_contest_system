@@ -5,6 +5,10 @@
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
+    /*!
+     * \note Need swapaccount=1 boot options
+     * or CONFIG_CGROUP_MEM_RES_CTLR_SWAP_ENABLED set.
+     */
     class MemorySwapBase:
         public virtual ResourceLimiter<MemorySwapBase, Count>,
         public virtual Stat<MemorySwapBase, Count>
