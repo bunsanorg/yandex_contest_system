@@ -69,6 +69,9 @@ namespace yandex{namespace contest{namespace system{namespace unistd
     /// symlink(3)
     void symlink(const boost::filesystem::path &value, const boost::filesystem::path &path);
 
+    /// mkfifo(3)
+    void mkfifo(const boost::filesystem::path &path, const mode_t mode);
+
     /// stat(3)
     FileStatus stat(const boost::filesystem::path &path);
 

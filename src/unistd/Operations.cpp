@@ -89,6 +89,12 @@ namespace yandex{namespace contest{namespace system{namespace unistd
                            info::path(path) << info::symLinkValue(value));
     }
 
+    void mkfifo(const boost::filesystem::path &path, const mode_t mode)
+    {
+        YANDEX_UNISTD_WRAP(::mkfifo(path.c_str(), mode),
+                           info::path(path) << info::mode(mode));
+    }
+
     namespace
     {
         struct StatusType: stat
