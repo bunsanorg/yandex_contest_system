@@ -37,8 +37,9 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         Count softLimitInBytes() const;
         void setSoftLimitInBytes(const Count limit) const;
 
-        bool oomControl() const;
-        void setOomControl(const bool oomControl=true) const;
+        bool underOom() const;
+        bool oomKillDisable() const;
+        void setOomKillDisable(const bool oomControl=true) const;
 
         void forceEmpty() const;
     };

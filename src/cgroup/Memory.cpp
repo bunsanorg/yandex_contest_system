@@ -42,12 +42,66 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         writeField("soft_limit_in_bytes", limit);
     }
 
-    bool MemoryBase::oomControl() const
+    namespace
     {
-        return readField<int>("oom_control");
+        struct KeyNotFoundInFileError: virtual Error
+        {
+            typedef boost::error_info<struct keyTag, std::string> key;
+            typedef boost::error_info<struct fileTag, std::string> file;
+        };
+
+        template <typename T>
+        T parseKVFile(std::istream &in, const std::string &key)
+        {
+            std::string k;
+            T v;
+            while (in >> k >> v)
+            {
+                if (k == key)
+                    return v;
+            }
+            BOOST_THROW_EXCEPTION(KeyNotFoundInFileError() <<
+                                  KeyNotFoundInFileError::key(key));
+        }
     }
 
-    void MemoryBase::setOomControl(const bool oomControl) const
+    bool MemoryBase::underOom() const
+    {
+        bool underOom_;
+        try
+        {
+            readFieldByReader("oom_control",
+                [&underOom_](std::istream &in)
+                {
+                    underOom_ = parseKVFile<int>(in, "under_oom");
+                });
+        }
+        catch (KeyNotFoundInFileError &e)
+        {
+            e << KeyNotFoundInFileError::file("oom_control");
+        }
+        return underOom_;
+    }
+
+    bool MemoryBase::oomKillDisable() const
+    {
+        bool oomKillDisable_;
+        try
+        {
+            readFieldByReader("oom_control",
+                [&oomKillDisable_](std::istream &in)
+                {
+                    oomKillDisable_ = parseKVFile<int>(in, "oom_kill_disable");
+                });
+        }
+        catch (KeyNotFoundInFileError &e)
+        {
+            e << KeyNotFoundInFileError::file("oom_control");
+        }
+        return oomKillDisable_;
+    }
+
+    void MemoryBase::setOomKillDisable(const bool oomControl) const
     {
         writeField<int>("oom_control", oomControl);
     }
