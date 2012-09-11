@@ -12,6 +12,7 @@
 #include <sys/resource.h>
 #include <sys/time.h>
 #include <sys/syscall.h>
+#include <sys/epoll.h>
 
 // internal defines
 
@@ -293,5 +294,63 @@ namespace yandex{namespace contest{namespace system{namespace unistd
     long sysconf(const int name)
     {
         YANDEX_UNISTD_RETURN(::sysconf(name), info::sysconfName(name));
+    }
+
+    Descriptor epoll_create1(const int flags)
+    {
+        Descriptor retfd;
+        YANDEX_UNISTD_ASSIGN(::epoll_create1(flags), retfd, info::openFlags(flags));
+        return retfd;
+    }
+
+    void epoll_ctl(const int epfd, const int op, const int fd, ::epoll_event &event)
+    {
+        YANDEX_UNISTD_WRAP(::epoll_ctl(epfd, op, fd, &event),
+                           info::epfd(epfd) << info::op(op) << info::fd(fd));
+    }
+
+    void epoll_ctl_add(const int epfd, const int fd, ::epoll_event &event)
+    {
+        YANDEX_UNISTD_WRAP(::epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &event),
+                           info::epfd(epfd) << info::fd(fd));
+    }
+
+    void epoll_ctl_mod(const int epfd, const int fd, ::epoll_event &event)
+    {
+        YANDEX_UNISTD_WRAP(::epoll_ctl(epfd, EPOLL_CTL_MOD, fd, &event),
+                           info::epfd(epfd) << info::fd(fd));
+    }
+
+    void epoll_ctl_del(const int epfd, const int fd, ::epoll_event &event)
+    {
+        YANDEX_UNISTD_WRAP(::epoll_ctl(epfd, EPOLL_CTL_DEL, fd, &event),
+                           info::epfd(epfd) << info::fd(fd));
+    }
+
+    unsigned epoll_wait(const int epfd, ::epoll_event &events, const unsigned maxevents)
+    {
+        YANDEX_UNISTD_RETURN(::epoll_wait(epfd, &events, maxevents, -1),
+                             info::epfd(epfd) << info::maxevents(maxevents));
+    }
+
+    unsigned epoll_wait(const int epfd, ::epoll_event &events, const unsigned maxevents,
+                        const std::chrono::milliseconds &timeout)
+    {
+        YANDEX_UNISTD_RETURN(::epoll_wait(epfd, &events, maxevents, timeout.count()),
+                             info::epfd(epfd) << info::maxevents(maxevents));
+    }
+
+    unsigned epoll_pwait(const int epfd, ::epoll_event &events,
+                         const unsigned maxevents, const sigset_t &sigmask)
+    {
+        YANDEX_UNISTD_RETURN(::epoll_pwait(epfd, &events, maxevents, -1, &sigmask),
+                             info::epfd(epfd) << info::maxevents(maxevents));
+    }
+
+    unsigned epoll_pwait(const int epfd, ::epoll_event &events, const unsigned maxevents,
+                         const std::chrono::milliseconds &timeout, const sigset_t &sigmask)
+    {
+        YANDEX_UNISTD_RETURN(::epoll_pwait(epfd, &events, maxevents, timeout.count(), &sigmask),
+                             info::epfd(epfd) << info::maxevents(maxevents));
     }
 }}}}

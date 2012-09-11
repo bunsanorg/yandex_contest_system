@@ -6,6 +6,9 @@
 #include "yandex/contest/system/unistd/Descriptor.hpp"
 
 #include <system_error>
+#include <chrono>
+
+#include <csignal>
 
 #include <boost/filesystem/path.hpp>
 
@@ -13,6 +16,7 @@
 
 struct rlimit;
 struct itimerval;
+struct epoll_event;
 
 namespace yandex{namespace contest{namespace system{namespace unistd
 {
@@ -43,6 +47,9 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         typedef boost::error_info<struct pidTag, pid_t> pid;
         typedef boost::error_info<struct signalTag, int> signal;
         typedef boost::error_info<struct sysconfNameTag, int> sysconfName;
+        typedef boost::error_info<struct epfdTag, int> epfd;
+        typedef boost::error_info<struct opTag, int> op;
+        typedef boost::error_info<struct maxeventsTag, unsigned> maxevents;
     }
 
     /// chmod(3)
@@ -174,4 +181,34 @@ namespace yandex{namespace contest{namespace system{namespace unistd
 
     /// sysconf(3)
     long sysconf(const int name);
+
+    /// epoll_create1(2)
+    Descriptor epoll_create1(const int flags);
+
+    /// epoll_ctl(2)
+    void epoll_ctl(const int epfd, const int op, const int fd, ::epoll_event &event);
+
+    /// epoll_ctl(epfd, EPOLL_CTL_ADD, fd, event)
+    void epoll_ctl_add(const int epfd, const int fd, ::epoll_event &event);
+
+    /// epoll_ctl(epfd, EPOLL_CTL_MOD, fd, event)
+    void epoll_ctl_mod(const int epfd, const int fd, ::epoll_event &event);
+
+    /// epoll_ctl(epfd, EPOLL_CTL_DEL, fd, event)
+    void epoll_ctl_del(const int epfd, const int fd, ::epoll_event &event);
+
+    /// epoll_wait(2)(epfd, events, maxevents, -1)
+    unsigned epoll_wait(const int epfd, ::epoll_event &events, const unsigned maxevents);
+
+    /// epoll_wait(2)
+    unsigned epoll_wait(const int epfd, ::epoll_event &events, const unsigned maxevents,
+                        const std::chrono::milliseconds &timeout);
+
+    /// epoll_pwait(2)(epfd, events, maxevents, -1, sigmask)
+    unsigned epoll_pwait(const int epfd, ::epoll_event &events,
+                         const unsigned maxevents, const sigset_t &sigmask);
+
+    /// epoll_pwait(2)
+    unsigned epoll_pwait(const int epfd, ::epoll_event &events, const unsigned maxevents,
+                         const std::chrono::milliseconds &timeout, const sigset_t &sigmask);
 }}}}
