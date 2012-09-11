@@ -324,7 +324,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
             BOOST_ASSERT(pos2 != std::string::npos);
             //const std::string subsystems = line.substr(pos1 + 1, pos2);
             const std::string name = line.substr(pos2 + 1);
-            cgroups.push_back(ControlGroup(name, Attach));
+            cgroups.emplace_back(name, Attach);
         }
         return cgroups;
     }
