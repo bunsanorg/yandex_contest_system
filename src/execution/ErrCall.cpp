@@ -31,6 +31,7 @@ namespace yandex{namespace contest{namespace system{namespace execution
             unistd::dup2(devNull.get(), STDOUT_FILENO);
             unistd::dup2(errPipe.writeEnd(), STDERR_FILENO);
             errPipe.closeReadEnd();
+            errPipe.closeWriteEnd();
         }
 
         /// Function never returns.
