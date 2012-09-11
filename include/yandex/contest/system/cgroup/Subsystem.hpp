@@ -4,6 +4,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     class ControlGroup;
 
+    /// \note Stores reference to ControlGroup.
     template <typename Base>
     class Subsystem: public virtual Base
     {
