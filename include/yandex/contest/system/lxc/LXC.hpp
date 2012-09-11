@@ -1,6 +1,7 @@
 #pragma once
 
 #include "yandex/contest/system/lxc/Config.hpp"
+#include "yandex/contest/system/lxc/State.hpp"
 #include "yandex/contest/system/lxc/Error.hpp"
 
 #include "yandex/contest/StreamEnum.hpp"
