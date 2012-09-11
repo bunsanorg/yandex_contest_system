@@ -6,23 +6,18 @@
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
-    namespace freezer_detail
-    {
-        YANDEX_CONTEST_STREAM_ENUM_CLASS(State,
-        (
-            FROZEN,
-            FREEZING,
-            THAWED
-        ))
-    }
-
     class FreezerBase: public virtual SubsystemBase<FreezerBase>
     {
     public:
         static const std::string SUBSYSTEM_NAME;
 
     public:
-        typedef freezer_detail::State State;
+        YANDEX_CONTEST_INCLASS_STREAM_ENUM_CLASS(State,
+        (
+            FROZEN,
+            FREEZING,
+            THAWED
+        ))
 
     public:
         State state() const;

@@ -13,20 +13,15 @@
 
 namespace yandex{namespace contest{namespace system{namespace lxc
 {
-    namespace lxc_config_detail
+    struct Config
     {
-        YANDEX_CONTEST_STREAM_ENUM_CLASS(Arch,
+        YANDEX_CONTEST_INCLASS_STREAM_ENUM_CLASS(Arch,
         (
             x86,
             i686,
             x86_64,
             amd64
         ))
-    }
-
-    struct Config
-    {
-        typedef lxc_config_detail::Arch Arch;
 
         friend class boost::serialization::access;
 
