@@ -321,9 +321,9 @@ namespace yandex{namespace contest{namespace system{namespace unistd
                            info::epfd(epfd) << info::fd(fd));
     }
 
-    void epoll_ctl_del(const int epfd, const int fd, ::epoll_event &event)
+    void epoll_ctl_del(const int epfd, const int fd)
     {
-        YANDEX_UNISTD_WRAP(::epoll_ctl(epfd, EPOLL_CTL_DEL, fd, &event),
+        YANDEX_UNISTD_WRAP(::epoll_ctl(epfd, EPOLL_CTL_DEL, fd, nullptr),
                            info::epfd(epfd) << info::fd(fd));
     }
 
