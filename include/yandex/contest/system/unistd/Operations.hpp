@@ -194,8 +194,8 @@ namespace yandex{namespace contest{namespace system{namespace unistd
     /// epoll_ctl(epfd, EPOLL_CTL_MOD, fd, event)
     void epoll_ctl_mod(const int epfd, const int fd, ::epoll_event &event);
 
-    /// epoll_ctl(epfd, EPOLL_CTL_DEL, fd, event)
-    void epoll_ctl_del(const int epfd, const int fd, ::epoll_event &event);
+    /// epoll_ctl(epfd, EPOLL_CTL_DEL, fd, nullptr)
+    void epoll_ctl_del(const int epfd, const int fd);
 
     /// epoll_wait(2)(epfd, events, maxevents, -1)
     unsigned epoll_wait(const int epfd, ::epoll_event &events, const unsigned maxevents);
