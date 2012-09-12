@@ -58,6 +58,16 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         return handle_;
     }
 
+    void *DynamicLibrary::symbol(const char *const sym)
+    {
+        return dlsym(handle_, sym);
+    }
+
+    void *DynamicLibrary::symbol(const std::string &sym)
+    {
+        return symbol(sym.c_str());
+    }
+
     DynamicLibrary::~DynamicLibrary()
     {
         try
