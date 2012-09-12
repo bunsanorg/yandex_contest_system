@@ -183,7 +183,7 @@ namespace yandex{namespace contest{namespace system{namespace unistd
     long sysconf(const int name);
 
     /// epoll_create1(2)
-    Descriptor epoll_create1(const int flags);
+    Descriptor epoll_create1(const int flags=0);
 
     /// epoll_ctl(2)
     void epoll_ctl(const int epfd, const int op, const int fd, ::epoll_event &event);
