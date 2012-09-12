@@ -45,6 +45,10 @@ namespace yandex{namespace contest{namespace system{namespace unistd
 
         void close();
 
+        void *symbol(const char *const sym);
+
+        void *symbol(const std::string &sym);
+
         ~DynamicLibrary();
 
     private:
