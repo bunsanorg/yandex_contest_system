@@ -23,6 +23,8 @@ list(APPEND libraries ${LXC_LIBRARIES})
 # yandex_contest_common
 list(APPEND libraries yandex_contest_common)
 
+list(APPEND libraries dl)
+
 # Local
 include_directories(include)
 
@@ -44,6 +46,7 @@ add_library(${PROJECT_NAME} SHARED
     src/unistd/MountEntry.cpp
     src/unistd/MountEntryAlias.cpp
     src/unistd/Operations.cpp
+    src/unistd/DynamicLibrary.cpp
 
     src/execution/ResultError.cpp
     src/execution/ErrCall.cpp
