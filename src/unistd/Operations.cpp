@@ -327,30 +327,30 @@ namespace yandex{namespace contest{namespace system{namespace unistd
                            info::epfd(epfd) << info::fd(fd));
     }
 
-    unsigned epoll_wait(const int epfd, ::epoll_event &events, const unsigned maxevents)
+    unsigned epoll_wait(const int epfd, ::epoll_event *const events, const unsigned maxevents)
     {
-        YANDEX_UNISTD_RETURN(::epoll_wait(epfd, &events, maxevents, -1),
+        YANDEX_UNISTD_RETURN(::epoll_wait(epfd, events, maxevents, -1),
                              info::epfd(epfd) << info::maxevents(maxevents));
     }
 
-    unsigned epoll_wait(const int epfd, ::epoll_event &events, const unsigned maxevents,
+    unsigned epoll_wait(const int epfd, ::epoll_event *const events, const unsigned maxevents,
                         const std::chrono::milliseconds &timeout)
     {
-        YANDEX_UNISTD_RETURN(::epoll_wait(epfd, &events, maxevents, timeout.count()),
+        YANDEX_UNISTD_RETURN(::epoll_wait(epfd, events, maxevents, timeout.count()),
                              info::epfd(epfd) << info::maxevents(maxevents));
     }
 
-    unsigned epoll_pwait(const int epfd, ::epoll_event &events,
+    unsigned epoll_pwait(const int epfd, ::epoll_event *const events,
                          const unsigned maxevents, const sigset_t &sigmask)
     {
-        YANDEX_UNISTD_RETURN(::epoll_pwait(epfd, &events, maxevents, -1, &sigmask),
+        YANDEX_UNISTD_RETURN(::epoll_pwait(epfd, events, maxevents, -1, &sigmask),
                              info::epfd(epfd) << info::maxevents(maxevents));
     }
 
-    unsigned epoll_pwait(const int epfd, ::epoll_event &events, const unsigned maxevents,
+    unsigned epoll_pwait(const int epfd, ::epoll_event *const events, const unsigned maxevents,
                          const std::chrono::milliseconds &timeout, const sigset_t &sigmask)
     {
-        YANDEX_UNISTD_RETURN(::epoll_pwait(epfd, &events, maxevents, timeout.count(), &sigmask),
+        YANDEX_UNISTD_RETURN(::epoll_pwait(epfd, events, maxevents, timeout.count(), &sigmask),
                              info::epfd(epfd) << info::maxevents(maxevents));
     }
 }}}}
