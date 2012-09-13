@@ -49,6 +49,12 @@ namespace yandex{namespace contest{namespace system{namespace unistd
 
         void *symbol(const std::string &sym);
 
+        template <typename T, typename Sym>
+        T symbol(const Sym &sym)
+        {
+            return reinterpret_cast<T>(symbol(sym));
+        }
+
         ~DynamicLibrary();
 
     private:
