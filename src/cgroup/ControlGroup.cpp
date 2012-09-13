@@ -252,22 +252,22 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     {
         boost::filesystem::ifstream fin(field(fieldName));
         if (!fin)
-            BOOST_THROW_EXCEPTION(SystemError());
+            BOOST_THROW_EXCEPTION(SystemError() << unistd::info::path(field(fieldName)));
         reader(fin);
         fin.close();
         if (fin.bad())
-            BOOST_THROW_EXCEPTION(SystemError());
+            BOOST_THROW_EXCEPTION(SystemError() << unistd::info::path(field(fieldName)));
     }
 
     void ControlGroup::writeFieldByWriter(const std::string &fieldName, const Writer &writer)
     {
         boost::filesystem::ofstream fout(field(fieldName));
         if (!fout)
-            BOOST_THROW_EXCEPTION(SystemError());
+            BOOST_THROW_EXCEPTION(SystemError() << unistd::info::path(field(fieldName)));
         writer(fout);
         fout.close();
         if (fout.bad())
-            BOOST_THROW_EXCEPTION(SystemError());
+            BOOST_THROW_EXCEPTION(SystemError() << unistd::info::path(field(fieldName)));
     }
 
     template <>
