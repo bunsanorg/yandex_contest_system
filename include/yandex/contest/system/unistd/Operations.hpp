@@ -198,17 +198,44 @@ namespace yandex{namespace contest{namespace system{namespace unistd
     void epoll_ctl_del(const int epfd, const int fd);
 
     /// epoll_wait(2)(epfd, events, maxevents, -1)
-    unsigned epoll_wait(const int epfd, ::epoll_event &events, const unsigned maxevents);
+    unsigned epoll_wait(const int epfd, ::epoll_event *const events, const unsigned maxevents);
+
+    template <unsigned MaxEvents>
+    unsigned epoll_wait(const int epfd, ::epoll_event (&events)[MaxEvents])
+    {
+        return epoll_wait(epfd, events, MaxEvents);
+    }
 
     /// epoll_wait(2)
-    unsigned epoll_wait(const int epfd, ::epoll_event &events, const unsigned maxevents,
+    unsigned epoll_wait(const int epfd, ::epoll_event *const events, const unsigned maxevents,
                         const std::chrono::milliseconds &timeout);
 
+    template <unsigned MaxEvents>
+    unsigned epoll_wait(const int epfd, ::epoll_event (&events)[MaxEvents],
+                        const std::chrono::milliseconds &timeout)
+    {
+        return epoll_wait(epfd, events, MaxEvents, timeout);
+    }
+
     /// epoll_pwait(2)(epfd, events, maxevents, -1, sigmask)
-    unsigned epoll_pwait(const int epfd, ::epoll_event &events,
+    unsigned epoll_pwait(const int epfd, ::epoll_event *const events,
                          const unsigned maxevents, const sigset_t &sigmask);
 
+    template <unsigned MaxEvents>
+    unsigned epoll_pwait(const int epfd, ::epoll_event (&events)[MaxEvents],
+                         const sigset_t &sigmask)
+    {
+        return epoll_pwait(epfd, events, MaxEvents, sigmask);
+    }
+
     /// epoll_pwait(2)
-    unsigned epoll_pwait(const int epfd, ::epoll_event &events, const unsigned maxevents,
+    unsigned epoll_pwait(const int epfd, ::epoll_event *const events, const unsigned maxevents,
                          const std::chrono::milliseconds &timeout, const sigset_t &sigmask);
+
+    template <unsigned MaxEvents>
+    unsigned epoll_pwait(const int epfd, ::epoll_event (&events)[MaxEvents],
+                         const std::chrono::milliseconds &timeout, const sigset_t &sigmask)
+    {
+        return epoll_pwait(epfd, events, MaxEvents, timeout, sigmask);
+    }
 }}}}
