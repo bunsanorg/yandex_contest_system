@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE cgroup
 #include <boost/test/unit_test.hpp>
 
-#include "yandex/contest/system/execution/tests/BoostExecTest.hpp"
+#include "yandex/contest/tests/BoostExecTest.hpp"
 
 #include "yandex/contest/system/cgroup/MountPoint.hpp"
 #include "yandex/contest/system/cgroup/ControlGroup.hpp"
