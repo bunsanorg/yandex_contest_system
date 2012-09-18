@@ -29,7 +29,6 @@ list(APPEND libraries dl)
 include_directories(include)
 
 # Targets
-
 add_library(${PROJECT_NAME} SHARED
     src/unistd/access/Id.cpp
     src/unistd/access/Operations.cpp
@@ -67,7 +66,7 @@ add_library(${PROJECT_NAME} SHARED
 )
 target_link_libraries(${PROJECT_NAME} ${libraries})
 
-# installation
+# Installation
 install(DIRECTORY include DESTINATION .)
 install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION bin
