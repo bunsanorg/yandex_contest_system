@@ -16,9 +16,14 @@ namespace yandex{namespace contest{namespace system{namespace unistd
                                   DynamicLibraryError::flags(flags));
         handle_ = dlopen(filename.c_str(), flags);
         if (!handle_)
+        {
+            const char *const err = dlerror();
+            BOOST_ASSERT(err);
             BOOST_THROW_EXCEPTION(DynamicLibraryError() <<
                                   DynamicLibraryError::filename(filename) <<
+                                  DynamicLibraryError::dlerror(err) <<
                                   DynamicLibraryError::flags(flags));
+        }
     }
 
     DynamicLibrary::DynamicLibrary(DynamicLibrary &&dl)
