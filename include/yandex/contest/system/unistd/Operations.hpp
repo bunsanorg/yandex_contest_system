@@ -112,6 +112,12 @@ namespace yandex{namespace contest{namespace system{namespace unistd
     /// setgid(3)
     void setgid(const gid_t gid);
 
+    /// seteuid(3)
+    void seteuid(const uid_t uid);
+
+    /// setegid(3)
+    void setegid(const gid_t gid);
+
     /// setreuid(3)
     void setreuid(const uid_t ruid, const uid_t euid);
 
