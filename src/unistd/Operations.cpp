@@ -181,6 +181,16 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         YANDEX_UNISTD_WRAP(::setgid(gid), info::gid(gid));
     }
 
+    void seteuid(const uid_t uid)
+    {
+        YANDEX_UNISTD_WRAP(::seteuid(uid), info::euid(uid));
+    }
+
+    void setegid(const gid_t gid)
+    {
+        YANDEX_UNISTD_WRAP(::setegid(gid), info::egid(gid));
+    }
+
     void setreuid(const uid_t ruid, const uid_t euid)
     {
         YANDEX_UNISTD_WRAP(::setreuid(ruid, euid),
