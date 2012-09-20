@@ -48,13 +48,13 @@ namespace yandex{namespace contest{namespace system
         {
             try
             {
-                out << unistd::detail::dladdr(function);
+                out << unistd::detail::dladdr(function) <<
+                       " {addr = 0x" << std::hex << function << "}\n";
             }
             catch (unistd::DynamicLoaderError &)
             {
-                out << "0x" << std::hex << function;
+                out << "0x" << std::hex << function << "\n";
             }
-            out << " {addr = 0x" << std::hex << function << "}\n";
         }
         return out;
     }
