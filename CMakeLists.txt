@@ -45,7 +45,7 @@ add_library(${PROJECT_NAME} SHARED
     src/unistd/MountEntry.cpp
     src/unistd/MountEntryAlias.cpp
     src/unistd/Operations.cpp
-    src/unistd/DynamicLibrary.cpp
+    src/unistd/DynamicLoader.cpp
 
     src/execution/ResultError.cpp
     src/execution/ErrCall.cpp

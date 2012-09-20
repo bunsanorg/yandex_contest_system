@@ -4,26 +4,23 @@
 
 #include <memory>
 
+#include <boost/optional.hpp>
 #include <boost/filesystem/path.hpp>
 
 namespace yandex{namespace contest{namespace system{namespace unistd
 {
-    struct DynamicLibraryError: virtual Error
+    struct DynamicLoaderError: virtual Error
     {
-        typedef boost::error_info<struct filenameTag, boost::filesystem::path> filename;
-        typedef boost::error_info<struct flagsTag, int> flags;
         typedef boost::error_info<struct dlerrorTag, std::string> dlerror;
     };
 
-    struct DynamicLibraryIsAlreadyResidentError: virtual DynamicLibraryError {};
-
-    namespace detail
+    struct DynamicLibraryError: virtual DynamicLoaderError
     {
-        struct DynamicLibraryDelete
-        {
-            void operator()(void *ptr) const noexcept;
-        };
+        typedef boost::error_info<struct filenameTag, boost::filesystem::path> filename;
+        typedef boost::error_info<struct flagsTag, int> flags;
     };
+
+    struct DynamicLibraryIsAlreadyResidentError: virtual DynamicLoaderError {};
 
     /// \warning Does not support multiple load of one library.
     class DynamicLibrary
@@ -65,4 +62,32 @@ namespace yandex{namespace contest{namespace system{namespace unistd
     {
         a.swap(b);
     }
+
+    struct DLInfo
+    {
+        boost::filesystem::path fname;
+        void *fbase = nullptr;
+        boost::optional<std::string> sname;
+        boost::optional<void *> saddr;
+    };
+
+    namespace detail
+    {
+        DLInfo dladdr(void *const addr);
+    }
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpmf-conversions"
+    template <typename Ret, typename ... Args>
+    DLInfo dladdr(Ret (*fn)(Args...))
+    {
+        return detail::dladdr(reinterpret_cast<void *>(fn));
+    }
+
+    template <typename Class, typename Ret, typename ... Args>
+    DLInfo dladdr(Ret (Class::*memfn)(Args...))
+    {
+        return detail::dladdr(reinterpret_cast<void *>(memfn));
+    }
+#pragma GCC diagnostic pop
 }}}}
