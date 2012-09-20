@@ -4,7 +4,7 @@
 
 namespace yandex{namespace contest{namespace system
 {
-    class Trace
+    class Trace: public std::vector<void *>
     {
     public:
         Trace()=default;
@@ -18,9 +18,6 @@ namespace yandex{namespace contest{namespace system
 
     private:
         friend std::ostream &operator<<(std::ostream &out, const Trace &trace);
-
-    private:
-        std::vector<void *> backtrace_;
     };
 
     std::ostream &operator<<(std::ostream &out, const Trace &trace);

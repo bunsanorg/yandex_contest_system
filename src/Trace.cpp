@@ -11,16 +11,17 @@ namespace yandex{namespace contest{namespace system
     Trace Trace::get(const std::size_t maxSize)
     {
         Trace trace;
-        trace.backtrace_.resize(maxSize);
-        const std::size_t realSize = ::backtrace(&trace.backtrace_[0], maxSize);
+        trace.resize(maxSize);
+        const std::size_t realSize = ::backtrace(&trace[0], maxSize);
         BOOST_ASSERT(realSize <= maxSize);
-        trace.backtrace_.resize(realSize);
+        trace.resize(realSize);
+        trace.erase(trace.begin());
         return trace;
     }
 
     std::ostream &operator<<(std::ostream &out, const Trace &trace)
     {
-        for (void *const function: trace.backtrace_)
+        for (void *const function: trace)
         {
             try
             {
