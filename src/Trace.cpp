@@ -2,6 +2,13 @@
 
 #include "yandex/contest/system/unistd/DynamicLoader.hpp"
 
+#include "yandex/contest/SystemError.hpp"
+
+#include "yandex/contest/detail/LogHelper.hpp"
+
+#include <cstdlib>
+#include <cstring>
+
 #include <boost/assert.hpp>
 
 #include <execinfo.h>
@@ -17,6 +24,22 @@ namespace yandex{namespace contest{namespace system
         trace.resize(realSize);
         trace.erase(trace.begin());
         return trace;
+    }
+
+    void Trace::handler(int sig, siginfo_t * /*siginfo*/, void * /*context*/)
+    {
+        STREAM_ERROR << "Processing signal: " << strsignal(sig) << '\n' <<
+                        "backtrace:\n" << get();
+        exit(EXIT_FAILURE);
+    }
+
+    void Trace::handle(const int sig, void (*h)(int, siginfo_t *, void *))
+    {
+        struct sigaction sigact;
+        sigact.sa_sigaction = h;
+        sigact.sa_flags = SA_RESTART | SA_SIGINFO;
+        if (sigaction(sig, &sigact, nullptr) < 0)
+            BOOST_THROW_EXCEPTION(SystemError("sigaction"));
     }
 
     std::ostream &operator<<(std::ostream &out, const Trace &trace)
