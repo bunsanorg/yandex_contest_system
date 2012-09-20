@@ -87,6 +87,33 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         }
     }
 
+    namespace
+    {
+        template <typename T>
+        std::ostream &print(std::ostream &out, const boost::optional<T> &opt)
+        {
+            if (opt)
+                out << opt.get();
+            else
+                out << "???";
+            return out;
+        }
+    }
+
+    std::ostream &operator<<(std::ostream &out, const DLInfo &info)
+    {
+        out << info.fname.string() << "(";
+        print(out, info.sname);
+        if (info.offset)
+        {
+            out << "+0x" << std::hex << info.offset;
+        }
+        out << ") [";
+        print(out, info.saddr);
+        out << "]";
+        return out;
+    }
+
     namespace detail
     {
         DLInfo dladdr(void *const addr)
@@ -104,7 +131,10 @@ namespace yandex{namespace contest{namespace system{namespace unistd
             if (info.dli_sname)
                 ret.sname = typeinfo::demangle(info.dli_sname);
             if (info.dli_saddr)
+            {
                 ret.saddr = info.dli_saddr;
+                ret.offset = static_cast<char *>(addr) - static_cast<char *>(info.dli_saddr);
+            }
             return ret;
         }
     }

@@ -69,7 +69,10 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         void *fbase = nullptr;
         boost::optional<std::string> sname;
         boost::optional<void *> saddr;
+        boost::optional<std::size_t> offset;
     };
+
+    std::ostream &operator<<(std::ostream &out, const DLInfo &info);
 
     namespace detail
     {
