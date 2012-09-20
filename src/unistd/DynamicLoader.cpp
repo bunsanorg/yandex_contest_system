@@ -1,4 +1,6 @@
-#include "yandex/contest/system/unistd/DynamicLibrary.hpp"
+#include "yandex/contest/system/unistd/DynamicLoader.hpp"
+
+#include "yandex/contest/TypeInfo.hpp"
 
 #include <dlfcn.h>
 
@@ -82,6 +84,28 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         catch (...)
         {
             // does nothing
+        }
+    }
+
+    namespace detail
+    {
+        DLInfo dladdr(void *const addr)
+        {
+            Dl_info info;
+            if (!dladdr(addr, &info))
+            {
+                const char *const err = dlerror();
+                BOOST_ASSERT(err);
+                BOOST_THROW_EXCEPTION(DynamicLoaderError() << DynamicLoaderError::dlerror(err));
+            }
+            DLInfo ret;
+            ret.fname = info.dli_fname;
+            ret.fbase = info.dli_fbase;
+            if (info.dli_sname)
+                ret.sname = typeinfo::demangle(info.dli_sname);
+            if (info.dli_saddr)
+                ret.saddr = info.dli_saddr;
+            return ret;
         }
     }
 }}}}
