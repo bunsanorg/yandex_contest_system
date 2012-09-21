@@ -195,6 +195,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
     void ControlGroup::attachTask(const pid_t pid)
     {
+        STREAM_TRACE << "Attempt to attach " << pid << " to " << data() << ".";
         writeField("tasks", pid);
     }
 
