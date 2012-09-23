@@ -106,7 +106,14 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         bool notifyOnRelease();
         void setNotifyOnRelease(const bool notifyOnRelease=true);
 
+        /*!
+         * \note This field is only available in root cgroup.
+         *
+         * \todo Do I need to implement forwarding?
+         */
         std::string releaseAgent();
+
+        /// \copydoc releaseAgent()
         void setReleaseAgent(const std::string &releaseAgent);
 
         bool cloneChildren();
