@@ -55,6 +55,7 @@ add_library(${PROJECT_NAME} SHARED
 
     src/cgroup/MountPoint.cpp
     src/cgroup/ControlGroup.cpp
+    src/cgroup/ControlGroupSet.cpp
     src/cgroup/Freezer.cpp
     src/cgroup/CpuSet.cpp
     src/cgroup/CpuAccounting.cpp

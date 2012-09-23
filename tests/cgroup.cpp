@@ -5,6 +5,7 @@
 
 #include "yandex/contest/system/cgroup/MountPoint.hpp"
 #include "yandex/contest/system/cgroup/ControlGroup.hpp"
+#include "yandex/contest/system/cgroup/ControlGroupSet.hpp"
 #include "yandex/contest/system/cgroup/CpuAccounting.hpp"
 
 #include "yandex/contest/system/execution/AsyncProcess.hpp"
@@ -136,6 +137,15 @@ BOOST_AUTO_TEST_CASE(fork_bomb)
 }
 
 BOOST_AUTO_TEST_SUITE_END() // ControlGroup
+
+BOOST_AUTO_TEST_SUITE(ControlGroupSet)
+
+BOOST_AUTO_TEST_CASE(empty)
+{
+    yac::ControlGroupSet cgs;
+}
+
+BOOST_AUTO_TEST_SUITE_END() // ControlGroupSet
 
 BOOST_FIXTURE_TEST_SUITE(Subsystems, ControlGroupFixture)
 
