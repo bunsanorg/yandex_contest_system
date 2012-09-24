@@ -120,8 +120,10 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         // we need to wait for them.
         // TODO Another solution it to move them to the parent cgroup
         // but I am not sure how to implement it robust.
+        STREAM_TRACE << "Waiting for tasks to terminate in " << data_ << ".";
         while (!tasks().empty())
             std::this_thread::sleep_for(std::chrono::milliseconds(10)); // FIXME hardcode
+        STREAM_TRACE << "All tasks have terminated in " << data_ << ".";
         unistd::rmdir(path());
         STREAM_DEBUG << data_ << " was successfully removed.";
         data_.reset();
