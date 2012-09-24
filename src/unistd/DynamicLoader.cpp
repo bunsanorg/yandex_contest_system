@@ -2,6 +2,8 @@
 
 #include "yandex/contest/TypeInfo.hpp"
 
+#include <boost/format.hpp>
+
 #include <dlfcn.h>
 
 namespace yandex{namespace contest{namespace system{namespace unistd
@@ -12,11 +14,13 @@ namespace yandex{namespace contest{namespace system{namespace unistd
     DynamicLibrary::DynamicLibrary(const boost::filesystem::path &filename, const int flags):
         handle_(dlopen(filename.c_str(), flags | RTLD_NOLOAD))
     {
+        const boost::filesystem::path fname = (filename.filename() == filename) ?
+            str(boost::format("lib%1%.so") % filename.string()) : filename;
         if (handle_)
             BOOST_THROW_EXCEPTION(DynamicLibraryIsAlreadyResidentError() <<
                                   DynamicLibraryError::filename(filename) <<
                                   DynamicLibraryError::flags(flags));
-        handle_ = dlopen(filename.c_str(), flags);
+        handle_ = dlopen(fname.c_str(), flags);
         if (!handle_)
         {
             const char *const err = dlerror();

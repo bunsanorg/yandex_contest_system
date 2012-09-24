@@ -28,6 +28,12 @@ namespace yandex{namespace contest{namespace system{namespace unistd
     public:
         DynamicLibrary();
 
+        /*!
+         * If filename does not contain '/', it is transformed into lib${filename}.so.
+         * That means that user may specify library similar to compiler option:
+         * "-lm" or "-l/usr/lib/libm.so" <=>
+         * DynamicLibrary("m", ...) or DynamicLibrary("/usr/lib/libm.so", ...).
+         */
         DynamicLibrary(const boost::filesystem::path &filename, const int flags);
 
         DynamicLibrary(DynamicLibrary &&dl);
