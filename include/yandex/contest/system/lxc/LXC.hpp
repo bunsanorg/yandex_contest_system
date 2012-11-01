@@ -94,6 +94,7 @@ namespace yandex{namespace contest{namespace system{namespace lxc
         const std::string name_;
         const boost::filesystem::path dir_;
         const boost::filesystem::path rootfs_;
+        const boost::filesystem::path rootfsMount_;
         const boost::filesystem::path configPath_;
     };
 }}}}

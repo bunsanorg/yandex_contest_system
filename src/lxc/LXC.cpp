@@ -22,6 +22,7 @@ namespace yandex{namespace contest{namespace system{namespace lxc
         name_(name),
         dir_(boost::filesystem::absolute(dir)),
         rootfs_(dir_ / "rootfs"),
+        rootfsMount_(dir_ / "rootfs.mount"),
         configPath_(dir_ / "config")
     {
         STREAM_INFO << "Trying to create \"" << name_ << "\" LXC.";
@@ -29,6 +30,9 @@ namespace yandex{namespace contest{namespace system{namespace lxc
         prepare(config_);
         STREAM_INFO << "Trying to create root directory for \"" << name_ << "\" LXC at " << rootfs_ << ".";
         boost::filesystem::create_directory(rootfs_);
+        STREAM_INFO << "Root directory was successfully created for \"" << name_ << "\" LXC.";
+        STREAM_INFO << "Trying to create root.mount directory for \"" << name_ << "\" LXC at " << rootfsMount_ << ".";
+        boost::filesystem::create_directory(rootfsMount_);
         STREAM_INFO << "Root directory was successfully created for \"" << name_ << "\" LXC.";
         {
             STREAM_INFO << "Trying to write lxc.conf(5) for \"" << name_ << "\" LXC.";
@@ -153,7 +157,7 @@ namespace yandex{namespace contest{namespace system{namespace lxc
 
     void LXC::prepare(Config &config)
     {
-        config.rootfs = rootfs_;
+        config.rootfs = RootfsConfig{.fsname = rootfs_, .mount = rootfsMount_};
         if (config.mount)
         {
             if (config.mount.get().fstab)
