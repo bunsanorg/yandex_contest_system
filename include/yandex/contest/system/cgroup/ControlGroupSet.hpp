@@ -51,19 +51,23 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         template <typename Subsystem>
         Subsystem subsystem()
         {
-            const auto iter = groups_.find(Subsystem::SUBSYSTEM_NAME);
-            if (iter != groups_.end())
-                return Subsystem(iter->second);
-            else
-                BOOST_THROW_EXCEPTION(SubsystemIsNotAttachedError() <<
-                                      SubsystemIsNotAttachedError::subsystem(
-                                          Subsystem::SUBSYSTEM_NAME));
+            const auto siter = subsystems_.find(Subsystem::SUBSYSTEM_NAME);
+            if (siter != subsystems_.end())
+            {
+                const auto giter = hierarchies_.find(siter->second);
+                if (giter != hierarchies_.end())
+                    return Subsystem(giter->second);
+            }
+            BOOST_THROW_EXCEPTION(SubsystemIsNotAttachedError() <<
+                                  SubsystemIsNotAttachedError::subsystem(
+                                      Subsystem::SUBSYSTEM_NAME));
         }
 
         void swap(ControlGroupSet &controlGroupSet) noexcept;
 
     private:
-        std::unordered_map<std::string, ControlGroup> groups_;
+        std::unordered_set<std::size_t, ControlGroup> hierarchies_;
+        std::unordered_map<std::string, std::size_t> subsystems_;
     };
 
     inline void swap(ControlGroupSet &a, ControlGroupSet &b) noexcept

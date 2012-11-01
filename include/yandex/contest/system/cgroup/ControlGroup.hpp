@@ -141,6 +141,8 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
         const boost::filesystem::path &root() const;
 
+        std::size_t hierarchy() const;
+
         boost::filesystem::path field(const std::string &fieldName) const;
 
     public:
@@ -159,6 +161,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         {
             boost::filesystem::path root;
             boost::filesystem::path name;
+            std::size_t hierarchy;
             bool own;
         };
 

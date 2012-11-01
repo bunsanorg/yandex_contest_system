@@ -15,12 +15,32 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         return *this;
     }
 
-    void ControlGroupSet::swap(ControlGroupSet &controlGroupSet) noexcept
+    void ControlGroupSet::insert(ControlGroup &&controlGroup)
     {
         #warning TODO
     }
 
     void ControlGroupSet::clear()
+    {
+        #warning TODO
+    }
+
+    void ControlGroupSet::attachTask(const pid_t pid)
+    {
+        #warning TODO
+    }
+
+    ControlGroupSet ControlGroupSet::createChild()
+    {
+        #warning TODO
+    }
+
+    ControlGroupSet ControlGroupSet::attachChild()
+    {
+        #warning TODO
+    }
+
+    void ControlGroupSet::swap(ControlGroupSet &controlGroupSet) noexcept
     {
         #warning TODO
     }
