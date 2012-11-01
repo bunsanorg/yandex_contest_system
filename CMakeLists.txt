@@ -64,6 +64,7 @@ add_library(${PROJECT_NAME} SHARED
     src/lxc/Config.cpp
     src/lxc/LXC.c
     src/lxc/MountConfig.cpp
+    src/lxc/RootfsConfig.cpp
     src/lxc/LXC.cpp
 )
 target_link_libraries(${PROJECT_NAME} ${libraries})

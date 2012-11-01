@@ -1,6 +1,7 @@
 #pragma once
 
 #include "yandex/contest/system/lxc/MountConfig.hpp"
+#include "yandex/contest/system/lxc/RootfsConfig.hpp"
 
 #include "yandex/contest/StreamEnum.hpp"
 
@@ -34,6 +35,7 @@ namespace yandex{namespace contest{namespace system{namespace lxc
             // TODO pts
             ar & BOOST_SERIALIZATION_NVP(console);
             ar & BOOST_SERIALIZATION_NVP(tty);
+            ar & BOOST_SERIALIZATION_NVP(devttydir);
             ar & BOOST_SERIALIZATION_NVP(mount);
             ar & BOOST_SERIALIZATION_NVP(rootfs);
             ar & BOOST_SERIALIZATION_NVP(cgroup);
@@ -55,17 +57,20 @@ namespace yandex{namespace contest{namespace system{namespace lxc
         /// The number of tty available to the container.
         boost::optional<int> tty;
 
+        /// A directory under /dev under which to create the container console devices.
+        boost::optional<boost::filesystem::path> devttydir;
+
         /// Mount settings.
         boost::optional<MountConfig> mount;
 
+        /// Root filesystem.
+        boost::optional<RootfsConfig> rootfs;
+
         /*!
-         * \brief Root filesystem.
-         *
-         * \warning User should not use this option
-         * because it's value is redefined by Container.
-         * This is only used by detail::LXC.
+         * Where to pivot the original root file system under lxc.rootfs,
+         * specified relatively to that.
          */
-        boost::optional<boost::filesystem::path> rootfs;
+        boost::optional<boost::filesystem::path> pivotdir;
 
         /*!
          * \brief The control group values to be set.

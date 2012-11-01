@@ -12,8 +12,10 @@ namespace yandex{namespace contest{namespace system{namespace lxc
         // TODO pts
         BOOST_OPTIONAL_OVERRIDE_PATCH(console);
         BOOST_OPTIONAL_OVERRIDE_PATCH(tty);
+        BOOST_OPTIONAL_OVERRIDE_PATCH(devttydir);
         BOOST_OPTIONAL_RECURSIVE_PATCH(mount);
-        BOOST_OPTIONAL_OVERRIDE_PATCH(rootfs);
+        BOOST_OPTIONAL_RECURSIVE_PATCH(rootfs);
+        BOOST_OPTIONAL_OVERRIDE_PATCH(pivotdir);
         BOOST_OPTIONAL_OVERRIDE_PATCH(cgroup);
         BOOST_OPTIONAL_OVERRIDE_PATCH(cap_drop);
     }
@@ -27,9 +29,12 @@ namespace yandex{namespace contest{namespace system{namespace lxc
         // TODO pts
         optionalOutput(out, "lxc.console", config.console);
         optionalOutput(out, "lxc.tty", config.tty);
+        optionalOutput(out, "lxc.devttydir", config.devttydir);
         if (config.mount)
             out << config.mount.get();
-        optionalOutput(out, "lxc.rootfs", config.rootfs);
+        if (config.rootfs)
+            out << config.rootfs.get();
+        optionalOutput(out, "lxc.pivotdir", config.pivotdir);
         if (config.cgroup)
             for (const auto &cgrp: config.cgroup.get())
                 output(out, "lxc.cgroup." + cgrp.first, cgrp.second);
