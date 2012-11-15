@@ -9,10 +9,11 @@
 #include <ext/stdio_filebuf.h>
 
 #include <cstring>
+#include <cstdio>
+#include <cerrno>
 
 #include <boost/assert.hpp>
 
-#include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -65,11 +66,10 @@ namespace yandex{namespace contest{namespace system{namespace execution
             errPipe.closeWriteEnd(ec);
             __gnu_cxx::stdio_filebuf<char> errBuf(errPipe.readEnd(), std::ios::in);
             std::istream errS(&errBuf);
-            const std::string::size_type bufsize = 1024;
-            char buf[bufsize];
+            char buf[BUFSIZ];
             do
             {
-                errS.read(buf, std::min(bufsize, result.err.capacity()-result.err.size()));
+                errS.read(buf, std::min((std::size_t)BUFSIZ, result.err.capacity()-result.err.size()));
                 // string is preallocated, so this should not cause an exception
                 result.err.append(buf, errS.gcount());
             }
