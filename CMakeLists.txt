@@ -7,29 +7,21 @@ cmake_minimum_required(VERSION 2.8)
 include(YandexContestCommon)
 
 # BOOST
-set(Boost_USE_STATIC_LIBS OFF)
-set(Boost_USE_MULTITHREADED ON)
-find_package(Boost COMPONENTS system filesystem serialization unit_test_framework REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
-list(APPEND libraries ${Boost_LIBRARIES})
+bunsan_use_boost(system filesystem serialization unit_test_framework)
 
 # LXC
 find_package(PkgConfig)
 pkg_check_modules(LXC REQUIRED lxc)
 link_directories(${LXC_LIBRARY_DIRS})
 include_directories(${LXC_INCLUDE_DIRS})
-list(APPEND libraries ${LXC_LIBRARIES})
+bunsan_use(${LXC_LIBRARIES})
 
-# yandex_contest_common
-list(APPEND libraries yandex_contest_common)
+bunsan_use_bunsan(common)
+bunsan_use(yandex_contest_common)
 
-list(APPEND libraries dl)
+bunsan_use(dl)
 
-# Local
-include_directories(include)
-
-# Targets
-add_library(${PROJECT_NAME} SHARED
+bunsan_add_shared_library(${PROJECT_NAME}
     src/unistd/access/Id.cpp
     src/unistd/access/Operations.cpp
 
@@ -67,13 +59,8 @@ add_library(${PROJECT_NAME} SHARED
     src/lxc/RootfsConfig.cpp
     src/lxc/LXC.cpp
 )
-target_link_libraries(${PROJECT_NAME} ${libraries})
 
-# Installation
-install(DIRECTORY include DESTINATION .)
-install(TARGETS ${PROJECT_NAME}
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib)
+bunsan_install_headers()
+bunsan_install_targets(${PROJECT_NAME})
 
-yandex_contest_tests()
+bunsan_include_tests()
