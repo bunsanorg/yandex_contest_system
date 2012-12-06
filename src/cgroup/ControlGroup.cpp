@@ -7,6 +7,9 @@
 
 #include "yandex/contest/detail/LogHelper.hpp"
 
+#include "bunsan/enable_error_info.hpp"
+#include "bunsan/filesystem/fstream.hpp"
+
 #include <iterator>
 #include <thread>
 #include <chrono>
@@ -17,7 +20,6 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/operations.hpp>
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
@@ -253,24 +255,24 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
     void ControlGroup::readFieldByReader(const std::string &fieldName, const Reader &reader)
     {
-        boost::filesystem::ifstream fin(field(fieldName));
-        if (!fin)
-            BOOST_THROW_EXCEPTION(SystemError() << unistd::info::path(field(fieldName)));
-        reader(fin);
-        fin.close();
-        if (fin.bad())
-            BOOST_THROW_EXCEPTION(SystemError() << unistd::info::path(field(fieldName)));
+        BUNSAN_EXCEPTIONS_WRAP_BEGIN()
+        {
+            bunsan::filesystem::ifstream fin(field(fieldName));
+            reader(fin);
+            fin.close();
+        }
+        BUNSAN_EXCEPTIONS_WRAP_END_ERROR_INFO(unistd::info::path(field(fieldName)));
     }
 
     void ControlGroup::writeFieldByWriter(const std::string &fieldName, const Writer &writer)
     {
-        boost::filesystem::ofstream fout(field(fieldName));
-        if (!fout)
-            BOOST_THROW_EXCEPTION(SystemError() << unistd::info::path(field(fieldName)));
-        writer(fout);
-        fout.close();
-        if (fout.bad())
-            BOOST_THROW_EXCEPTION(SystemError() << unistd::info::path(field(fieldName)));
+        BUNSAN_EXCEPTIONS_WRAP_BEGIN()
+        {
+            bunsan::filesystem::ofstream fout(field(fieldName));
+            writer(fout);
+            fout.close();
+        }
+        BUNSAN_EXCEPTIONS_WRAP_END_ERROR_INFO(unistd::info::path(field(fieldName)))
     }
 
     template <>
@@ -313,22 +315,24 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     std::vector<ControlGroup> ControlGroup::getControlGroups(const pid_t pid)
     {
         std::vector<ControlGroup> cgroups;
-        boost::filesystem::ifstream fin(str(boost::format("/proc/%1%/cgroup") % pid));
-        if (!fin)
-            BOOST_THROW_EXCEPTION(SystemError("open"));
-        std::string line;
-        while (std::getline(fin, line))
+        BUNSAN_EXCEPTIONS_WRAP_BEGIN()
         {
-            std::vector<std::string> fields;
-            std::size_t pos1 = line.find(':');
-            BOOST_ASSERT(pos1 != std::string::npos);
-            //const std::string hierId = line.substr(0, pos1);
-            std::size_t pos2 = line.find(':', pos1 + 1);
-            BOOST_ASSERT(pos2 != std::string::npos);
-            //const std::string subsystems = line.substr(pos1 + 1, pos2);
-            const std::string name = line.substr(pos2 + 1);
-            cgroups.emplace_back(name, Attach);
+            bunsan::filesystem::ifstream fin(str(boost::format("/proc/%1%/cgroup") % pid));
+            std::string line;
+            while (std::getline(fin, line))
+            {
+                std::vector<std::string> fields;
+                std::size_t pos1 = line.find(':');
+                BOOST_ASSERT(pos1 != std::string::npos);
+                //const std::string hierId = line.substr(0, pos1);
+                std::size_t pos2 = line.find(':', pos1 + 1);
+                BOOST_ASSERT(pos2 != std::string::npos);
+                //const std::string subsystems = line.substr(pos1 + 1, pos2);
+                const std::string name = line.substr(pos2 + 1);
+                cgroups.emplace_back(name, Attach);
+            }
         }
+        BUNSAN_EXCEPTIONS_WRAP_END()
         return cgroups;
     }
 }}}}

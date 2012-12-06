@@ -7,9 +7,11 @@
 
 #include "yandex/contest/detail/LogHelper.hpp"
 
+#include "bunsan/enable_error_info.hpp"
+#include "bunsan/filesystem/fstream.hpp"
+
 #include <iterator>
 
-#include <boost/filesystem/fstream.hpp>
 #include <boost/assert.hpp>
 
 #include <unistd.h>
@@ -166,14 +168,14 @@ namespace yandex{namespace contest{namespace system{namespace execution
     {
         std::string readAll(const boost::filesystem::path &path)
         {
-            boost::filesystem::ifstream fin(path);
-            if (!fin)
-                BOOST_THROW_EXCEPTION(SystemError("open"));
-            const std::string contents{std::istreambuf_iterator<char>(fin), std::istreambuf_iterator<char>()};
-            fin.close();
-            if (!fin)
-                BOOST_THROW_EXCEPTION(SystemError("close"));
-            return contents;
+            BUNSAN_EXCEPTIONS_WRAP_BEGIN()
+            {
+                bunsan::filesystem::ifstream fin(path);
+                const std::string contents{std::istreambuf_iterator<char>(fin), std::istreambuf_iterator<char>()};
+                fin.close();
+                return contents;
+            }
+            BUNSAN_EXCEPTIONS_WRAP_END()
         }
     }
 
