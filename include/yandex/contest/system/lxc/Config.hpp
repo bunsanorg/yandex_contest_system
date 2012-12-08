@@ -3,7 +3,7 @@
 #include "yandex/contest/system/lxc/MountConfig.hpp"
 #include "yandex/contest/system/lxc/RootfsConfig.hpp"
 
-#include "yandex/contest/StreamEnum.hpp"
+#include "bunsan/stream_enum.hpp"
 
 #include <iostream>
 #include <unordered_map>
@@ -16,7 +16,7 @@ namespace yandex{namespace contest{namespace system{namespace lxc
 {
     struct Config
     {
-        YANDEX_CONTEST_INCLASS_STREAM_ENUM_CLASS(Arch,
+        BUNSAN_INCLASS_STREAM_ENUM_CLASS(Arch,
         (
             x86,
             i686,

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "yandex/contest/StreamEnum.hpp"
+#include "bunsan/stream_enum.hpp"
 
 namespace yandex{namespace contest{namespace system{namespace lxc{namespace lxc_detail
 {
@@ -9,7 +9,7 @@ namespace yandex{namespace contest{namespace system{namespace lxc{namespace lxc_
      *
      * \warning Get in sync with ::lxc_state_t.
      */
-    YANDEX_CONTEST_STREAM_ENUM_CLASS(State,
+    BUNSAN_STREAM_ENUM_CLASS(State,
     (
         STOPPED,
         STARTING,

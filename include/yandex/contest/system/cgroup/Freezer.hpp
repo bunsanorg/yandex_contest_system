@@ -2,7 +2,7 @@
 
 #include "yandex/contest/system/cgroup/SubsystemBase.hpp"
 
-#include "yandex/contest/StreamEnum.hpp"
+#include "bunsan/stream_enum.hpp"
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
@@ -12,7 +12,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         static const std::string SUBSYSTEM_NAME;
 
     public:
-        YANDEX_CONTEST_INCLASS_STREAM_ENUM_CLASS(State,
+        BUNSAN_INCLASS_STREAM_ENUM_CLASS(State,
         (
             FROZEN,
             FREEZING,

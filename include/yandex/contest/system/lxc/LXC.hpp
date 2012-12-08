@@ -4,8 +4,6 @@
 #include "yandex/contest/system/lxc/State.hpp"
 #include "yandex/contest/system/lxc/Error.hpp"
 
-#include "yandex/contest/StreamEnum.hpp"
-
 #include "yandex/contest/system/execution/Result.hpp"
 #include "yandex/contest/system/execution/ResultError.hpp"
 #include "yandex/contest/system/execution/AsyncProcess.hpp"
