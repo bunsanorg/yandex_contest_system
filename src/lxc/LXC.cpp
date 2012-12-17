@@ -158,19 +158,19 @@ namespace yandex{namespace contest{namespace system{namespace lxc
         config.rootfs = RootfsConfig{.fsname = rootfs_, .mount = rootfsMount_};
         if (config.mount)
         {
-            if (config.mount.get().fstab)
+            if (config.mount->fstab)
             {
                 unistd::Fstab fstab;
-                fstab.load(config.mount.get().fstab.get());
+                fstab.load(config.mount->fstab.get());
                 for (unistd::MountEntry &entry: fstab)
                     prepare(entry);
                 const boost::filesystem::path fstab_ = dir_ / "fstab";
                 fstab.save(fstab_);
-                config.mount.get().fstab = fstab_;
+                config.mount->fstab = fstab_;
             }
-            if (config.mount.get().entries)
+            if (config.mount->entries)
             {
-                for (unistd::MountEntry &entry: config.mount.get().entries.get())
+                for (unistd::MountEntry &entry: config.mount->entries.get())
                     prepare(entry);
             }
         }

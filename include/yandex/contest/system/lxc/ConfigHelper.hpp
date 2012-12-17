@@ -60,7 +60,7 @@ namespace yandex{namespace contest{namespace system{namespace lxc{namespace conf
         if (patch)
         {
             if (this_)
-                this_.get().patch(patch.get());
+                this_->patch(patch.get());
             else
                 this_ = patch;
         }

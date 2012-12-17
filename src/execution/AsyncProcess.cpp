@@ -183,10 +183,10 @@ namespace yandex{namespace contest{namespace system{namespace execution
     {
         BOOST_ASSERT(result_);
         STREAM_DEBUG << "Trying to collect data from temporary file at " << out_.path() << ".";
-        result_.get().out = readAll(out_.path());
+        result_->out = readAll(out_.path());
         out_.remove();
         STREAM_DEBUG << "Trying to collect data from temporary file at " << err_.path() << ".";
-        result_.get().err = readAll(err_.path());
+        result_->err = readAll(err_.path());
         err_.remove();
     }
 
