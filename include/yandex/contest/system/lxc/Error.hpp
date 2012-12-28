@@ -6,7 +6,8 @@
 
 #include "yandex/contest/system/lxc/State.hpp"
 
-#include <utility>
+#include "bunsan/forward_constructor.hpp"
+
 #include <string>
 
 namespace yandex{namespace contest{namespace system{namespace lxc
@@ -25,9 +26,7 @@ namespace yandex{namespace contest{namespace system{namespace lxc
         virtual Error,
         virtual execution::ResultError
     {
-        template <typename ... Args>
-        explicit UtilityError(Args &&...args):
-            execution::ResultError(std::forward<Args>(args)...) {}
+        BUNSAN_INHERIT_EXPLICIT_CONSTRUCTOR(UtilityError, execution::ResultError)
     };
 
     struct ConfigError: virtual Error

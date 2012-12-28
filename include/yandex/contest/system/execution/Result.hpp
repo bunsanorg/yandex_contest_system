@@ -2,16 +2,16 @@
 
 #include "yandex/contest/system/unistd/ProcessResult.hpp"
 
-#include <utility>
+#include "bunsan/forward_constructor.hpp"
+
 #include <string>
 
 namespace yandex{namespace contest{namespace system{namespace execution
 {
     struct Result: unistd::ProcessResult
     {
-        template <typename ... Args>
-        explicit Result(Args &&...args):
-            unistd::ProcessResult(std::forward<Args>(args)...) {}
+        BUNSAN_INHERIT_EXPLICIT_CONSTRUCTOR(Result, unistd::ProcessResult)
+
         Result()=default;
         Result(const Result &)=default;
         Result &operator=(const Result &)=default;
