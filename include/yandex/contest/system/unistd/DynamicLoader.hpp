@@ -36,8 +36,8 @@ namespace yandex{namespace contest{namespace system{namespace unistd
          */
         DynamicLibrary(const boost::filesystem::path &filename, const int flags);
 
-        DynamicLibrary(DynamicLibrary &&dl);
-        DynamicLibrary &operator=(DynamicLibrary &&dl);
+        DynamicLibrary(DynamicLibrary &&dl) noexcept;
+        DynamicLibrary &operator=(DynamicLibrary &&dl) noexcept;
 
         DynamicLibrary(const DynamicLibrary &)=delete;
         DynamicLibrary &operator=(const DynamicLibrary &)=delete;
@@ -59,6 +59,9 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         }
 
         ~DynamicLibrary();
+
+    private:
+        void closeNoExcept() noexcept;
 
     private:
         void *handle_;

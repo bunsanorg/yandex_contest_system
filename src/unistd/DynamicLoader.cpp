@@ -1,5 +1,6 @@
 #include "yandex/contest/system/unistd/DynamicLoader.hpp"
 
+#include "yandex/contest/detail/LogHelper.hpp"
 #include "yandex/contest/TypeInfo.hpp"
 
 #include <boost/format.hpp>
@@ -32,17 +33,29 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         }
     }
 
-    DynamicLibrary::DynamicLibrary(DynamicLibrary &&dl)
+    DynamicLibrary::DynamicLibrary(DynamicLibrary &&dl) noexcept
     {
         swap(dl);
-        dl.close();
+        dl.closeNoExcept();
     }
 
-    DynamicLibrary &DynamicLibrary::operator=(DynamicLibrary &&dl)
+    DynamicLibrary &DynamicLibrary::operator=(DynamicLibrary &&dl) noexcept
     {
         swap(dl);
-        dl.close();
+        dl.closeNoExcept();
         return *this;
+    }
+
+    void DynamicLibrary::closeNoExcept() noexcept
+    {
+        try
+        {
+            close();
+        }
+        catch (std::exception &e)
+        {
+            STREAM_ERROR << "Error while closing DynamicLibrary (ignoring): " << e.what();
+        }
     }
 
     void DynamicLibrary::close()

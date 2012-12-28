@@ -30,9 +30,9 @@ namespace yandex{namespace contest{namespace system{namespace execution
 
         explicit AsyncProcess(const Options &options);
         AsyncProcess(const AsyncProcess &)=delete;
-        AsyncProcess(AsyncProcess &&);
+        AsyncProcess(AsyncProcess &&) noexcept;
         AsyncProcess &operator=(const AsyncProcess &)=delete;
-        AsyncProcess &operator=(AsyncProcess &&);
+        AsyncProcess &operator=(AsyncProcess &&) noexcept;
 
         /// If AsyncProcess is valid.
         explicit operator bool() const noexcept;

@@ -45,8 +45,8 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         explicit ControlGroup(const boost::filesystem::path &name,
                               const boost::filesystem::path &root=getMountPoint());
 
-        ControlGroup(ControlGroup &&);
-        ControlGroup &operator=(ControlGroup &&);
+        ControlGroup(ControlGroup &&) noexcept;
+        ControlGroup &operator=(ControlGroup &&) noexcept;
 
         ~ControlGroup();
 
@@ -171,6 +171,8 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     private:
         /// \throws InvalidControlGroupError if control group is not initialized.
         const ControlGroupData &data() const;
+
+        void closeNoExcept() noexcept;
 
     private:
         boost::optional<ControlGroupData> data_;

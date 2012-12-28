@@ -65,20 +65,20 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
                                const boost::filesystem::path &root):
         ControlGroup::ControlGroup(name, 0777, root) {}
 
-    ControlGroup::ControlGroup(ControlGroup &&controlGroup)
+    ControlGroup::ControlGroup(ControlGroup &&controlGroup) noexcept
     {
         swap(controlGroup);
-        controlGroup.close();
+        controlGroup.closeNoExcept();
     }
 
-    ControlGroup &ControlGroup::operator=(ControlGroup &&controlGroup)
+    ControlGroup &ControlGroup::operator=(ControlGroup &&controlGroup) noexcept
     {
         swap(controlGroup);
-        controlGroup.close();
+        controlGroup.closeNoExcept();
         return *this;
     }
 
-    ControlGroup::~ControlGroup()
+    void ControlGroup::closeNoExcept() noexcept
     {
         try
         {
@@ -97,10 +97,11 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
                                 e.what() << "\" (ignoring).";
             }
         }
-        catch (...)
-        {
-            STREAM_ERROR << "Unknown error (ignoring).";
-        }
+    }
+
+    ControlGroup::~ControlGroup()
+    {
+        closeNoExcept();
     }
 
     ControlGroup::operator bool() const

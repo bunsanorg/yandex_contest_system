@@ -22,14 +22,14 @@
 
 namespace yandex{namespace contest{namespace system{namespace execution
 {
-    AsyncProcess::AsyncProcess(AsyncProcess &&process)
+    AsyncProcess::AsyncProcess(AsyncProcess &&process) noexcept
     {
-        this->swap(process);
+        swap(process);
     }
 
-    AsyncProcess &AsyncProcess::operator=(AsyncProcess &&process)
+    AsyncProcess &AsyncProcess::operator=(AsyncProcess &&process) noexcept
     {
-        this->swap(process);
+        swap(process);
         return *this;
     }
 
