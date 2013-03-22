@@ -2,6 +2,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include "yandex/contest/system/cgroup/SystemInfo.hpp"
+#include "yandex/contest/system/cgroup/ProcessInfo.hpp"
 #include "yandex/contest/system/cgroup/MountPoint.hpp"
 #include "yandex/contest/system/cgroup/ControlGroup.hpp"
 #include "yandex/contest/system/cgroup/CpuAccounting.hpp"
@@ -33,6 +34,12 @@ BOOST_AUTO_TEST_CASE(SystemInfo)
     BOOST_CHECK_EQUAL(ptr2, ptr);
     const yac::SystemInfoPointer ptr3 = yac::SystemInfo::instance(true);
     BOOST_CHECK_NE(ptr3, ptr);
+}
+
+BOOST_AUTO_TEST_CASE(ProcessInfo)
+{
+    const yac::ProcessInfo info = yac::ProcessInfo::forSelf();
+    BOOST_TEST_MESSAGE(info);
 }
 
 BOOST_AUTO_TEST_CASE(MountPoint)
