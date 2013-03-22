@@ -28,7 +28,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
                 const std::size_t hierId = boost::lexical_cast<std::size_t>(line.substr(0, pos1));
                 const std::string subsystemsLine = line.substr(pos1 + 1, pos2 - pos1 - 1);
                 HierarchyInfo &info = id2hierarchy_[hierId];
-                info.id = hierId;
+                info.hierarchyId = hierId;
                 std::vector<std::string> subsystems;
                 boost::algorithm::split(subsystems, subsystemsLine, boost::algorithm::is_any_of(","));
                 for (const std::string &subsystem: subsystems)
@@ -86,17 +86,17 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
                                               "subsystems from /proc/mounts are not equal "
                                               "to subsystems from /proc/self/cgroup"));
                 info.mountpoint = entry.dir;
-                mountpoint2id_[entry.dir] = info.id;
+                mountpoint2id_[entry.dir] = info.hierarchyId;
             }
         }
     }
 
-    const HierarchyInfo &SystemInfo::byId(const std::size_t id) const
+    const HierarchyInfo &SystemInfo::byHierarchyId(const std::size_t hierarchyId) const
     {
-        const auto iter = id2hierarchy_.find(id);
+        const auto iter = id2hierarchy_.find(hierarchyId);
         if (iter == id2hierarchy_.end())
             BOOST_THROW_EXCEPTION(SystemInfoUnknownHierarchyError() <<
-                                  SystemInfoUnknownHierarchyError::id(id));
+                                  SystemInfoUnknownHierarchyError::hierarchyId(hierarchyId));
         return iter->second;
     }
 

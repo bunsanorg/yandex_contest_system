@@ -15,15 +15,8 @@
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     struct SystemInfoError: virtual Error {};
-
-    struct SystemInfoInconsistencyError: virtual SystemInfoError {};
-
-    struct SystemInfoUnknownHierarchyError: virtual SystemInfoError
-    {
-        typedef boost::error_info<struct idTag, std::size_t> id;
-        typedef boost::error_info<struct subsystemTag, std::string> subsystem;
-        typedef boost::error_info<struct mountpointTag, boost::filesystem::path> mountpoint;
-    };
+    struct SystemInfoInconsistencyError: virtual SystemInfoError, virtual InconsistencyError {};
+    struct SystemInfoUnknownHierarchyError: virtual SystemInfoError {};
 
     class SystemInfo: private boost::noncopyable
     {
@@ -49,7 +42,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         typedef boost::transform_iterator<IteratorConverter, map_const_iterator> const_iterator;
 
     public:
-        const HierarchyInfo &byId(const std::size_t id) const;
+        const HierarchyInfo &byHierarchyId(const std::size_t hierarchyId) const;
         const HierarchyInfo &bySubsystem(const std::string &subsystem) const;
         const HierarchyInfo &byMountpoint(const boost::filesystem::path &mountpoint) const;
 
