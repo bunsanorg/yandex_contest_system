@@ -147,13 +147,12 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
     SystemInfoPointer SystemInfo::instance(const bool forceUpdate)
     {
-        // access is atomic, no additional synchronization required
         static SystemInfoPointer instance_;
-        SystemInfoPointer info = instance_;
+        SystemInfoPointer info = atomic_load(&instance_);
         if (forceUpdate || !info)
         {
             info.reset(new SystemInfo);
-            instance_ = info;
+            atomic_store(&instance_, info);
         }
         return info;
     }

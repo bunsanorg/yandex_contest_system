@@ -5,11 +5,11 @@
 
 #include <iostream>
 #include <functional>
-#include <memory>
 #include <unordered_map>
 
 #include <boost/iterator/transform_iterator.hpp>
 #include <boost/noncopyable.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/unordered_map.hpp>
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
@@ -26,7 +26,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         typedef id2hierarchy_type::value_type map_value_type;
 
     public:
-        typedef std::shared_ptr<SystemInfo> SystemInfoPointer;
+        typedef boost::shared_ptr<SystemInfo> SystemInfoPointer;
         typedef map_value_type::second_type value_type;
 
     private:
