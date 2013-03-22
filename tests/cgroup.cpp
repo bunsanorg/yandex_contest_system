@@ -1,6 +1,7 @@
 #define BOOST_TEST_MODULE cgroup
 #include <boost/test/unit_test.hpp>
 
+#include "yandex/contest/system/cgroup/SystemInfo.hpp"
 #include "yandex/contest/system/cgroup/MountPoint.hpp"
 #include "yandex/contest/system/cgroup/ControlGroup.hpp"
 #include "yandex/contest/system/cgroup/CpuAccounting.hpp"
@@ -23,6 +24,16 @@ namespace yac = ya::cgroup;
 namespace unistd = ya::unistd;
 
 BOOST_AUTO_TEST_SUITE(cgroup)
+
+BOOST_AUTO_TEST_CASE(SystemInfo)
+{
+    const yac::SystemInfoPointer ptr = yac::SystemInfo::instance();
+    BOOST_TEST_MESSAGE(*ptr);
+    const yac::SystemInfoPointer ptr2 = yac::SystemInfo::instance();
+    BOOST_CHECK_EQUAL(ptr2, ptr);
+    const yac::SystemInfoPointer ptr3 = yac::SystemInfo::instance(true);
+    BOOST_CHECK_NE(ptr3, ptr);
+}
 
 BOOST_AUTO_TEST_CASE(MountPoint)
 {
