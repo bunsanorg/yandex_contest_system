@@ -1,11 +1,11 @@
 #include "yandex/contest/system/cgroup/SystemInfo.hpp"
+#include "yandex/contest/system/cgroup/ProcPidCgroup.hpp"
 #include "yandex/contest/system/unistd/Fstab.hpp"
 
 #include "bunsan/enable_error_info.hpp"
 #include "bunsan/filesystem/fstream.hpp"
 
 #include <boost/assert.hpp>
-#include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/classification.hpp>
@@ -14,80 +14,90 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     SystemInfo::SystemInfo()
     {
-        BUNSAN_EXCEPTIONS_WRAP_BEGIN()
+        loadHierarchies();
+        loadMountpoints();
+    }
+
+    void SystemInfo::loadHierarchies()
+    {
+        ProcPidCgroup cgroup;
+        cgroup.load("/proc/self/cgroup");
+        for (ProcPidCgroup::Entry &entry: cgroup)
         {
-            bunsan::filesystem::ifstream fin("/proc/self/cgroup");
-            std::string line;
-            while (std::getline(fin, line))
+            if (id2hierarchy_.find(entry.hierarchyId) != id2hierarchy_.end())
+                BOOST_THROW_EXCEPTION(SystemInfoDuplicateHierarchiesError() <<
+                                      SystemInfoDuplicateHierarchiesError::hierarchyId(entry.hierarchyId));
+            HierarchyInfo &info = id2hierarchy_[entry.hierarchyId];
+            info.hierarchyId = std::move(entry.hierarchyId);
+            info.subsystems = std::move(entry.subsystems);
+            for (const std::string &subsystem: info.subsystems)
             {
-                const std::size_t pos1 = line.find(':');
-                BOOST_ASSERT(pos1 != std::string::npos);
-                const std::size_t pos2 = line.find(':', pos1 + 1);
-                BOOST_ASSERT(pos2 != std::string::npos);
-                BOOST_ASSERT(pos1 < pos2);
-                const std::size_t hierId = boost::lexical_cast<std::size_t>(line.substr(0, pos1));
-                const std::string subsystemsLine = line.substr(pos1 + 1, pos2 - pos1 - 1);
-                HierarchyInfo &info = id2hierarchy_[hierId];
-                info.hierarchyId = hierId;
-                std::vector<std::string> subsystems;
-                boost::algorithm::split(subsystems, subsystemsLine, boost::algorithm::is_any_of(","));
-                for (const std::string &subsystem: subsystems)
-                {
-                    info.subsystems.insert(subsystem);
-                    BOOST_ASSERT(subsystem2id_.find(subsystem) == subsystem2id_.end());
-                    subsystem2id_[subsystem] = hierId;
-                }
+                if (subsystem2id_.find(subsystem) != subsystem2id_.end())
+                    BOOST_THROW_EXCEPTION(SystemInfoDuplicateSubsystemsError() <<
+                                          SystemInfoDuplicateSubsystemsError::hierarchyId(info.hierarchyId) <<
+                                          SystemInfoDuplicateSubsystemsError::subsystem(subsystem));
+                subsystem2id_[subsystem] = info.hierarchyId;
             }
         }
-        BUNSAN_EXCEPTIONS_WRAP_END()
+    }
+
+    void SystemInfo::loadMountpoints()
+    {
         unistd::Fstab fstab;
         fstab.load("/proc/mounts");
         for (const unistd::MountEntry &entry: fstab)
         {
-            if (entry.type == "cgroup")
+            BUNSAN_EXCEPTIONS_WRAP_BEGIN()
             {
-                std::unordered_set<std::string> subsystems;
-                std::vector<std::string> opts;
-                boost::algorithm::split(opts, entry.opts, boost::algorithm::is_any_of(","));
-                for (const std::string &opt: opts)
+                if (entry.type == "cgroup")
                 {
-                    static const std::unordered_set<std::string> knownSubsystems = {
-                        "blkio",
-                        "cpu",
-                        "cpuacct",
-                        "cpuset",
-                        "devices",
-                        "freezer",
-                        "memory",
-                        "net_cls",
-                        "net_prio",
-                        "ns",
-                        "perf_event",
-                    };
-                    if (boost::algorithm::starts_with(opt, "name=") ||
-                        knownSubsystems.find(opt) != knownSubsystems.end())
+                    std::unordered_set<std::string> subsystems;
+                    std::vector<std::string> opts;
+                    boost::algorithm::split(opts, entry.opts, boost::algorithm::is_any_of(","));
+                    for (const std::string &opt: opts)
                     {
-                        subsystems.insert(opt);
+                        static const std::unordered_set<std::string> knownSubsystems = {
+                            "blkio",
+                            "cpu",
+                            "cpuacct",
+                            "cpuset",
+                            "devices",
+                            "freezer",
+                            "memory",
+                            "net_cls",
+                            "net_prio",
+                            "ns",
+                            "perf_event",
+                        };
+                        if (boost::algorithm::starts_with(opt, "name=") ||
+                            knownSubsystems.find(opt) != knownSubsystems.end())
+                        {
+                            subsystems.insert(opt);
+                        }
                     }
+                    if (subsystems.empty())
+                        BOOST_THROW_EXCEPTION(SystemInfoNoSubsystemsError());
+                    const std::string subsystem = *subsystems.begin();
+                    const auto iter = subsystem2id_.find(subsystem);
+                    if (iter == subsystem2id_.end())
+                        BOOST_THROW_EXCEPTION(SystemInfoInconsistencyError() <<
+                                              SystemInfoInconsistencyError::message(
+                                                  "/proc/mounts is not consistent with /proc/self/cgroup"));
+                    const auto iter2 = id2hierarchy_.find(iter->second);
+                    BOOST_ASSERT(iter2 != id2hierarchy_.end());
+                    HierarchyInfo &info = iter2->second;
+                    if (subsystems != info.subsystems)
+                        BOOST_THROW_EXCEPTION(SystemInfoInconsistencyError() <<
+                                              SystemInfoInconsistencyError::message(
+                                                  "subsystems from /proc/mounts are not equal "
+                                                  "to subsystems from /proc/self/cgroup"));
+                    info.mountpoint = entry.dir;
+                    mountpoint2id_[entry.dir] = info.hierarchyId;
                 }
-                BOOST_ASSERT(!subsystems.empty());
-                const std::string subsystem = *subsystems.begin();
-                const auto iter = subsystem2id_.find(subsystem);
-                if (iter == subsystem2id_.end())
-                    BOOST_THROW_EXCEPTION(SystemInfoInconsistencyError() <<
-                                          SystemInfoInconsistencyError::message(
-                                              "/proc/mounts is not consistent with /proc/self/cgroup"));
-                const auto iter2 = id2hierarchy_.find(iter->second);
-                BOOST_ASSERT(iter2 != id2hierarchy_.end());
-                HierarchyInfo &info = iter2->second;
-                if (subsystems != info.subsystems)
-                    BOOST_THROW_EXCEPTION(SystemInfoInconsistencyError() <<
-                                          SystemInfoInconsistencyError::message(
-                                              "subsystems from /proc/mounts are not equal "
-                                              "to subsystems from /proc/self/cgroup"));
-                info.mountpoint = entry.dir;
-                mountpoint2id_[entry.dir] = info.hierarchyId;
             }
+            BUNSAN_EXCEPTIONS_WRAP_END_ERROR_INFO(
+                bunsan::filesystem::error::path("/proc/self/cgroup") <<
+                SystemInfoProcMountsFormatError::mountEntry(entry))
         }
     }
 

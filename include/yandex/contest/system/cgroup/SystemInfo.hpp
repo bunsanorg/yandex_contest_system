@@ -2,6 +2,7 @@
 
 #include "yandex/contest/system/cgroup/Error.hpp"
 #include "yandex/contest/system/cgroup/HierarchyInfo.hpp"
+#include "yandex/contest/system/unistd/MountEntry.hpp"
 
 #include <iostream>
 #include <functional>
@@ -15,7 +16,24 @@
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     struct SystemInfoError: virtual Error {};
-    struct SystemInfoInconsistencyError: virtual SystemInfoError, virtual InconsistencyError {};
+    struct SystemInfoInconsistencyError:
+        virtual SystemInfoError,
+        virtual InconsistencyError {};
+    struct SystemInfoDuplicateHierarchiesError:
+        virtual SystemInfoInconsistencyError {};
+    struct SystemInfoDuplicateSubsystemsError:
+        virtual SystemInfoInconsistencyError {};
+
+    struct SystemInfoProcMountsFormatError:
+        virtual SystemInfoError,
+        virtual FileFormatError
+    {
+        typedef boost::error_info<struct mountEntryTag, unistd::MountEntry> mountEntry;
+    };
+
+    struct SystemInfoNoSubsystemsError:
+        virtual SystemInfoProcMountsFormatError {};
+
     struct SystemInfoUnknownHierarchyError: virtual SystemInfoError {};
 
     class SystemInfo: private boost::noncopyable
@@ -56,6 +74,9 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
     private:
         SystemInfo();
+
+        void loadHierarchies();
+        void loadMountpoints();
 
         const HierarchyInfo &byIdNoFail(const std::size_t id) const;
 

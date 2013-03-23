@@ -15,6 +15,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     struct ProcessInfoError: virtual Error {};
     struct ProcessInfoInconsistencyError: virtual ProcessInfoError, virtual InconsistencyError {};
+    struct ProcessInfoDuplicateHierarchiesError: virtual ProcessInfoError, virtual FileFormatError {};
 
     class ProcessInfo
     {

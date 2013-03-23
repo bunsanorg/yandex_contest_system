@@ -1,12 +1,8 @@
 #include "yandex/contest/system/cgroup/ProcessInfo.hpp"
+#include "yandex/contest/system/cgroup/ProcPidCgroup.hpp"
 #include "yandex/contest/system/cgroup/SystemInfo.hpp"
 
-#include "bunsan/enable_error_info.hpp"
-#include "bunsan/filesystem/fstream.hpp"
-
-#include <boost/assert.hpp>
 #include <boost/format.hpp>
-#include <boost/lexical_cast.hpp>
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
@@ -77,25 +73,17 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     ProcessInfo ProcessInfo::fromFile(const boost::filesystem::path &path)
     {
         ProcessInfo info;
-        BUNSAN_EXCEPTIONS_WRAP_BEGIN()
+        ProcPidCgroup cgroup;
+        cgroup.load(path);
+        for (const ProcPidCgroup::Entry &entry: cgroup)
         {
-            bunsan::filesystem::ifstream fin(path);
-            std::string line;
-            while (std::getline(fin, line))
-            {
-                const std::size_t pos1 = line.find(':');
-                BOOST_ASSERT(pos1 != std::string::npos);
-                const std::size_t pos2 = line.find(':', pos1 + 1);
-                BOOST_ASSERT(pos2 != std::string::npos);
-                BOOST_ASSERT(pos1 < pos2);
-                const std::size_t hierId = boost::lexical_cast<std::size_t>(line.substr(0, pos1));
-                const boost::filesystem::path controlGroup = line.substr(pos2 + 1);
-                BOOST_ASSERT(info.id2controlGroup_.find(hierId) == info.id2controlGroup_.end());
-                info.id2controlGroup_[hierId] = controlGroup;
-                // TODO Should we check subsystems field for consistency with SystemInfo::instance()?
-            }
+            if (info.id2controlGroup_.find(entry.hierarchyId) != info.id2controlGroup_.end())
+                BOOST_THROW_EXCEPTION(ProcessInfoDuplicateHierarchiesError() <<
+                                      ProcessInfoDuplicateHierarchiesError::path(path) <<
+                                      ProcessInfoDuplicateHierarchiesError::hierarchyId(entry.hierarchyId));
+            info.id2controlGroup_[entry.hierarchyId] = entry.controlGroup;
+            // TODO Should we check subsystems field for consistency with SystemInfo::instance()?
         }
-        BUNSAN_EXCEPTIONS_WRAP_END()
         return info;
     }
 
