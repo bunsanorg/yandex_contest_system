@@ -38,6 +38,7 @@ bunsan_add_shared_library(${PROJECT_NAME}
 
     src/Trace.cpp
 
+    src/cgroup/ProcPidCgroup.cpp
     src/cgroup/HierarchyInfo.cpp
     src/cgroup/SystemInfo.cpp
     src/cgroup/ProcessHierarchyInfo.cpp
