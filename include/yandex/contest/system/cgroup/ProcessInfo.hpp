@@ -66,7 +66,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         id2controlGroupType id2controlGroup_;
     };
 
-    void swap(ProcessInfo &a, ProcessInfo &b) noexcept
+    inline void swap(ProcessInfo &a, ProcessInfo &b) noexcept
     {
         a.swap(b);
     }
