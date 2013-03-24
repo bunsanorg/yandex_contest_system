@@ -1,4 +1,5 @@
 #include "yandex/contest/system/cgroup/Memory.hpp"
+#include "yandex/contest/system/cgroup/Error.hpp"
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {

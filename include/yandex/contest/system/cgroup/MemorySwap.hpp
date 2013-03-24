@@ -3,6 +3,8 @@
 #include "yandex/contest/system/cgroup/ResourceLimiter.hpp"
 #include "yandex/contest/system/cgroup/Stat.hpp"
 
+#include <boost/optional.hpp>
+
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     /*!
