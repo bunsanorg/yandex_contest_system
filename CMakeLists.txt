@@ -43,10 +43,11 @@ bunsan_add_shared_library(${PROJECT_NAME}
     src/cgroup/ProcPidCgroup.cpp
     src/cgroup/HierarchyInfo.cpp
     src/cgroup/SystemInfo.cpp
+    src/cgroup/ControlGroup.cpp
+    src/cgroup/SingleControlGroup.cpp
     src/cgroup/ProcessHierarchyInfo.cpp
     src/cgroup/ProcessInfo.cpp
     src/cgroup/MountPoint.cpp
-    src/cgroup/ControlGroup.cpp
     src/cgroup/Freezer.cpp
     src/cgroup/CpuSet.cpp
     src/cgroup/CpuAccounting.cpp
