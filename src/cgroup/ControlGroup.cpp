@@ -14,6 +14,26 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     YANDEX_CONTEST_INTRUSIVE_PTR_DEFINE(ControlGroup)
 
+    ControlGroupPointer ControlGroup::attachChild(const boost::filesystem::path &childControlGroup)
+    {
+        return attachChild__(childControlGroup);
+    }
+
+    ControlGroupPointer ControlGroup::createChild(const boost::filesystem::path &childControlGroup)
+    {
+        return createChild(childControlGroup, 0777);
+    }
+
+    ControlGroupPointer ControlGroup::createChild(const boost::filesystem::path &childControlGroup, const mode_t mode)
+    {
+        return createChild__(childControlGroup, mode);
+    }
+
+    ControlGroupPointer ControlGroup::parent()
+    {
+        return parent__();
+    }
+
     void ControlGroup::readFieldByReader(const std::string &fieldName, const Reader &reader)
     {
         const boost::filesystem::path fpath = fieldPath(fieldName);
