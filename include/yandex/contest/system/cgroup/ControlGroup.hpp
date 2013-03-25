@@ -21,6 +21,16 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     struct ControlGroupError: virtual Error {};
 
+    /*!
+     * \warning Objects of this class are not thread-safe, but reentrant.
+     * Static functions guarantee to allocate new instances of ControlGroup -- root objects.
+     * Root objects may allocate new cgroups by member functions -- child objects.
+     * Child objects may allocate new cgroups by member functions or return
+     * previously allocated child objects related to root object.
+     * It is guaranteed that no member function will return child object
+     * related to other root object. So it is safe to use non-intersecting
+     * hierarchies of objects in different threads.
+     */
     class ControlGroup: public IntrusivePointeeBase
     {
     public:
