@@ -11,10 +11,13 @@
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     struct SingleControlGroupError: virtual ControlGroupError {};
+    struct SingleControlGroupCreateError: virtual SingleControlGroupError {};
+    struct SingleControlGroupExistsError: virtual SingleControlGroupCreateError {};
     struct SingleControlGroupNotMountedError: virtual SingleControlGroupError {};
-    struct SingleControlGroupEmptyControlGroupPathError: virtual SingleControlGroupError {};
-    struct SingleControlGroupAbsoluteControlGroupPathError: virtual SingleControlGroupError {};
-    struct SingleControlGroupRelativeControlGroupError: virtual SingleControlGroupError {};
+    struct SingleControlGroupPathError: virtual SingleControlGroupError {};
+    struct SingleControlGroupEmptyControlGroupPathError: virtual SingleControlGroupPathError {};
+    struct SingleControlGroupAbsoluteControlGroupPathError: virtual SingleControlGroupPathError {};
+    struct SingleControlGroupRelativeControlGroupError: virtual SingleControlGroupPathError {};
 
     class SingleControlGroup: public ControlGroup
     {

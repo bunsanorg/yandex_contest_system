@@ -221,4 +221,61 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         printSingle(out);
         out << " }";
     }
+
+    SingleControlGroupPointer SingleControlGroup::attachDirectChild(
+        const boost::filesystem::path &childControlGroup)
+    {
+        BOOST_ASSERT(childControlGroup.is_relative());
+        BOOST_ASSERT(childControlGroup == childControlGroup.filename());
+        if (childControlGroup == ".")
+        {
+            return SingleControlGroupPointer(this);
+        }
+        else if (childControlGroup == "..")
+        {
+            SingleControlGroupPointer ret = parent();
+            if (!ret)
+                ret.reset(this);
+            return ret;
+        }
+        else
+        {
+            auto iter = children_.find(childControlGroup);
+            if (iter == children_.end())
+            {
+                const SingleControlGroupPointer cgroup/*(
+                    new detail::AttachedControlGroup(hierarchyId,
+                                                     controlGroup() / childControlGroup,
+                                                     SingleControlGroupPointer(this)))*/;
+                const auto iter_inserted = children_.emplace(childControlGroup, cgroup.get());
+                BOOST_ASSERT(iter_inserted.second);
+                return cgroup;
+            }
+            else
+            {
+                return SingleControlGroupPointer(iter->second);
+            }
+        }
+    }
+
+    SingleControlGroupPointer SingleControlGroup::createDirectChild(
+        const boost::filesystem::path &childControlGroup, const mode_t mode)
+    {
+        BOOST_ASSERT(childControlGroup.is_relative());
+        BOOST_ASSERT(childControlGroup == childControlGroup.filename());
+        if (childControlGroup == "." || childControlGroup == "..")
+            BOOST_THROW_EXCEPTION(SingleControlGroupPathError() <<
+                                  SingleControlGroupPathError::controlGroupPath(controlGroup() / childControlGroup) <<
+                                  SingleControlGroupPathError::message("Invalid path."));
+        if (children_.find(childControlGroup) != children_.end())
+            BOOST_THROW_EXCEPTION(SingleControlGroupExistsError() <<
+                                  SingleControlGroupExistsError::controlGroupPath(controlGroup() / childControlGroup));
+        const SingleControlGroupPointer cgroup/*(
+            new detail::CreatedControlGroup(hierarchyId,
+                                            controlGroup() / childControlGroup, mode,
+                                            SingleControlGroupPointer(this)))*/;
+        const auto iter_inserted = children_.emplace(childControlGroup, cgroup.get());
+        BOOST_ASSERT(iter_inserted.second);
+        return cgroup;
+    }
 }}}}
