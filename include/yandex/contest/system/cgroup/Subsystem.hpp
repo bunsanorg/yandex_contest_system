@@ -1,26 +1,27 @@
 #pragma once
 
+#include "yandex/contest/system/cgroup/Forward.hpp"
+
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
-    class ControlGroup;
-
-    /// \note Stores reference to ControlGroup.
     template <typename Base>
     class Subsystem: public virtual Base
     {
     public:
-        explicit Subsystem(ControlGroup &controlGroup):
+        explicit Subsystem(const ControlGroupPointer &controlGroup):
             controlGroup_(controlGroup) {}
 
         Subsystem(const Subsystem &)=default;
         Subsystem &operator=(const Subsystem &)=default;
+        Subsystem(Subsystem &&)=default;
+        Subsystem &operator=(Subsystem &&)=default;
 
         ControlGroup &controlGroup() const override
         {
-            return controlGroup_;
+            return *controlGroup_;
         }
 
     private:
-        ControlGroup &controlGroup_;
+        ControlGroupPointer controlGroup_;
     };
 }}}}

@@ -61,7 +61,7 @@ BOOST_FIXTURE_TEST_SUITE(Subsystems, SingleControlGroupFixture)
 
 BOOST_AUTO_TEST_CASE(CpuAccounting)
 {
-    const yac::CpuAccounting cpuAcct(*thisCG);
+    const yac::CpuAccounting cpuAcct(thisCG);
     BOOST_TEST_MESSAGE("user: " << cpuAcct.userUsage().count());
     BOOST_TEST_MESSAGE("system: " << cpuAcct.systemUsage().count());
     BOOST_TEST_MESSAGE("usage: " << cpuAcct.usage().count());
