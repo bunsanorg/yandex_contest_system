@@ -4,16 +4,23 @@
 #include "yandex/contest/system/cgroup/SystemInfo.hpp"
 #include "yandex/contest/system/cgroup/ProcessInfo.hpp"
 
+#include <boost/unordered_map.hpp>
+
 #include <utility>
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     struct SingleControlGroupError: virtual ControlGroupError {};
     struct SingleControlGroupNotMountedError: virtual SingleControlGroupError {};
+    struct SingleControlGroupEmptyControlGroupPathError: virtual SingleControlGroupError {};
+    struct SingleControlGroupAbsoluteControlGroupPathError: virtual SingleControlGroupError {};
+    struct SingleControlGroupRelativeControlGroupError: virtual SingleControlGroupError {};
 
     class SingleControlGroup: public ControlGroup
     {
     public:
+        ~SingleControlGroup() override;
+
         static SingleControlGroupPointer forProcessHierarchyInfo(
             const ProcessHierarchyInfo &processHierarchyInfo);
 
@@ -80,9 +87,15 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         virtual void printSingle(std::ostream &out) const=0;
 
     private:
+        SingleControlGroupPointer attachDirectChild(const boost::filesystem::path &childControlGroup);
+        SingleControlGroupPointer createDirectChild(const boost::filesystem::path &childControlGroup,
+                                                    const mode_t mode);
+
+    private:
         const SystemInfoPointer systemInfo_;
         const HierarchyInfo &hierarchyInfo_;
         const boost::filesystem::path controlGroup_;
         const SingleControlGroupPointer parent_;
+        boost::unordered_map<boost::filesystem::path, SingleControlGroup *> children_;
     };
 }}}}
