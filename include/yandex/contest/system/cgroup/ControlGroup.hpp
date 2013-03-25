@@ -118,13 +118,13 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         friend std::ostream &operator<<(std::ostream &out, const ControlGroup &cgroup);
 
         /// Attach to existing child cgroup.
-        virtual ControlGroupPointer attachChild_(const boost::filesystem::path &childControlGroup)=0;
+        virtual ControlGroupPointer attachChild__(const boost::filesystem::path &childControlGroup)=0;
 
         /// Create new child cgroup.
-        virtual ControlGroupPointer createChild_(const boost::filesystem::path &childControlGroup,
-                                                 const mode_t mode)=0;
+        virtual ControlGroupPointer createChild__(const boost::filesystem::path &childControlGroup,
+                                                  const mode_t mode)=0;
 
-        virtual ControlGroupPointer parent_()=0;
+        virtual ControlGroupPointer parent__()=0;
     };
 
     template <>
