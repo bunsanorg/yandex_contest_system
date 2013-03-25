@@ -53,22 +53,25 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         SingleControlGroupPointer createChild(const boost::filesystem::path &childControlGroup);
         SingleControlGroupPointer createChild(const boost::filesystem::path &childControlGroup,
                                               const mode_t mode);
-        virtual SingleControlGroupPointer parent()=0;
+        SingleControlGroupPointer parent();
 
     protected:
         SingleControlGroup(const SystemInfoPointer &systemInfo,
                            const std::size_t hierarchyId,
-                           const boost::filesystem::path &controlGroup);
+                           const boost::filesystem::path &controlGroup,
+                           const SingleControlGroupPointer &parent);
 
         SingleControlGroup(const std::size_t hierarchyId,
-                           const boost::filesystem::path &controlGroup);
+                           const boost::filesystem::path &controlGroup,
+                           const SingleControlGroupPointer &parent);
 
-        explicit SingleControlGroup(const ProcessHierarchyInfo &processHierarchyInfo);
+        explicit SingleControlGroup(const ProcessHierarchyInfo &processHierarchyInfo,
+                                    const SingleControlGroupPointer &parent);
 
-        ControlGroupPointer attachChild_(const boost::filesystem::path &childControlGroup) override;
-        ControlGroupPointer createChild_(const boost::filesystem::path &childControlGroup,
-                                         const mode_t mode) override;
-        ControlGroupPointer parent_() override;
+        ControlGroupPointer attachChild__(const boost::filesystem::path &childControlGroup) override;
+        ControlGroupPointer createChild__(const boost::filesystem::path &childControlGroup,
+                                          const mode_t mode) override;
+        ControlGroupPointer parent__() override;
 
         boost::filesystem::path fieldPath(const std::string &fieldName) const override;
 
@@ -80,5 +83,6 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         const SystemInfoPointer systemInfo_;
         const HierarchyInfo &hierarchyInfo_;
         const boost::filesystem::path controlGroup_;
+        const SingleControlGroupPointer parent_;
     };
 }}}}

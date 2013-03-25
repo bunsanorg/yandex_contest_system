@@ -13,10 +13,12 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     SingleControlGroup::SingleControlGroup(const SystemInfoPointer &systemInfo,
                                            const std::size_t hierarchyId,
-                                           const boost::filesystem::path &controlGroup):
+                                           const boost::filesystem::path &controlGroup,
+                                           const SingleControlGroupPointer &parent):
         systemInfo_(systemInfo),
         hierarchyInfo_(systemInfo_->byHierarchyId(hierarchyId)),
-        controlGroup_(controlGroup)
+        controlGroup_(controlGroup),
+        parent_(parent)
     {
         if (!hierarchyInfo_.mountpoint)
             BOOST_THROW_EXCEPTION(SingleControlGroupNotMountedError() <<
@@ -24,11 +26,15 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     }
 
     SingleControlGroup::SingleControlGroup(const std::size_t hierarchyId,
-                                           const boost::filesystem::path &controlGroup):
-        SingleControlGroup(SystemInfo::instance(), hierarchyId, controlGroup) {}
+                                           const boost::filesystem::path &controlGroup,
+                                           const SingleControlGroupPointer &parent):
+        SingleControlGroup(SystemInfo::instance(), hierarchyId, controlGroup, parent) {}
 
-    SingleControlGroup::SingleControlGroup(const ProcessHierarchyInfo &processHierarchyInfo):
-        SingleControlGroup(processHierarchyInfo.hierarchy.hierarchyId, processHierarchyInfo.controlGroup) {}
+    SingleControlGroup::SingleControlGroup(const ProcessHierarchyInfo &processHierarchyInfo,
+                                           const SingleControlGroupPointer &parent):
+        SingleControlGroup(processHierarchyInfo.hierarchy.hierarchyId,
+                           processHierarchyInfo.controlGroup,
+                           parent) {}
 
     SystemInfoPointer SingleControlGroup::systemInfo() const
     {
@@ -114,18 +120,23 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         // TODO
     }
 
-    ControlGroupPointer SingleControlGroup::attachChild_(const boost::filesystem::path &childControlGroup)
+    SingleControlGroupPointer SingleControlGroup::parent()
+    {
+        return parent_;
+    }
+
+    ControlGroupPointer SingleControlGroup::attachChild__(const boost::filesystem::path &childControlGroup)
     {
         return boost::static_pointer_cast<ControlGroup>(attachChild(childControlGroup));
     }
 
-    ControlGroupPointer SingleControlGroup::createChild_(const boost::filesystem::path &childControlGroup,
+    ControlGroupPointer SingleControlGroup::createChild__(const boost::filesystem::path &childControlGroup,
                                                          const mode_t mode)
     {
         return boost::static_pointer_cast<ControlGroup>(createChild(childControlGroup, mode));
     }
 
-    ControlGroupPointer SingleControlGroup::parent_()
+    ControlGroupPointer SingleControlGroup::parent__()
     {
         return boost::static_pointer_cast<ControlGroup>(parent());
     }
@@ -174,6 +185,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     {
         out << "{ ";
         out << "hierarchy = " << hierarchyInfo() << ", ";
+        out << "cgroup = " << controlGroup() << ", ";
         printSingle(out);
         out << " }";
     }
