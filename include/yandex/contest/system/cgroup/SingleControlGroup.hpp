@@ -47,6 +47,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         std::size_t hierarchyId() const;
         const boost::filesystem::path &mountpoint() const;
         const boost::filesystem::path &controlGroup() const;
+        const boost::filesystem::path &location() const;
 
         Tasks tasks() override;
 
@@ -96,5 +97,6 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         const boost::filesystem::path controlGroup_;
         const SingleControlGroupPointer parent_;
         boost::unordered_map<boost::filesystem::path, SingleControlGroup *> children_;
+        boost::filesystem::path location_;
     };
 }}}}

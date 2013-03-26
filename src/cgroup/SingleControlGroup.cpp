@@ -24,6 +24,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         if (!hierarchyInfo_.mountpoint)
             BOOST_THROW_EXCEPTION(SingleControlGroupNotMountedError() <<
                                   SingleControlGroupNotMountedError::hierarchyId(hierarchyId));
+        location_ = mountpoint() / controlGroup;
     }
 
     SingleControlGroup::~SingleControlGroup()
@@ -56,6 +57,11 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     const boost::filesystem::path &SingleControlGroup::controlGroup() const
     {
         return controlGroup_;
+    }
+
+    const boost::filesystem::path &SingleControlGroup::location() const
+    {
+        return location_;
     }
 
     ControlGroup::Tasks SingleControlGroup::tasks()
