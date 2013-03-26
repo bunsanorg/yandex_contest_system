@@ -57,12 +57,12 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
     ProcessHierarchyInfo ProcessInfo::getProcessHierarchyInfo(const HierarchyInfo &info) const
     {
-        const auto iter = id2controlGroup_.find(info.hierarchyId);
+        const auto iter = id2controlGroup_.find(info.id);
         if (iter == id2controlGroup_.end())
             BOOST_THROW_EXCEPTION(ProcessInfoInconsistencyError() <<
                                   ProcessInfoInconsistencyError::message(
                                       "Unable to find cgroup for hierarchy's id.") <<
-                                  ProcessInfoInconsistencyError::hierarchyId(info.hierarchyId));
+                                  ProcessInfoInconsistencyError::hierarchyId(info.id));
         ProcessHierarchyInfo processHierarchyInfo = {
             .hierarchy = info,
             .controlGroup = iter->second,

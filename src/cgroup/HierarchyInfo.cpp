@@ -4,7 +4,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     std::ostream &operator<<(std::ostream &out, const HierarchyInfo &hierarchyInfo)
     {
-        out << "{ hierarchyId = " << hierarchyInfo.hierarchyId << ", subsystems = {";
+        out << "{ id = " << hierarchyInfo.id << ", subsystems = {";
         {
             bool first = true;
             for (const std::string &subsystem: hierarchyInfo.subsystems)

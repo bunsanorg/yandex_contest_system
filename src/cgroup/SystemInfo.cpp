@@ -28,15 +28,15 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
                 BOOST_THROW_EXCEPTION(SystemInfoDuplicateHierarchiesError() <<
                                       SystemInfoDuplicateHierarchiesError::hierarchyId(entry.hierarchyId));
             HierarchyInfo &info = id2hierarchy_[entry.hierarchyId];
-            info.hierarchyId = std::move(entry.hierarchyId);
+            info.id = std::move(entry.hierarchyId);
             info.subsystems = std::move(entry.subsystems);
             for (const std::string &subsystem: info.subsystems)
             {
                 if (subsystem2id_.find(subsystem) != subsystem2id_.end())
                     BOOST_THROW_EXCEPTION(SystemInfoDuplicateSubsystemsError() <<
-                                          SystemInfoDuplicateSubsystemsError::hierarchyId(info.hierarchyId) <<
+                                          SystemInfoDuplicateSubsystemsError::hierarchyId(info.id) <<
                                           SystemInfoDuplicateSubsystemsError::subsystem(subsystem));
-                subsystem2id_[subsystem] = info.hierarchyId;
+                subsystem2id_[subsystem] = info.id;
             }
         }
     }
@@ -92,7 +92,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
                                                   "subsystems from /proc/mounts are not equal "
                                                   "to subsystems from /proc/self/cgroup"));
                     info.mountpoint = entry.dir;
-                    mountpoint2id_[entry.dir] = info.hierarchyId;
+                    mountpoint2id_[entry.dir] = info.id;
                 }
             }
             BUNSAN_EXCEPTIONS_WRAP_END_ERROR_INFO(

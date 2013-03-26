@@ -32,7 +32,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
     SingleControlGroup::SingleControlGroup(const ProcessHierarchyInfo &processHierarchyInfo,
                                            const SingleControlGroupPointer &parent):
-        SingleControlGroup(processHierarchyInfo.hierarchy.hierarchyId,
+        SingleControlGroup(processHierarchyInfo.hierarchy.id,
                            processHierarchyInfo.controlGroup,
                            parent) {}
 
@@ -54,7 +54,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
     std::size_t SingleControlGroup::hierarchyId() const
     {
-        return hierarchyInfo().hierarchyId;
+        return hierarchyInfo().id;
     }
 
     const boost::filesystem::path &SingleControlGroup::controlGroup() const
@@ -171,7 +171,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     SingleControlGroupPointer SingleControlGroup::forProcessHierarchyInfo(
         const ProcessHierarchyInfo &processHierarchyInfo)
     {
-        return attach(processHierarchyInfo.hierarchy.hierarchyId, processHierarchyInfo.controlGroup);
+        return attach(processHierarchyInfo.hierarchy.id, processHierarchyInfo.controlGroup);
     }
 
     SingleControlGroupPointer SingleControlGroup::forProcessInfo(const std::size_t hierarchyId,

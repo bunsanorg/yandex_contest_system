@@ -39,7 +39,7 @@ BOOST_FIXTURE_TEST_SUITE(SingleControlGroup, SingleControlGroupFixture)
 
 BOOST_AUTO_TEST_CASE(attached)
 {
-    yac::SingleControlGroupPointer acg = yac::SingleControlGroup::root(processHierarchy.hierarchy.hierarchyId);
+    yac::SingleControlGroupPointer acg = yac::SingleControlGroup::root(processHierarchy.hierarchy.id);
     BOOST_CHECK_GT(acg->tasks().size(), 0);
     acg = acg->attachChild(cg->controlGroup());
     BOOST_CHECK_EQUAL(acg->tasks().size(), 0);
