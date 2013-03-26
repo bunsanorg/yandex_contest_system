@@ -20,6 +20,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         controlGroup_(controlGroup),
         parent_(parent)
     {
+        BOOST_ASSERT(parent ? parent->controlGroup() == controlGroup.parent_path() : controlGroup == "/");
         if (!hierarchyInfo_.mountpoint)
             BOOST_THROW_EXCEPTION(SingleControlGroupNotMountedError() <<
                                   SingleControlGroupNotMountedError::hierarchyId(hierarchyId));
