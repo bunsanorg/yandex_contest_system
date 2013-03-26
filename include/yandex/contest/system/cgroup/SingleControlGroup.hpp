@@ -8,6 +8,8 @@
 
 #include <utility>
 
+#include <sys/types.h>
+
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     struct SingleControlGroupError: virtual ControlGroupError {};
@@ -70,13 +72,6 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
                            const std::size_t hierarchyId,
                            const boost::filesystem::path &controlGroup,
                            const SingleControlGroupPointer &parent);
-
-        SingleControlGroup(const std::size_t hierarchyId,
-                           const boost::filesystem::path &controlGroup,
-                           const SingleControlGroupPointer &parent);
-
-        explicit SingleControlGroup(const ProcessHierarchyInfo &processHierarchyInfo,
-                                    const SingleControlGroupPointer &parent);
 
         ControlGroupPointer attachChild__(const boost::filesystem::path &childControlGroup) override;
         ControlGroupPointer createChild__(const boost::filesystem::path &childControlGroup,

@@ -53,6 +53,9 @@ bunsan_add_shared_library(${PROJECT_NAME}
     src/cgroup/CpuAccounting.cpp
     src/cgroup/Memory.cpp
     src/cgroup/MemorySwap.cpp
+
+    src/cgroup/detail/AttachedControlGroup.cpp
+    src/cgroup/detail/CreatedControlGroup.cpp
 )
 
 bunsan_install_headers()
