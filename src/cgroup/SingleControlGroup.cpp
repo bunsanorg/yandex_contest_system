@@ -46,6 +46,12 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         return hierarchyInfo().id;
     }
 
+    const boost::filesystem::path &SingleControlGroup::mountpoint() const
+    {
+        BOOST_ASSERT(hierarchyInfo().mountpoint);
+        return hierarchyInfo().mountpoint.get();
+    }
+
     const boost::filesystem::path &SingleControlGroup::controlGroup() const
     {
         return controlGroup_;

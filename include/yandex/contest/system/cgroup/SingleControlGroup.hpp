@@ -45,6 +45,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         const SystemInfoPointer &systemInfo() const;
         const HierarchyInfo &hierarchyInfo() const;
         std::size_t hierarchyId() const;
+        const boost::filesystem::path &mountpoint() const;
         const boost::filesystem::path &controlGroup() const;
 
         Tasks tasks() override;
