@@ -107,8 +107,6 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
                 BOOST_THROW_EXCEPTION(
                     SingleControlGroupAbsoluteControlGroupPathError() <<
                     SingleControlGroupAbsoluteControlGroupPathError::controlGroupPath(childControlGroup));
-            if (childControlGroup.empty())
-                BOOST_THROW_EXCEPTION(SingleControlGroupEmptyControlGroupPathError());
         }
     }
 
@@ -216,7 +214,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     {
         BOOST_ASSERT(childControlGroup.is_relative());
         BOOST_ASSERT(childControlGroup == childControlGroup.filename());
-        if (childControlGroup == ".")
+        if (childControlGroup.empty() || childControlGroup == ".")
         {
             return SingleControlGroupPointer(this);
         }
@@ -257,6 +255,9 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
             BOOST_THROW_EXCEPTION(SingleControlGroupPathError() <<
                                   SingleControlGroupPathError::controlGroupPath(controlGroup() / childControlGroup) <<
                                   SingleControlGroupPathError::message("Invalid path."));
+        if (childControlGroup.empty())
+            BOOST_THROW_EXCEPTION(SingleControlGroupEmptyControlGroupPathError() <<
+                                  SingleControlGroupEmptyControlGroupPathError::controlGroupPath(controlGroup()));
         if (children_.find(childControlGroup) != children_.end())
             BOOST_THROW_EXCEPTION(SingleControlGroupExistsError() <<
                                   SingleControlGroupExistsError::controlGroupPath(controlGroup() / childControlGroup));
