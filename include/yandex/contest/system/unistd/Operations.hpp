@@ -1,7 +1,7 @@
 #pragma once
 
+#include "yandex/contest/system/unistd/Error.hpp"
 #include "yandex/contest/system/unistd/access/Id.hpp"
-
 #include "yandex/contest/system/unistd/FileStatus.hpp"
 #include "yandex/contest/system/unistd/Descriptor.hpp"
 
@@ -24,7 +24,7 @@ namespace yandex{namespace contest{namespace system{namespace unistd
     /// Information for exceptions.
     namespace info
     {
-        typedef boost::error_info<struct pathTag, boost::filesystem::path> path;
+        typedef Error::path path;
         typedef boost::error_info<struct modeTag, mode_t> mode;
         typedef boost::error_info<struct accessIdTag, access::Id> accessId;
         typedef boost::error_info<struct devMajorTag, int> devMajor;
