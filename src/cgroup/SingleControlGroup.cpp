@@ -188,7 +188,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     SingleControlGroupPointer SingleControlGroup::attach(const std::size_t hierarchyId,
                                                          const boost::filesystem::path &controlGroup)
     {
-        if (!controlGroup.is_relative())
+        if (controlGroup.is_relative())
             BOOST_THROW_EXCEPTION(
                 SingleControlGroupRelativeControlGroupError() <<
                 SingleControlGroupRelativeControlGroupError::controlGroupPath(controlGroup));
