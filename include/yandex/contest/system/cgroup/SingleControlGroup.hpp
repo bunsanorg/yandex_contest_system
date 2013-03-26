@@ -40,7 +40,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
                                                 const boost::filesystem::path &controlGroup);
 
     public:
-        SystemInfoPointer systemInfo() const;
+        const SystemInfoPointer &systemInfo() const;
         const HierarchyInfo &hierarchyInfo() const;
         std::size_t hierarchyId() const;
         const boost::filesystem::path &controlGroup() const;

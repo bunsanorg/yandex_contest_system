@@ -42,7 +42,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
             parent_->children_.erase(controlGroup_.filename());
     }
 
-    SystemInfoPointer SingleControlGroup::systemInfo() const
+    const SystemInfoPointer &SingleControlGroup::systemInfo() const
     {
         return systemInfo_;
     }
