@@ -49,27 +49,50 @@ BOOST_AUTO_TEST_CASE(attached)
 BOOST_AUTO_TEST_CASE(parent)
 {
     const yac::SingleControlGroupPointer pcg = cg->parent();
+    BOOST_CHECK_EQUAL(pcg, thisCG);
     BOOST_CHECK_GT(pcg->tasks().size(), 0);
     BOOST_CHECK_EQUAL(pcg->controlGroup(), cg->controlGroup());
 }
 
 BOOST_AUTO_TEST_CASE(attachChild)
 {
-    const yac::SingleControlGroupPointer acg = thisCG->attachChild(cg->controlGroup());
-    BOOST_CHECK_EQUAL(acg->controlGroup(), cg->controlGroup());
+    const yac::SingleControlGroupPointer acg = thisCG->attachChild(cg->controlGroup().filename());
+    BOOST_CHECK_EQUAL(acg, cg);
 }
 
 BOOST_AUTO_TEST_CASE(attachTask)
 {
+    BOOST_CHECK(cg->tasks().empty());
     cg->attachTask(pid);
     const yac::ControlGroup::Tasks tasks = cg->tasks();
     BOOST_CHECK(tasks.find(pid) != tasks.end());
+    thisCG->attachTask(pid);
+    BOOST_CHECK(cg->tasks().empty());
 }
 
-BOOST_AUTO_TEST_CASE(getControlGroup)
+BOOST_AUTO_TEST_CASE(tree)
 {
-    const yac::ControlGroup::Tasks tasks = thisCG->tasks();
-    BOOST_CHECK(tasks.find(pid) != tasks.end());
+    const boost::filesystem::path cg2Path = boost::filesystem::unique_path();
+    const boost::filesystem::path cg3Path = boost::filesystem::unique_path();
+    yac::SingleControlGroupPointer cg2 = thisCG->createChild(cg2Path);
+    const yac::SingleControlGroupPointer cg3 = thisCG->createChild(cg3Path);
+    BOOST_CHECK_NE(cg, cg2);
+    BOOST_CHECK_NE(cg2, cg3);
+    BOOST_CHECK_EQUAL(cg2->parent(), thisCG);
+    BOOST_CHECK_EQUAL(thisCG->attachChild(cg2Path), cg2);
+    BOOST_CHECK_EQUAL(thisCG->attachChild(cg3Path), cg3);
+    const yac::SingleControlGroupPointer cg2_1 = cg2->createChild("1");
+    {
+        void *const cg2_ = cg2.get();
+        cg2.reset();
+        BOOST_CHECK_EQUAL(cg2_1->parent().get(), cg2_);
+        BOOST_CHECK_EQUAL(thisCG->attachChild(cg2Path).get(), cg2_);
+        cg2 = thisCG->attachChild(cg2Path);
+    }
+    BOOST_CHECK_EQUAL(thisCG->attachChild(""), thisCG);
+    BOOST_CHECK_EQUAL(thisCG->attachChild("."), thisCG);
+    BOOST_CHECK_EQUAL(thisCG->attachChild(cg2Path / ".."), thisCG);
+    BOOST_CHECK_EQUAL(thisCG->attachChild(cg2Path / ".." / cg3Path), cg3);
 }
 
 BOOST_AUTO_TEST_SUITE_END() // SingleControlGroup
