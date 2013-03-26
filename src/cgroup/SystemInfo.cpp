@@ -27,16 +27,16 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
             if (id2hierarchy_.find(entry.hierarchyId) != id2hierarchy_.end())
                 BOOST_THROW_EXCEPTION(SystemInfoDuplicateHierarchiesError() <<
                                       SystemInfoDuplicateHierarchiesError::hierarchyId(entry.hierarchyId));
-            HierarchyInfo &info = id2hierarchy_[entry.hierarchyId];
-            info.id = std::move(entry.hierarchyId);
-            info.subsystems = std::move(entry.subsystems);
-            for (const std::string &subsystem: info.subsystems)
+            HierarchyInfo &hierarchyInfo = id2hierarchy_[entry.hierarchyId];
+            hierarchyInfo.id = std::move(entry.hierarchyId);
+            hierarchyInfo.subsystems = std::move(entry.subsystems);
+            for (const std::string &subsystem: hierarchyInfo.subsystems)
             {
                 if (subsystem2id_.find(subsystem) != subsystem2id_.end())
                     BOOST_THROW_EXCEPTION(SystemInfoDuplicateSubsystemsError() <<
-                                          SystemInfoDuplicateSubsystemsError::hierarchyId(info.id) <<
+                                          SystemInfoDuplicateSubsystemsError::hierarchyId(hierarchyInfo.id) <<
                                           SystemInfoDuplicateSubsystemsError::subsystem(subsystem));
-                subsystem2id_[subsystem] = info.id;
+                subsystem2id_[subsystem] = hierarchyInfo.id;
             }
         }
     }
@@ -85,14 +85,14 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
                                                   "/proc/mounts is not consistent with /proc/self/cgroup"));
                     const auto iter2 = id2hierarchy_.find(iter->second);
                     BOOST_ASSERT(iter2 != id2hierarchy_.end());
-                    HierarchyInfo &info = iter2->second;
-                    if (subsystems != info.subsystems)
+                    HierarchyInfo &hierarchyInfo = iter2->second;
+                    if (subsystems != hierarchyInfo.subsystems)
                         BOOST_THROW_EXCEPTION(SystemInfoInconsistencyError() <<
                                               SystemInfoInconsistencyError::message(
                                                   "subsystems from /proc/mounts are not equal "
                                                   "to subsystems from /proc/self/cgroup"));
-                    info.mountpoint = entry.dir;
-                    mountpoint2id_[entry.dir] = info.id;
+                    hierarchyInfo.mountpoint = entry.dir;
+                    mountpoint2id_[entry.dir] = hierarchyInfo.id;
                 }
             }
             BUNSAN_EXCEPTIONS_WRAP_END_ERROR_INFO(
@@ -158,13 +158,13 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     SystemInfoPointer SystemInfo::instance(const bool forceUpdate)
     {
         static SystemInfoPointer instance_;
-        SystemInfoPointer info = atomic_load(&instance_);
-        if (forceUpdate || !info)
+        SystemInfoPointer systemInfo = atomic_load(&instance_);
+        if (forceUpdate || !systemInfo)
         {
-            info.reset(new SystemInfo);
-            atomic_store(&instance_, info);
+            systemInfo.reset(new SystemInfo);
+            atomic_store(&instance_, systemInfo);
         }
-        return info;
+        return systemInfo;
     }
 
     std::ostream &operator<<(std::ostream &out, const SystemInfo &systemInfo)
