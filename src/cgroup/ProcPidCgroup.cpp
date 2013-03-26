@@ -39,6 +39,6 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
                 BUNSAN_EXCEPTIONS_WRAP_END_ERROR_INFO(ProcPidCgroupLineFormatError::line(line))
             }
         }
-        BUNSAN_EXCEPTIONS_WRAP_END_ERROR_INFO(bunsan::filesystem::error::path(path))
+        BUNSAN_EXCEPTIONS_WRAP_END_ERROR_INFO(FileFormatError::path(path))
     }
 }}}}

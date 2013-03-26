@@ -1,8 +1,6 @@
 #include "yandex/contest/system/cgroup/ControlGroup.hpp"
 #include "yandex/contest/system/cgroup/SystemInfo.hpp"
 
-#include "yandex/contest/system/unistd/Operations.hpp"
-
 #include "yandex/contest/detail/IntrusivePointerHelper.hpp"
 
 #include "bunsan/enable_error_info.hpp"
@@ -43,8 +41,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
             reader(fin);
             fin.close();
         }
-        BUNSAN_EXCEPTIONS_WRAP_END_ERROR_INFO(unistd::info::path(fpath) <<
-                                              bunsan::filesystem::error::path(fpath))
+        BUNSAN_EXCEPTIONS_WRAP_END_ERROR_INFO(ControlGroupError::path(fpath))
     }
 
     void ControlGroup::writeFieldByWriter(const std::string &fieldName, const Writer &writer)
@@ -56,8 +53,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
             writer(fout);
             fout.close();
         }
-        BUNSAN_EXCEPTIONS_WRAP_END_ERROR_INFO(unistd::info::path(fpath) <<
-                                              bunsan::filesystem::error::path(fpath))
+        BUNSAN_EXCEPTIONS_WRAP_END_ERROR_INFO(ControlGroupError::path(fpath))
     }
 
     template <>
