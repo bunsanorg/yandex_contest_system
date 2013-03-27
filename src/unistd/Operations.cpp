@@ -4,6 +4,7 @@
 
 #include <boost/assert.hpp>
 
+#include <cerrno>
 #include <csignal>
 
 #include <fcntl.h>
@@ -67,6 +68,22 @@ namespace yandex{namespace contest{namespace system{namespace unistd
     {
         YANDEX_UNISTD_WRAP(::mkdir(path.c_str(), mode),
                            info::path(path) << info::mode(mode));
+    }
+
+    bool create_directory(const boost::filesystem::path &path, const mode_t mode)
+    {
+        const int ret = ::mkdir(path.c_str(), mode);
+        if (ret < 0)
+        {
+            if (errno == EEXIST)
+                return false;
+            BOOST_THROW_EXCEPTION(SystemError(__func__) <<
+                                  info::path(path) << info::mode(mode));
+        }
+        else
+        {
+            return true;
+        }
     }
 
     void rmdir(const boost::filesystem::path &path)

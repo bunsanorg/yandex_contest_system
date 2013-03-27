@@ -3,6 +3,8 @@
 
 #include "yandex/contest/system/unistd/MountEntry.hpp"
 
+#include <boost/filesystem/operations.hpp>
+
 namespace ya = yandex::contest::system::unistd;
 
 BOOST_AUTO_TEST_SUITE(MountEntry)
@@ -140,6 +142,33 @@ BOOST_FIXTURE_TEST_CASE(ExecExecutableArgumentsEnvironment, ExecFixture)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+
+#include "yandex/contest/system/unistd/Operations.hpp"
+
+BOOST_AUTO_TEST_SUITE(Operations)
+
+struct CreateDirectoryFixture
+{
+    CreateDirectoryFixture():
+        path(boost::filesystem::temp_directory_path() / boost::filesystem::unique_path())
+    {}
+
+    ~CreateDirectoryFixture()
+    {
+        boost::filesystem::remove(path);
+    }
+
+    const boost::filesystem::path path;
+};
+
+BOOST_FIXTURE_TEST_CASE(create_directory, CreateDirectoryFixture)
+{
+    BOOST_CHECK(ya::create_directory(path, 0777));
+    BOOST_CHECK(!ya::create_directory(path, 0777));
+    BOOST_CHECK(boost::filesystem::remove(path));
+}
+
+BOOST_AUTO_TEST_SUITE_END() // Operations
 
 #include "yandex/contest/system/unistd/ProcessResult.hpp"
 

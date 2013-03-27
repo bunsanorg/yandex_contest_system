@@ -69,6 +69,15 @@ namespace yandex{namespace contest{namespace system{namespace unistd
     /// mkdir(3)
     void mkdir(const boost::filesystem::path &path, const mode_t mode);
 
+    /*!
+     * \brief Like mkdir(3), except it does not treat EEXIST as error.
+     *
+     * \see boost::filesystem::create_directory()
+     *
+     * \return false on EEXIST
+     */
+    bool create_directory(const boost::filesystem::path &path, const mode_t mode);
+
     /// rmdir(3)
     void rmdir(const boost::filesystem::path &path);
 
