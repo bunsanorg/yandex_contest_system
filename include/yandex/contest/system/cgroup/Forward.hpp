@@ -10,7 +10,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     typedef boost::intrusive_ptr<SingleControlGroup> SingleControlGroupPointer;
 
     class MultipleControlGroup;
-    typedef boost::intrusive_ptr<SingleControlGroup> MultipleControlGroupPointer;
+    typedef boost::intrusive_ptr<MultipleControlGroup> MultipleControlGroupPointer;
 }}}}
 
 #include "yandex/contest/detail/ForwardFooter.hpp"
