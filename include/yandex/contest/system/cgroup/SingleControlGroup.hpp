@@ -89,7 +89,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
                                           const mode_t mode) override;
         ControlGroupPointer parent__() override;
 
-        boost::filesystem::path fieldPath(const std::string &fieldName) const override;
+        boost::filesystem::path fieldPath__(const std::string &fieldName) const override;
 
         void print(std::ostream &out) const override;
 

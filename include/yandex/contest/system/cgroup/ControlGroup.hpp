@@ -21,6 +21,16 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     struct ControlGroupError: virtual Error {};
 
+    struct ControlGroupFieldError: virtual ControlGroupError
+    {
+        typedef boost::error_info<struct fieldNameTag, std::string> fieldName;
+        typedef boost::error_info<struct fieldPathTag, boost::filesystem::path> fieldPath;
+    };
+
+    struct ControlGroupInvalidFieldNameError: virtual ControlGroupFieldError {};
+    struct ControlGroupFieldDoesNotExistError: virtual ControlGroupFieldError {};
+    struct ControlGroupInvalidFieldFileError: virtual ControlGroupFieldError {};
+
     /*!
      * \warning Objects of this class are not thread-safe, but reentrant.
      * Static functions guarantee to allocate new instances of ControlGroup -- root objects.
@@ -51,6 +61,8 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         ControlGroupPointer parent();
 
     public:
+        boost::filesystem::path fieldPath(const std::string &fieldName) const;
+
         virtual Tasks tasks()=0;
 
         virtual void attachTask(const pid_t pid)=0;
@@ -109,7 +121,16 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     protected:
         ControlGroup()=default;
 
-        virtual boost::filesystem::path fieldPath(const std::string &fieldName) const=0;
+        /*!
+         * \brief Hypothetical field path.
+         *
+         * \param fieldName Correct field name (checked by ControlGroup::fieldPath()).
+         * Otherwise behavior is undefined.
+         *
+         * \warning Returned path may not exist or may point to invalid file.
+         * This will be checked by ControlGroup::fieldPath().
+         */
+        virtual boost::filesystem::path fieldPath__(const std::string &fieldName) const=0;
 
         virtual void print(std::ostream &out) const=0;
 

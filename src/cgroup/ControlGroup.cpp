@@ -7,6 +7,7 @@
 #include "bunsan/filesystem/fstream.hpp"
 
 #include <boost/algorithm/string/trim.hpp>
+#include <boost/filesystem/operations.hpp>
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
@@ -30,6 +31,33 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     ControlGroupPointer ControlGroup::parent()
     {
         return parent__();
+    }
+
+    boost::filesystem::path ControlGroup::fieldPath(const std::string &fieldName) const
+    {
+        const boost::filesystem::path name(fieldName);
+        if (name.is_absolute() || name.filename() != name)
+            BOOST_THROW_EXCEPTION(ControlGroupInvalidFieldNameError() <<
+                                  ControlGroupInvalidFieldNameError::fieldName(fieldName));
+        const boost::filesystem::path path = fieldPath__(fieldName);
+        BUNSAN_EXCEPTIONS_WRAP_BEGIN()
+        {
+            const boost::filesystem::file_status status = boost::filesystem::symlink_status(path);
+            switch (status.type())
+            {
+            case boost::filesystem::regular_file:
+                // OK
+                break;
+            case boost::filesystem::file_not_found:
+                BOOST_THROW_EXCEPTION(ControlGroupFieldDoesNotExistError());
+            default:
+                BOOST_THROW_EXCEPTION(ControlGroupInvalidFieldFileError());
+            }
+        }
+        BUNSAN_EXCEPTIONS_WRAP_END_ERROR_INFO(
+            ControlGroupFieldError::fieldName(fieldName) <<
+            ControlGroupFieldError::fieldPath(path))
+        return path;
     }
 
     void ControlGroup::readFieldByReader(const std::string &fieldName, const Reader &reader)

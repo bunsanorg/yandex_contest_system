@@ -229,11 +229,9 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         return root(hierarchyId)->attachChild(controlGroup.relative_path());
     }
 
-    boost::filesystem::path SingleControlGroup::fieldPath(const std::string &fieldName) const
+    boost::filesystem::path SingleControlGroup::fieldPath__(const std::string &fieldName) const
     {
-        const boost::filesystem::path fieldName_(fieldName);
-        BOOST_ASSERT_MSG(fieldName_.filename() == fieldName_, "Should be filename.");
-        return hierarchyInfo().mountpoint.get() / controlGroup() / fieldName_;
+        return hierarchyInfo().mountpoint.get() / controlGroup() / fieldName;
     }
 
     void SingleControlGroup::print(std::ostream &out) const
