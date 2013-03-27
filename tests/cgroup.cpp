@@ -11,6 +11,8 @@
 
 #include "bunsan/testing/exec_test.hpp"
 
+#include <boost/scope_exit.hpp>
+
 #include <chrono>
 #include <sstream>
 #include <thread>
@@ -39,10 +41,10 @@ BOOST_FIXTURE_TEST_SUITE(SingleControlGroup, SingleControlGroupFixture)
 
 BOOST_AUTO_TEST_CASE(attached)
 {
-    yac::SingleControlGroupPointer acg = yac::SingleControlGroup::root(processHierarchy.hierarchy.id);
-    BOOST_CHECK_GT(acg->tasks().size(), 0);
-    acg = acg->attachChild(cg->controlGroup());
+    const yac::SingleControlGroupPointer acg =
+        yac::SingleControlGroup::attach(processHierarchy.hierarchy.id, cg->controlGroup());
     BOOST_CHECK_EQUAL(acg->tasks().size(), 0);
+    BOOST_CHECK_EQUAL(acg->controlGroup(), cg->controlGroup());
     acg->close();
 }
 
@@ -50,8 +52,6 @@ BOOST_AUTO_TEST_CASE(parent)
 {
     const yac::SingleControlGroupPointer pcg = cg->parent();
     BOOST_CHECK_EQUAL(pcg, thisCG);
-    BOOST_CHECK_GT(pcg->tasks().size(), 0);
-    BOOST_CHECK_EQUAL(pcg->controlGroup(), cg->controlGroup());
 }
 
 BOOST_AUTO_TEST_CASE(attachChild)
@@ -63,11 +63,14 @@ BOOST_AUTO_TEST_CASE(attachChild)
 BOOST_AUTO_TEST_CASE(attachTask)
 {
     BOOST_CHECK(cg->tasks().empty());
+    BOOST_SCOPE_EXIT_ALL(this)
+    {
+        thisCG->attachTask(pid);
+        BOOST_CHECK(cg->tasks().empty());
+    };
     cg->attachTask(pid);
     const yac::ControlGroup::Tasks tasks = cg->tasks();
     BOOST_CHECK(tasks.find(pid) != tasks.end());
-    thisCG->attachTask(pid);
-    BOOST_CHECK(cg->tasks().empty());
 }
 
 BOOST_AUTO_TEST_CASE(tree)
