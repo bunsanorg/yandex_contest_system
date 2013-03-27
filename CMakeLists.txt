@@ -45,6 +45,7 @@ bunsan_add_shared_library(${PROJECT_NAME}
     src/cgroup/SystemInfo.cpp
     src/cgroup/ControlGroup.cpp
     src/cgroup/SingleControlGroup.cpp
+    src/cgroup/MultipleControlGroup.cpp
     src/cgroup/ProcessHierarchyInfo.cpp
     src/cgroup/ProcessInfo.cpp
     src/cgroup/MountPoint.cpp

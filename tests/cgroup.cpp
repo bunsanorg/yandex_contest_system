@@ -2,6 +2,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include "SingleControlGroupFixture.hpp"
+#include "MultipleControlGroupFixture.hpp"
 
 #include "yandex/contest/system/cgroup/SystemInfo.hpp"
 #include "yandex/contest/system/cgroup/ProcessInfo.hpp"
@@ -106,5 +107,42 @@ BOOST_AUTO_TEST_CASE(tree)
 }
 
 BOOST_AUTO_TEST_SUITE_END() // SingleControlGroup
+
+BOOST_FIXTURE_TEST_SUITE(MultipleControlGroup, MultipleControlGroupFixture)
+
+BOOST_AUTO_TEST_CASE(forSelf)
+{
+    BOOST_TEST_MESSAGE(*thisCG);
+}
+
+BOOST_AUTO_TEST_CASE(parent)
+{
+    const yac::ControlGroup::Tasks tasks = cg->parent()->tasks();
+    BOOST_CHECK(tasks.find(pid) != tasks.end());
+}
+
+BOOST_AUTO_TEST_CASE(fieldPath)
+{
+    BOOST_CHECK(boost::filesystem::is_regular_file(cg->fieldPath("freezer.state")));
+    BOOST_CHECK_THROW(thisCG->fieldPath("/"), yac::ControlGroupInvalidFieldNameError);
+    BOOST_CHECK_THROW(thisCG->fieldPath("unknown/path"), yac::ControlGroupInvalidFieldNameError);
+    BOOST_CHECK_THROW(thisCG->fieldPath("unknown.path"), yac::ControlGroupFieldDoesNotExistError);
+    BOOST_CHECK_THROW(thisCG->fieldPath(cgName.string()), yac::ControlGroupInvalidFieldFileError);
+}
+
+BOOST_AUTO_TEST_CASE(container)
+{
+    const std::size_t hierarchyId = yac::SystemInfo::instance()->bySubsystem("freezer").id;
+    const yac::SingleControlGroupPointer cgroup = yac::SingleControlGroup::forSelf(hierarchyId);
+    const yac::SingleControlGroupPointer cgroup2 = yac::SingleControlGroup::forSelf(hierarchyId);
+    BOOST_CHECK_THROW(thisCG->add(cgroup), yac::MultipleControlGroupHierarchyConflictError);
+    thisCG->remove(hierarchyId);
+    BOOST_CHECK_THROW(thisCG->remove(hierarchyId), yac::MultipleControlGroupHierarchyNotFoundError);
+    BOOST_CHECK(!thisCG->find(hierarchyId));
+    thisCG->add(cgroup);
+    BOOST_CHECK_EQUAL(thisCG->replace(cgroup2), cgroup);
+}
+
+BOOST_AUTO_TEST_SUITE_END() // MultipleControlGroup
 
 BOOST_AUTO_TEST_SUITE_END() // cgroup
