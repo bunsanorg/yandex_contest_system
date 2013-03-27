@@ -13,13 +13,21 @@
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     struct SingleControlGroupError: virtual ControlGroupError {};
+
+    struct SingleControlGroupAttachError: virtual SingleControlGroupError {};
+    struct SingleControlGroupNotExistsError: virtual SingleControlGroupAttachError {};
+
     struct SingleControlGroupCreateError: virtual SingleControlGroupError {};
     struct SingleControlGroupExistsError: virtual SingleControlGroupCreateError {};
+
     struct SingleControlGroupNotMountedError: virtual SingleControlGroupError {};
+
     struct SingleControlGroupPathError: virtual SingleControlGroupError {};
     struct SingleControlGroupEmptyControlGroupPathError: virtual SingleControlGroupPathError {};
     struct SingleControlGroupAbsoluteControlGroupPathError: virtual SingleControlGroupPathError {};
     struct SingleControlGroupRelativeControlGroupError: virtual SingleControlGroupPathError {};
+    struct SingleControlGroupPathToFieldError: virtual SingleControlGroupPathError{};
+    struct SingleControlGroupPathToUnknownError: virtual SingleControlGroupPathError{};
 
     class SingleControlGroup: public ControlGroup
     {
@@ -70,6 +78,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         SingleControlGroupPointer parent();
 
     protected:
+        /// \throws SingleControlGroupPathError if location() is neither directory nor not_found.
         SingleControlGroup(const SystemInfoPointer &systemInfo,
                            const std::size_t hierarchyId,
                            const boost::filesystem::path &controlGroup,

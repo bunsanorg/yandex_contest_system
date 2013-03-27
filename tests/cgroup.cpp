@@ -45,7 +45,15 @@ BOOST_AUTO_TEST_CASE(attached)
         yac::SingleControlGroup::attach(processHierarchy.hierarchy.id, cg->controlGroup());
     BOOST_CHECK_EQUAL(acg->tasks().size(), 0);
     BOOST_CHECK_EQUAL(acg->controlGroup(), cg->controlGroup());
+    BOOST_CHECK_THROW(acg->attachChild("123"), yac::SingleControlGroupNotExistsError);
     acg->close();
+}
+
+BOOST_AUTO_TEST_CASE(created)
+{
+    const yac::SingleControlGroupPointer thisCG2 =
+        yac::SingleControlGroup::attach(processHierarchy.hierarchy.id, thisCG->controlGroup());
+    BOOST_CHECK_THROW(thisCG2->createChild(cg->controlGroup().filename()), yac::SingleControlGroupExistsError);
 }
 
 BOOST_AUTO_TEST_CASE(parent)

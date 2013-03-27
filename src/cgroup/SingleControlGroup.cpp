@@ -5,7 +5,10 @@
 
 #include "yandex/contest/detail/LogHelper.hpp"
 
+#include "bunsan/enable_error_info.hpp"
+
 #include <boost/assert.hpp>
+#include <boost/filesystem/operations.hpp>
 
 #include <iterator>
 
@@ -25,6 +28,26 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
             BOOST_THROW_EXCEPTION(SingleControlGroupNotMountedError() <<
                                   SingleControlGroupNotMountedError::hierarchyId(hierarchyId));
         location_ = mountpoint() / controlGroup;
+        BUNSAN_EXCEPTIONS_WRAP_BEGIN()
+        {
+            const boost::filesystem::file_status status =
+                boost::filesystem::symlink_status(location());
+            switch (status.type())
+            {
+            case boost::filesystem::file_not_found:
+            case boost::filesystem::directory_file:
+                // let child deside
+                break;
+            case boost::filesystem::regular_file:
+                BOOST_THROW_EXCEPTION(SingleControlGroupPathToFieldError());
+            default:
+                BOOST_THROW_EXCEPTION(SingleControlGroupPathToUnknownError());
+            }
+        }
+        BUNSAN_EXCEPTIONS_WRAP_END_ERROR_INFO(
+            SingleControlGroupError::hierarchyId(hierarchyId) <<
+            SingleControlGroupError::controlGroupPath(controlGroup) <<
+            SingleControlGroupError::path(location()))
     }
 
     SingleControlGroup::~SingleControlGroup()
