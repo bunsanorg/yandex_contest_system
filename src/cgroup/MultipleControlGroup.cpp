@@ -94,9 +94,41 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
             id_cgroup.second->attachTask(pid);
     }
 
+    namespace
+    {
+        template <typename Ret, typename Iter>
+        Ret foldFields(Iter begin, const Iter end,
+                       Ret (SingleControlGroup::*getter)(), const std::string &fieldName)
+        {
+            if (begin == end)
+                BOOST_THROW_EXCEPTION(EmptyMultipleControlGroupError());
+            bool initialized = false;
+            Ret value;
+            for (; begin != end; ++begin)
+            {
+                const Ret nextValue = (begin->second.get()->*getter)();
+                if (initialized)
+                {
+                    if (value != nextValue)
+                        BOOST_THROW_EXCEPTION(
+                            MultipleControlGroupFieldValueConflictError() <<
+                            MultipleControlGroupFieldValueConflictError::fieldName(fieldName));
+                }
+                else
+                {
+                    value = nextValue;
+                    initialized = true;
+                }
+            }
+            BOOST_ASSERT(initialized);
+            return value;
+        }
+    }
+
     bool MultipleControlGroup::notifyOnRelease()
     {
-        // TODO
+        return foldFields(id2cgroup_.begin(), id2cgroup_.end(),
+                          &SingleControlGroup::notifyOnRelease, "notify_on_release");
     }
 
     void MultipleControlGroup::setNotifyOnRelease(const bool notifyOnRelease)
@@ -107,7 +139,8 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
     std::string MultipleControlGroup::releaseAgent()
     {
-        // TODO
+        return foldFields(id2cgroup_.begin(), id2cgroup_.end(),
+                          &SingleControlGroup::releaseAgent, "release_agent");
     }
 
     void MultipleControlGroup::setReleaseAgent(const std::string &releaseAgent)
@@ -118,7 +151,8 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
     bool MultipleControlGroup::cloneChildren()
     {
-        // TODO
+        return foldFields(id2cgroup_.begin(), id2cgroup_.end(),
+                          &SingleControlGroup::cloneChildren, "cgroup.clone_children");
     }
 
     void MultipleControlGroup::setCloneChildren(const bool cloneChildren)

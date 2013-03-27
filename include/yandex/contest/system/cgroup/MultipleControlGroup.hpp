@@ -8,9 +8,15 @@
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     struct MultipleControlGroupError: virtual ControlGroupError {};
+    struct EmptyMultipleControlGroupError: virtual MultipleControlGroupError {};
+
     struct MultipleControlGroupHierarchyError: virtual MultipleControlGroupError {};
     struct MultipleControlGroupHierarchyConflictError: virtual MultipleControlGroupHierarchyError {};
     struct MultipleControlGroupHierarchyNotFoundError: virtual MultipleControlGroupHierarchyError {};
+
+    struct MultipleControlGroupFieldError: virtual MultipleControlGroupError, virtual ControlGroupFieldError {};
+    struct MultipleControlGroupFieldValueError: virtual MultipleControlGroupFieldError {};
+    struct MultipleControlGroupFieldValueConflictError: virtual MultipleControlGroupFieldValueError {};
 
     class MultipleControlGroup: public ControlGroup
     {
