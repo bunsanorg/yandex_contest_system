@@ -15,8 +15,6 @@ namespace yandex{namespace contest{namespace system{namespace cgroup{namespace d
 
         ~CreatedControlGroup() override;
 
-        void close() override;
-
     protected:
         void printSingle(std::ostream &out) const override;
     };

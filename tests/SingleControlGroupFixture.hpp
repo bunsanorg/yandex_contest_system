@@ -25,8 +25,6 @@ struct SingleControlGroupFixture
     ~SingleControlGroupFixture()
     {
         thisCG->attachTask(pid);
-        cg->close();
-        thisCG->close();
     }
 
     const pid_t pid;

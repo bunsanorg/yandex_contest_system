@@ -39,8 +39,6 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         typedef std::function<void (std::ostream &)> Writer;
 
     public:
-        virtual void close()=0;
-
         /// Attach to existing child cgroup.
         ControlGroupPointer attachChild(const boost::filesystem::path &childControlGroup);
 

@@ -30,11 +30,6 @@ namespace yandex{namespace contest{namespace system{namespace cgroup{namespace d
             SingleControlGroupError::path(location()))
     }
 
-    void AttachedControlGroup::close()
-    {
-        // nothing to do
-    }
-
     void AttachedControlGroup::printSingle(std::ostream &out) const
     {
         out << "\"attached\"";

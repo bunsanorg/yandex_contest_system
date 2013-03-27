@@ -46,7 +46,6 @@ BOOST_AUTO_TEST_CASE(attached)
     BOOST_CHECK_EQUAL(acg->tasks().size(), 0);
     BOOST_CHECK_EQUAL(acg->controlGroup(), cg->controlGroup());
     BOOST_CHECK_THROW(acg->attachChild("123"), yac::SingleControlGroupNotExistsError);
-    acg->close();
 }
 
 BOOST_AUTO_TEST_CASE(created)

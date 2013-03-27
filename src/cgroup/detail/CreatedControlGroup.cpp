@@ -36,7 +36,19 @@ namespace yandex{namespace contest{namespace system{namespace cgroup{namespace d
     {
         try
         {
-            close();
+            BUNSAN_EXCEPTIONS_WRAP_BEGIN()
+            {
+                STREAM_TRACE << "Attempt to remove cgroup = " << *this << ".";
+                if (!boost::filesystem::remove(location()))
+                {
+                    STREAM_ERROR << "Unable to remove cgroup = " << *this << " (does not exist).";
+                }
+                STREAM_TRACE << "Control group " << *this << " was successfully removed.";
+            }
+            BUNSAN_EXCEPTIONS_WRAP_END_ERROR_INFO(
+                SingleControlGroupError::hierarchyId(hierarchyId()) <<
+                SingleControlGroupError::controlGroupPath(controlGroup()) <<
+                SingleControlGroupError::path(location()))
         }
         catch (std::exception &e)
         {
@@ -48,23 +60,6 @@ namespace yandex{namespace contest{namespace system{namespace cgroup{namespace d
             STREAM_ERROR << "Unable to successfully destroy CreatedControlGroup " <<
                             *this << " due to unknown exception.";
         }
-    }
-
-    void CreatedControlGroup::close()
-    {
-        BUNSAN_EXCEPTIONS_WRAP_BEGIN()
-        {
-            STREAM_TRACE << "Attempt to remove cgroup = " << *this << ".";
-            if (!boost::filesystem::remove(location()))
-            {
-                STREAM_ERROR << "Unable to remove cgroup = " << *this << " (does not exist).";
-            }
-            STREAM_TRACE << "Control group " << *this << " was successfully removed.";
-        }
-        BUNSAN_EXCEPTIONS_WRAP_END_ERROR_INFO(
-            SingleControlGroupError::hierarchyId(hierarchyId()) <<
-            SingleControlGroupError::controlGroupPath(controlGroup()) <<
-            SingleControlGroupError::path(location()))
     }
 
     void CreatedControlGroup::printSingle(std::ostream &out) const

@@ -12,8 +12,6 @@ namespace yandex{namespace contest{namespace system{namespace cgroup{namespace d
                              const boost::filesystem::path &controlGroup,
                              const SingleControlGroupPointer &parent);
 
-        void close() override;
-
     protected:
         void printSingle(std::ostream &out) const override;
     };
