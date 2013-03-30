@@ -41,6 +41,8 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         typedef boost::error_info<struct fdTag, int> fd;
         typedef boost::error_info<struct oldFdTag, int> oldfd;
         typedef boost::error_info<struct newFdTag, int> newfd;
+        typedef boost::error_info<struct inFdTag, int> inFd;
+        typedef boost::error_info<struct outFdTag, int> outFd;
         typedef boost::error_info<struct resourceTag, int> resource;
         // TODO rlimit (how to do it without <sys/resource.h> include?
         // TODO interval timer (the same...)
@@ -150,6 +152,18 @@ namespace yandex{namespace contest{namespace system{namespace unistd
      * \endcode
      */
     void dup2(const int oldfd, const int newfd);
+
+    /// sendfile(2)
+    std::size_t sendfile(const int outFd, const int inFd, off_t &offset, const std::size_t count);
+
+    /// sendfile(outFd, inFd, offset, /* unspecified buffer size */)
+    std::size_t sendfile(const int outFd, const int inFd, off_t &offset);
+
+    /// sendfile(outFd, inFd, nullptr, count)
+    std::size_t sendfile(const int outFd, const int inFd, const std::size_t count);
+
+    /// sendfile(outFd, inFd, /* unspecified buffer size */)
+    std::size_t sendfile(const int outFd, const int inFd);
 
     /// getdtablesize(3)
     unsigned getdtablesize();

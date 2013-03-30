@@ -2,17 +2,19 @@
 
 #include "yandex/contest/SystemError.hpp"
 
-#include <csignal>
-
 #include <boost/assert.hpp>
 
-#include <unistd.h>
+#include <csignal>
+
 #include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/resource.h>
-#include <sys/time.h>
-#include <sys/syscall.h>
+#include <unistd.h>
+
 #include <sys/epoll.h>
+#include <sys/resource.h>
+#include <sys/sendfile.h>
+#include <sys/stat.h>
+#include <sys/syscall.h>
+#include <sys/time.h>
 
 // internal defines
 
@@ -246,6 +248,26 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         YANDEX_UNISTD_WRAP(retfd = ::dup2(oldfd, newfd),
                            info::oldfd(oldfd) << info::newfd(newfd));
         BOOST_ASSERT(newfd == retfd);
+    }
+
+    std::size_t sendfile(const int outFd, const int inFd, off_t &offset, const std::size_t count)
+    {
+        YANDEX_UNISTD_RETURN(::sendfile(outFd, inFd, &offset, count), info::outFd(outFd) << info::inFd(inFd));
+    }
+
+    std::size_t sendfile(const int outFd, const int inFd, off_t &offset)
+    {
+        return sendfile(outFd, inFd, offset, BUFSIZ);
+    }
+
+    std::size_t sendfile(const int outFd, const int inFd, const std::size_t count)
+    {
+        YANDEX_UNISTD_RETURN(::sendfile(outFd, inFd, nullptr, count), info::outFd(outFd) << info::inFd(inFd));
+    }
+
+    std::size_t sendfile(const int outFd, const int inFd)
+    {
+        return sendfile(outFd, inFd, BUFSIZ);
     }
 
     unsigned getdtablesize()
