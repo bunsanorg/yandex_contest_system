@@ -47,7 +47,7 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         std::error_code ec;
         close(ec);
         if (ec)
-            BOOST_THROW_EXCEPTION(SystemError(ec));
+            BOOST_THROW_EXCEPTION(SystemError(ec, __func__));
     }
 
     void Descriptor::close(std::error_code &ec) noexcept
