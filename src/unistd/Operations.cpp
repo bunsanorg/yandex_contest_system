@@ -224,10 +224,10 @@ namespace yandex{namespace contest{namespace system{namespace unistd
 
     Descriptor open(const boost::filesystem::path &path, const int oflag, const mode_t mode)
     {
-        Descriptor retfd;
-        YANDEX_UNISTD_ASSIGN(::open(path.c_str(), oflag, mode), retfd,
+        Descriptor retFd;
+        YANDEX_UNISTD_ASSIGN(::open(path.c_str(), oflag, mode), retFd,
                              info::path(path) << info::openFlags(oflag) << info::mode(mode));
-        return retfd;
+        return retFd;
     }
 
     void close(const int fd)
@@ -237,17 +237,17 @@ namespace yandex{namespace contest{namespace system{namespace unistd
 
     Descriptor dup(const int fd)
     {
-        Descriptor retfd;
-        YANDEX_UNISTD_ASSIGN(::dup(fd), retfd, info::fd(fd));
-        return retfd;
+        Descriptor retFd;
+        YANDEX_UNISTD_ASSIGN(::dup(fd), retFd, info::fd(fd));
+        return retFd;
     }
 
-    void dup2(const int oldfd, const int newfd)
+    void dup2(const int oldFd, const int newFd)
     {
-        int retfd;
-        YANDEX_UNISTD_WRAP(retfd = ::dup2(oldfd, newfd),
-                           info::oldfd(oldfd) << info::newfd(newfd));
-        BOOST_ASSERT(newfd == retfd);
+        int retFd;
+        YANDEX_UNISTD_WRAP(retFd = ::dup2(oldFd, newFd),
+                           info::oldFd(oldFd) << info::newFd(newFd));
+        BOOST_ASSERT(newFd == retFd);
     }
 
     std::size_t sendfile(const int outFd, const int inFd, off_t &offset, const std::size_t count)
@@ -330,9 +330,9 @@ namespace yandex{namespace contest{namespace system{namespace unistd
 
     Descriptor epoll_create1(const int flags)
     {
-        Descriptor retfd;
-        YANDEX_UNISTD_ASSIGN(::epoll_create1(flags), retfd, info::openFlags(flags));
-        return retfd;
+        Descriptor retFd;
+        YANDEX_UNISTD_ASSIGN(::epoll_create1(flags), retFd, info::openFlags(flags));
+        return retFd;
     }
 
     void epoll_ctl(const int epfd, const int op, const int fd, ::epoll_event &event)

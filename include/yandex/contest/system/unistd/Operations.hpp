@@ -39,8 +39,8 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         typedef boost::error_info<struct sgidTag, gid_t> sgid;
         typedef boost::error_info<struct openFlagsTag, int> openFlags;
         typedef boost::error_info<struct fdTag, int> fd;
-        typedef boost::error_info<struct oldFdTag, int> oldfd;
-        typedef boost::error_info<struct newFdTag, int> newfd;
+        typedef boost::error_info<struct oldFdTag, int> oldFd;
+        typedef boost::error_info<struct newFdTag, int> newFd;
         typedef boost::error_info<struct inFdTag, int> inFd;
         typedef boost::error_info<struct outFdTag, int> outFd;
         typedef boost::error_info<struct resourceTag, int> resource;
@@ -151,7 +151,7 @@ namespace yandex{namespace contest{namespace system{namespace unistd
      * dup2(1, 2); // redirect stderr to stdout
      * \endcode
      */
-    void dup2(const int oldfd, const int newfd);
+    void dup2(const int oldFd, const int newFd);
 
     /// sendfile(2)
     std::size_t sendfile(const int outFd, const int inFd, off_t &offset, const std::size_t count);
