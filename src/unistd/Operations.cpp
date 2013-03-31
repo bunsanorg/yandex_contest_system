@@ -129,6 +129,22 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         return buf;
     }
 
+    boost::optional<FileStatus> statOptional(const boost::filesystem::path &path)
+    {
+        StatusType buf;
+        if (::stat(path.c_str(), &buf) < 0)
+        {
+            if (errno == ENOENT || errno == ENOTDIR)
+                return boost::optional<FileStatus>();
+            else
+                BOOST_THROW_EXCEPTION(SystemError(__func__) << info::path(path));
+        }
+        else
+        {
+            return static_cast<FileStatus>(buf);
+        }
+    }
+
     FileStatus fstat(int fd)
     {
         StatusType buf;

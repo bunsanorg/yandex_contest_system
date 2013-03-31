@@ -11,6 +11,7 @@
 #include <csignal>
 
 #include <boost/filesystem/path.hpp>
+#include <boost/optional.hpp>
 
 #include <sys/types.h>
 
@@ -83,6 +84,9 @@ namespace yandex{namespace contest{namespace system{namespace unistd
 
     /// stat(3)
     FileStatus stat(const boost::filesystem::path &path);
+
+    /// same as stat() except it does not treat file-not-found as error
+    boost::optional<FileStatus> statOptional(const boost::filesystem::path &path);
 
     /// fstat(3)
     FileStatus fstat(int fd);
