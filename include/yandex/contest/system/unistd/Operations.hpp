@@ -45,6 +45,8 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         typedef boost::error_info<struct inFdTag, int> inFd;
         typedef boost::error_info<struct outFdTag, int> outFd;
         typedef boost::error_info<struct resourceTag, int> resource;
+        typedef boost::error_info<struct sizeTag, std::size_t> size;
+        typedef boost::error_info<struct offsetTag, off_t> offset;
         // TODO rlimit (how to do it without <sys/resource.h> include?
         // TODO interval timer (the same...)
         typedef boost::error_info<struct pidTag, pid_t> pid;
