@@ -9,13 +9,6 @@ include(BunsanCommon)
 # BOOST
 bunsan_use_boost(system filesystem serialization)
 
-# LXC
-find_package(PkgConfig)
-pkg_check_modules(LXC REQUIRED lxc)
-link_directories(${LXC_LIBRARY_DIRS})
-include_directories(${LXC_INCLUDE_DIRS})
-bunsan_use(${LXC_LIBRARIES})
-
 bunsan_use_bunsan(common)
 bunsan_use(yandex_contest_common)
 
@@ -52,12 +45,6 @@ bunsan_add_shared_library(${PROJECT_NAME}
     src/cgroup/CpuAccounting.cpp
     src/cgroup/Memory.cpp
     src/cgroup/MemorySwap.cpp
-
-    src/lxc/Config.cpp
-    src/lxc/LXC.c
-    src/lxc/MountConfig.cpp
-    src/lxc/RootfsConfig.cpp
-    src/lxc/LXC.cpp
 )
 
 bunsan_install_headers()
