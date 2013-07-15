@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 2.8)
 include(YandexContestCommon)
 
 # BOOST
-bunsan_use_boost(system filesystem serialization unit_test_framework)
+bunsan_use_boost(system filesystem serialization)
 
 # LXC
 find_package(PkgConfig)
