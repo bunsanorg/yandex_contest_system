@@ -1,8 +1,6 @@
 #define BOOST_TEST_MODULE cgroup
 #include <boost/test/unit_test.hpp>
 
-#include "yandex/contest/tests/BoostExecTest.hpp"
-
 #include "yandex/contest/system/cgroup/MountPoint.hpp"
 #include "yandex/contest/system/cgroup/ControlGroup.hpp"
 #include "yandex/contest/system/cgroup/CpuAccounting.hpp"
@@ -10,6 +8,8 @@
 #include "yandex/contest/system/execution/AsyncProcess.hpp"
 
 #include "yandex/contest/system/unistd/Operations.hpp"
+
+#include "bunsan/testing/exec_test.hpp"
 
 #include <thread>
 #include <chrono>
