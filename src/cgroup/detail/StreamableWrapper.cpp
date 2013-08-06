@@ -1,4 +1,4 @@
-#include "yandex/contest/system/cgroup/detail/StreamableWrapper.hpp"
+#include <yandex/contest/system/cgroup/detail/StreamableWrapper.hpp>
 
 #include <boost/assert.hpp>
 

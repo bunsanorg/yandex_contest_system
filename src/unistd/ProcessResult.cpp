@@ -1,4 +1,4 @@
-#include "yandex/contest/system/unistd/ProcessResult.hpp"
+#include <yandex/contest/system/unistd/ProcessResult.hpp>
 
 #include <sys/wait.h>
 

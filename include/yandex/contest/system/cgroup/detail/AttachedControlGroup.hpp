@@ -1,6 +1,6 @@
 #pragma once
 
-#include "yandex/contest/system/cgroup/SingleControlGroup.hpp"
+#include <yandex/contest/system/cgroup/SingleControlGroup.hpp>
 
 namespace yandex{namespace contest{namespace system{namespace cgroup{namespace detail
 {

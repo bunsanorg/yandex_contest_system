@@ -1,4 +1,4 @@
-#include "yandex/contest/system/cgroup/MultipleControlGroup.hpp"
+#include <yandex/contest/system/cgroup/MultipleControlGroup.hpp>
 
 #include <boost/assert.hpp>
 #include <boost/filesystem/operations.hpp>

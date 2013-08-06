@@ -1,6 +1,6 @@
 #pragma once
 
-#include "yandex/contest/system/unistd/MountEntry.hpp"
+#include <yandex/contest/system/unistd/MountEntry.hpp>
 
 #include <vector>
 

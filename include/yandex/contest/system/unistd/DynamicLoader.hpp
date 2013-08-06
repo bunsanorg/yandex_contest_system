@@ -1,6 +1,6 @@
 #pragma once
 
-#include "yandex/contest/Error.hpp"
+#include <yandex/contest/Error.hpp>
 
 #include <memory>
 

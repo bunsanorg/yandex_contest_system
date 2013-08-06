@@ -1,6 +1,6 @@
 #pragma once
 
-#include "yandex/contest/system/cgroup/Error.hpp"
+#include <yandex/contest/system/cgroup/Error.hpp>
 
 #include <string>
 #include <unordered_set>

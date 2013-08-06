@@ -1,9 +1,9 @@
 #pragma once
 
-#include "yandex/contest/system/execution/CommonTypedefs.hpp"
-#include "yandex/contest/system/execution/Result.hpp"
+#include <yandex/contest/system/execution/CommonTypedefs.hpp>
+#include <yandex/contest/system/execution/Result.hpp>
 
-#include "yandex/contest/Tempfile.hpp"
+#include <yandex/contest/Tempfile.hpp>
 
 #include <boost/filesystem/path.hpp>
 

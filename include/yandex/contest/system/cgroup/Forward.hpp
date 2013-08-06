@@ -1,6 +1,6 @@
 #pragma once
 
-#include "yandex/contest/detail/ForwardHeader.hpp"
+#include <yandex/contest/detail/ForwardHeader.hpp>
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
@@ -13,4 +13,4 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     typedef boost::intrusive_ptr<MultipleControlGroup> MultipleControlGroupPointer;
 }}}}
 
-#include "yandex/contest/detail/ForwardFooter.hpp"
+#include <yandex/contest/detail/ForwardFooter.hpp>

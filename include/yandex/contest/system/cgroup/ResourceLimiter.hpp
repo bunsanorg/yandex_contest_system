@@ -1,6 +1,6 @@
 #pragma once
 
-#include "yandex/contest/system/cgroup/ResourceCounter.hpp"
+#include <yandex/contest/system/cgroup/ResourceCounter.hpp>
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {

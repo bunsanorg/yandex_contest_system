@@ -1,7 +1,7 @@
 #pragma once
 
-#include "yandex/contest/system/cgroup/ResourceCounter.hpp"
-#include "yandex/contest/system/cgroup/StructStat.hpp"
+#include <yandex/contest/system/cgroup/ResourceCounter.hpp>
+#include <yandex/contest/system/cgroup/StructStat.hpp>
 
 #include <vector>
 #include <chrono>

@@ -1,4 +1,4 @@
-#include "yandex/contest/system/execution/ResultError.hpp"
+#include <yandex/contest/system/execution/ResultError.hpp>
 
 namespace yandex{namespace contest{namespace system{namespace execution
 {

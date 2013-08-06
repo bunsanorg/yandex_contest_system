@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE cgroup_detail
 #include <boost/test/unit_test.hpp>
 
-#include "yandex/contest/system/cgroup/detail/StreamableWrapper.hpp"
+#include <yandex/contest/system/cgroup/detail/StreamableWrapper.hpp>
 
 namespace yacd = yandex::contest::system::cgroup::detail;
 

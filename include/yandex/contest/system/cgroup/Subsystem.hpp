@@ -1,6 +1,6 @@
 #pragma once
 
-#include "yandex/contest/system/cgroup/Forward.hpp"
+#include <yandex/contest/system/cgroup/Forward.hpp>
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {

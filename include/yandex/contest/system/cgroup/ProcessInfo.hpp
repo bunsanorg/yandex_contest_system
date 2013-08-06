@@ -1,7 +1,7 @@
 #pragma once
 
-#include "yandex/contest/system/cgroup/Error.hpp"
-#include "yandex/contest/system/cgroup/ProcessHierarchyInfo.hpp"
+#include <yandex/contest/system/cgroup/Error.hpp>
+#include <yandex/contest/system/cgroup/ProcessHierarchyInfo.hpp>
 
 #include <iostream>
 #include <functional>

@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE DynamicLoader
 #include <boost/test/unit_test.hpp>
 
-#include "yandex/contest/system/unistd/DynamicLoader.hpp"
+#include <yandex/contest/system/unistd/DynamicLoader.hpp>
 
 namespace unistd = yandex::contest::system::unistd;
 

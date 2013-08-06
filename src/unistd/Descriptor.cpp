@@ -1,6 +1,6 @@
-#include "yandex/contest/system/unistd/Descriptor.hpp"
+#include <yandex/contest/system/unistd/Descriptor.hpp>
 
-#include "yandex/contest/SystemError.hpp"
+#include <yandex/contest/SystemError.hpp>
 
 #include <boost/assert.hpp>
 

@@ -1,6 +1,6 @@
-#include "yandex/contest/system/cgroup/MountPoint.hpp"
+#include <yandex/contest/system/cgroup/MountPoint.hpp>
 
-#include "yandex/contest/system/unistd/Fstab.hpp"
+#include <yandex/contest/system/unistd/Fstab.hpp>
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {

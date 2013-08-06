@@ -3,10 +3,10 @@
 
 #include "SingleControlGroupFixture.hpp"
 
-#include "yandex/contest/system/cgroup/ControlGroup.hpp"
-#include "yandex/contest/system/cgroup/CpuAccounting.hpp"
+#include <yandex/contest/system/cgroup/ControlGroup.hpp>
+#include <yandex/contest/system/cgroup/CpuAccounting.hpp>
 
-#include "bunsan/testing/exec_test.hpp"
+#include <bunsan/testing/exec_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(cgroup_subsystems)
 

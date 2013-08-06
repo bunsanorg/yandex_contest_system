@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE unistd
 #include <boost/test/unit_test.hpp>
 
-#include "yandex/contest/system/unistd/MountEntry.hpp"
+#include <yandex/contest/system/unistd/MountEntry.hpp>
 
 #include <boost/filesystem/operations.hpp>
 
@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE(string)
 
 BOOST_AUTO_TEST_SUITE_END()
 
-#include "yandex/contest/system/unistd/CharStarStar.hpp"
+#include <yandex/contest/system/unistd/CharStarStar.hpp>
 
 BOOST_AUTO_TEST_SUITE(CharStarStar)
 
@@ -80,8 +80,8 @@ BOOST_AUTO_TEST_CASE(empty)
 
 BOOST_AUTO_TEST_SUITE_END()
 
-#include "yandex/contest/system/execution/CommonTypedefs.hpp"
-#include "yandex/contest/system/unistd/Exec.hpp"
+#include <yandex/contest/system/execution/CommonTypedefs.hpp>
+#include <yandex/contest/system/unistd/Exec.hpp>
 
 BOOST_AUTO_TEST_SUITE(Exec)
 
@@ -143,7 +143,7 @@ BOOST_FIXTURE_TEST_CASE(ExecExecutableArgumentsEnvironment, ExecFixture)
 
 BOOST_AUTO_TEST_SUITE_END()
 
-#include "yandex/contest/system/unistd/Operations.hpp"
+#include <yandex/contest/system/unistd/Operations.hpp>
 
 BOOST_AUTO_TEST_SUITE(Operations)
 
@@ -170,7 +170,7 @@ BOOST_FIXTURE_TEST_CASE(create_directory, CreateDirectoryFixture)
 
 BOOST_AUTO_TEST_SUITE_END() // Operations
 
-#include "yandex/contest/system/unistd/ProcessResult.hpp"
+#include <yandex/contest/system/unistd/ProcessResult.hpp>
 
 BOOST_AUTO_TEST_SUITE(ProcessResult)
 

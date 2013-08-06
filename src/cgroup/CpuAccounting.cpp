@@ -1,6 +1,6 @@
-#include "yandex/contest/system/cgroup/CpuAccounting.hpp"
+#include <yandex/contest/system/cgroup/CpuAccounting.hpp>
 
-#include "yandex/contest/system/unistd/Operations.hpp"
+#include <yandex/contest/system/unistd/Operations.hpp>
 
 #include <iterator>
 

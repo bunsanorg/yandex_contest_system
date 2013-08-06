@@ -1,7 +1,7 @@
 #pragma once
 
-#include "yandex/contest/system/cgroup/ControlGroup.hpp"
-#include "yandex/contest/system/cgroup/SingleControlGroup.hpp"
+#include <yandex/contest/system/cgroup/ControlGroup.hpp>
+#include <yandex/contest/system/cgroup/SingleControlGroup.hpp>
 
 #include <unordered_map>
 

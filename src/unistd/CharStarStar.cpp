@@ -1,4 +1,4 @@
-#include "yandex/contest/system/unistd/CharStarStar.hpp"
+#include <yandex/contest/system/unistd/CharStarStar.hpp>
 
 namespace yandex{namespace contest{namespace system{namespace unistd
 {

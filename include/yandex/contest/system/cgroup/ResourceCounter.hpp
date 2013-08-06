@@ -1,7 +1,7 @@
 #pragma once
 
-#include "yandex/contest/system/cgroup/SubsystemBase.hpp"
-#include "yandex/contest/system/cgroup/Types.hpp"
+#include <yandex/contest/system/cgroup/SubsystemBase.hpp>
+#include <yandex/contest/system/cgroup/Types.hpp>
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {

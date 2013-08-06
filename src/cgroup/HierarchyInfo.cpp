@@ -1,4 +1,4 @@
-#include "yandex/contest/system/cgroup/HierarchyInfo.hpp"
+#include <yandex/contest/system/cgroup/HierarchyInfo.hpp>
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {

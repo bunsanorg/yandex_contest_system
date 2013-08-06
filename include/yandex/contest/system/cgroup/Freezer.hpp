@@ -1,8 +1,8 @@
 #pragma once
 
-#include "yandex/contest/system/cgroup/SubsystemBase.hpp"
+#include <yandex/contest/system/cgroup/SubsystemBase.hpp>
 
-#include "bunsan/stream_enum.hpp"
+#include <bunsan/stream_enum.hpp>
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {

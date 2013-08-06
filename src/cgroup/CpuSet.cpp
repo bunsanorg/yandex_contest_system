@@ -1,4 +1,4 @@
-#include "yandex/contest/system/cgroup/CpuSet.hpp"
+#include <yandex/contest/system/cgroup/CpuSet.hpp>
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {

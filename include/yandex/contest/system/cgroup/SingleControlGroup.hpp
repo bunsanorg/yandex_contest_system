@@ -1,8 +1,8 @@
 #pragma once
 
-#include "yandex/contest/system/cgroup/ControlGroup.hpp"
-#include "yandex/contest/system/cgroup/SystemInfo.hpp"
-#include "yandex/contest/system/cgroup/ProcessInfo.hpp"
+#include <yandex/contest/system/cgroup/ControlGroup.hpp>
+#include <yandex/contest/system/cgroup/SystemInfo.hpp>
+#include <yandex/contest/system/cgroup/ProcessInfo.hpp>
 
 #include <boost/unordered_map.hpp>
 
