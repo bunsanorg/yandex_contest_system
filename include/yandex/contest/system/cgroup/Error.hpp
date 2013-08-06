@@ -2,9 +2,9 @@
 
 #include <yandex/contest/system/Error.hpp>
 
-#include <string>
-
 #include <boost/filesystem/path.hpp>
+
+#include <string>
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {

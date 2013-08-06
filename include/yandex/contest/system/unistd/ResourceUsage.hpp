@@ -1,9 +1,9 @@
 #pragma once
 
-#include <cstdint>
-
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/nvp.hpp>
+
+#include <cstdint>
 
 struct rusage;
 

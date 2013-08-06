@@ -4,7 +4,7 @@
 
 #include <boost/assert.hpp>
 
-#include <errno.h>
+#include <cerrno>
 
 #include <unistd.h>
 

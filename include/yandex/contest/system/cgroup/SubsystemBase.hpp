@@ -3,10 +3,10 @@
 #include <yandex/contest/system/cgroup/ControlGroup.hpp>
 #include <yandex/contest/system/cgroup/Subsystem.hpp>
 
-#include <string>
-
 #include <boost/filesystem/path.hpp>
 #include <boost/lexical_cast.hpp>
+
+#include <string>
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {

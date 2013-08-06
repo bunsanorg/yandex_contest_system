@@ -1,10 +1,10 @@
 #pragma once
 
-#include <algorithm>
-#include <vector>
-#include <string>
-
 #include <boost/noncopyable.hpp>
+
+#include <algorithm>
+#include <string>
+#include <vector>
 
 namespace yandex{namespace contest{namespace system{namespace unistd
 {

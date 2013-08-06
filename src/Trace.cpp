@@ -2,14 +2,13 @@
 
 #include <yandex/contest/system/unistd/DynamicLoader.hpp>
 
+#include <yandex/contest/detail/LogHelper.hpp>
 #include <yandex/contest/SystemError.hpp>
 
-#include <yandex/contest/detail/LogHelper.hpp>
+#include <boost/assert.hpp>
 
 #include <cstdlib>
 #include <cstring>
-
-#include <boost/assert.hpp>
 
 #include <execinfo.h>
 

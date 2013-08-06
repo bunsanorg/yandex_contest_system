@@ -1,4 +1,5 @@
 #include <yandex/contest/system/cgroup/ControlGroup.hpp>
+
 #include <yandex/contest/system/cgroup/SystemInfo.hpp>
 
 #include <yandex/contest/detail/IntrusivePointerHelper.hpp>

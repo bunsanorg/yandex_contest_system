@@ -3,9 +3,9 @@
 
 #include <yandex/contest/SystemError.hpp>
 
-#include <memory>
-
 #include <boost/assert.hpp>
+
+#include <memory>
 
 #include <stdio.h>
 #include <mntent.h>

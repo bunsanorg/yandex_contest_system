@@ -1,11 +1,11 @@
 #pragma once
 
+#include <boost/filesystem/path.hpp>
+#include <boost/optional.hpp>
+
 #include <iostream>
 #include <string>
 #include <unordered_set>
-
-#include <boost/optional.hpp>
-#include <boost/filesystem/path.hpp>
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {

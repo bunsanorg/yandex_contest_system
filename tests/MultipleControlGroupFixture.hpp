@@ -1,7 +1,6 @@
 #pragma once
 
 #include <yandex/contest/system/cgroup/MultipleControlGroup.hpp>
-
 #include <yandex/contest/system/unistd/Operations.hpp>
 
 #include <boost/filesystem/operations.hpp>

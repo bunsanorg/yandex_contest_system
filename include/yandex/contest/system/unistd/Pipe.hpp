@@ -2,9 +2,9 @@
 
 #include <yandex/contest/system/unistd/Descriptor.hpp>
 
-#include <system_error>
-
 #include <boost/noncopyable.hpp>
+
+#include <system_error>
 
 namespace yandex{namespace contest{namespace system{namespace unistd
 {

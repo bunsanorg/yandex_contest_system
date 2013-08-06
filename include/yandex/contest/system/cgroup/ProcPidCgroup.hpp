@@ -2,11 +2,11 @@
 
 #include <yandex/contest/system/cgroup/Error.hpp>
 
+#include <boost/filesystem/path.hpp>
+
 #include <string>
 #include <unordered_set>
 #include <vector>
-
-#include <boost/filesystem/path.hpp>
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {

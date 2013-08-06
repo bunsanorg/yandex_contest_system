@@ -2,9 +2,9 @@
 
 #include <yandex/contest/system/execution/CommonTypedefs.hpp>
 
-#include <utility>
-
 #include <boost/filesystem/path.hpp>
+
+#include <utility>
 
 namespace yandex{namespace contest{namespace system{namespace execution
 {

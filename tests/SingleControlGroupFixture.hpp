@@ -1,9 +1,8 @@
 #pragma once
 
+#include <yandex/contest/system/cgroup/ProcessInfo.hpp>
 #include <yandex/contest/system/cgroup/SingleControlGroup.hpp>
 #include <yandex/contest/system/cgroup/SystemInfo.hpp>
-#include <yandex/contest/system/cgroup/ProcessInfo.hpp>
-
 #include <yandex/contest/system/unistd/Operations.hpp>
 
 #include <boost/filesystem/operations.hpp>

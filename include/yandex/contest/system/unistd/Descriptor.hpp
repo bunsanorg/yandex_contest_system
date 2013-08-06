@@ -1,8 +1,8 @@
 #pragma once
 
-#include <system_error>
-
 #include <boost/optional.hpp>
+
+#include <system_error>
 
 namespace yandex{namespace contest{namespace system{namespace unistd
 {

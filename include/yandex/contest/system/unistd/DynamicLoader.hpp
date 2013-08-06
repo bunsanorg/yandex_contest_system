@@ -2,10 +2,10 @@
 
 #include <yandex/contest/Error.hpp>
 
-#include <memory>
-
-#include <boost/optional.hpp>
 #include <boost/filesystem/path.hpp>
+#include <boost/optional.hpp>
+
+#include <memory>
 
 namespace yandex{namespace contest{namespace system{namespace unistd
 {

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <iostream>
-
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/nvp.hpp>
+
+#include <iostream>
 
 #include <sys/types.h>
 
