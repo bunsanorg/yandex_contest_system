@@ -38,6 +38,7 @@ namespace yandex{namespace contest{namespace system{namespace lxc
             ar & BOOST_SERIALIZATION_NVP(devttydir);
             ar & BOOST_SERIALIZATION_NVP(mount);
             ar & BOOST_SERIALIZATION_NVP(rootfs);
+            ar & BOOST_SERIALIZATION_NVP(pivotdir);
             ar & BOOST_SERIALIZATION_NVP(cgroup);
             ar & boost::serialization::make_nvp("cap.drop", cap_drop);
         }
