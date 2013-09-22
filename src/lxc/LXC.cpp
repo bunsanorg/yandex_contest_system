@@ -7,7 +7,6 @@
 
 #include "yandex/contest/system/unistd/Fstab.hpp"
 
-#include "bunsan/enable_error_info.hpp"
 #include "bunsan/filesystem/fstream.hpp"
 
 #include <boost/filesystem/operations.hpp>
@@ -34,15 +33,17 @@ namespace yandex{namespace contest{namespace system{namespace lxc
         STREAM_INFO << "Trying to create root.mount directory for \"" << name_ << "\" LXC at " << rootfsMount_ << ".";
         boost::filesystem::create_directory(rootfsMount_);
         STREAM_INFO << "Root directory was successfully created for \"" << name_ << "\" LXC.";
-        BUNSAN_EXCEPTIONS_WRAP_BEGIN()
         {
             STREAM_INFO << "Trying to write lxc.conf(5) for \"" << name_ << "\" LXC.";
             bunsan::filesystem::ofstream cfg(configPath_);
-            cfg << config_;
+            BUNSAN_FILESYSTEM_FSTREAM_WRAP_BEGIN(cfg)
+            {
+                cfg << config_;
+            }
+            BUNSAN_FILESYSTEM_FSTREAM_WRAP_END(cfg)
             cfg.close();
             STREAM_INFO << "lxc.conf(5) was successfully written for \"" << name << "\" LXC.";
         }
-        BUNSAN_EXCEPTIONS_WRAP_END()
     }
 
     void LXC::freeze()

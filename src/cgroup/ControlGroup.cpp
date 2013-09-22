@@ -7,7 +7,6 @@
 
 #include "yandex/contest/detail/LogHelper.hpp"
 
-#include "bunsan/enable_error_info.hpp"
 #include "bunsan/filesystem/fstream.hpp"
 
 #include <iterator>
@@ -256,24 +255,24 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
     void ControlGroup::readFieldByReader(const std::string &fieldName, const Reader &reader)
     {
-        BUNSAN_EXCEPTIONS_WRAP_BEGIN()
+        bunsan::filesystem::ifstream fin(field(fieldName));
+        BUNSAN_FILESYSTEM_FSTREAM_WRAP_BEGIN(fin)
         {
-            bunsan::filesystem::ifstream fin(field(fieldName));
             reader(fin);
-            fin.close();
         }
-        BUNSAN_EXCEPTIONS_WRAP_END_ERROR_INFO(unistd::info::path(field(fieldName)));
+        BUNSAN_FILESYSTEM_FSTREAM_WRAP_END(fin)
+        fin.close();
     }
 
     void ControlGroup::writeFieldByWriter(const std::string &fieldName, const Writer &writer)
     {
-        BUNSAN_EXCEPTIONS_WRAP_BEGIN()
+        bunsan::filesystem::ofstream fout(field(fieldName));
+        BUNSAN_FILESYSTEM_FSTREAM_WRAP_BEGIN(fout)
         {
-            bunsan::filesystem::ofstream fout(field(fieldName));
             writer(fout);
-            fout.close();
         }
-        BUNSAN_EXCEPTIONS_WRAP_END_ERROR_INFO(unistd::info::path(field(fieldName)))
+        BUNSAN_FILESYSTEM_FSTREAM_WRAP_END(fout)
+        fout.close();
     }
 
     template <>
@@ -316,9 +315,9 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     std::vector<ControlGroup> ControlGroup::getControlGroups(const pid_t pid)
     {
         std::vector<ControlGroup> cgroups;
-        BUNSAN_EXCEPTIONS_WRAP_BEGIN()
+        bunsan::filesystem::ifstream fin(str(boost::format("/proc/%1%/cgroup") % pid));
+        BUNSAN_FILESYSTEM_FSTREAM_WRAP_BEGIN(fin)
         {
-            bunsan::filesystem::ifstream fin(str(boost::format("/proc/%1%/cgroup") % pid));
             std::string line;
             while (std::getline(fin, line))
             {
@@ -333,7 +332,8 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
                 cgroups.emplace_back(name, Attach);
             }
         }
-        BUNSAN_EXCEPTIONS_WRAP_END()
+        BUNSAN_FILESYSTEM_FSTREAM_WRAP_END(fin)
+        fin.close();
         return cgroups;
     }
 }}}}
