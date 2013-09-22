@@ -4,7 +4,6 @@
 #include <yandex/contest/system/unistd/Fstab.hpp>
 
 #include <bunsan/enable_error_info.hpp>
-#include <bunsan/filesystem/fstream.hpp>
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/predicate.hpp>

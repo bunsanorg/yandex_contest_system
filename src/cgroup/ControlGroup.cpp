@@ -64,25 +64,25 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     void ControlGroup::readFieldByReader(const std::string &fieldName, const Reader &reader)
     {
         const boost::filesystem::path fpath = fieldPath(fieldName);
-        BUNSAN_EXCEPTIONS_WRAP_BEGIN()
+        bunsan::filesystem::ifstream fin(fpath);
+        BUNSAN_FILESYSTEM_FSTREAM_WRAP_BEGIN(fin)
         {
-            bunsan::filesystem::ifstream fin(fpath);
             reader(fin);
-            fin.close();
         }
-        BUNSAN_EXCEPTIONS_WRAP_END_ERROR_INFO(ControlGroupError::path(fpath))
+        BUNSAN_FILESYSTEM_FSTREAM_WRAP_END(fin)
+        fin.close();
     }
 
     void ControlGroup::writeFieldByWriter(const std::string &fieldName, const Writer &writer)
     {
         const boost::filesystem::path fpath = fieldPath(fieldName);
-        BUNSAN_EXCEPTIONS_WRAP_BEGIN()
+        bunsan::filesystem::ofstream fout(fpath);
+        BUNSAN_FILESYSTEM_FSTREAM_WRAP_BEGIN(fout)
         {
-            bunsan::filesystem::ofstream fout(fpath);
             writer(fout);
-            fout.close();
         }
-        BUNSAN_EXCEPTIONS_WRAP_END_ERROR_INFO(ControlGroupError::path(fpath))
+        BUNSAN_FILESYSTEM_FSTREAM_WRAP_END(fout)
+        fout.close();
     }
 
     template <>
