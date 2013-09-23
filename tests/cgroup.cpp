@@ -1,6 +1,7 @@
 #define BOOST_TEST_MODULE cgroup
 #include <boost/test/unit_test.hpp>
 
+#include "DummyProcess.hpp"
 #include "SingleControlGroupFixture.hpp"
 #include "MultipleControlGroupFixture.hpp"
 
@@ -163,7 +164,76 @@ BOOST_AUTO_TEST_CASE(fields)
 
 BOOST_AUTO_TEST_CASE(tasks)
 {
-    // TODO
+    std::unordered_map<std::size_t, yac::HierarchyInfo> hiers;
+    for (const yac::HierarchyInfo &info: *yac::SystemInfo::instance())
+    {
+        if (hiers.find(info.id) == hiers.end())
+        {
+            hiers[info.id] = info;
+            if (hiers.size() > 1)
+                break;
+        }
+    }
+    BOOST_REQUIRE_EQUAL(hiers.size(), 2);
+    const yac::HierarchyInfo hier1 = hiers.begin()->second;
+    hiers.erase(hiers.begin());
+    const yac::HierarchyInfo hier2 = hiers.begin()->second;
+    hiers.erase(hiers.begin());
+    BOOST_REQUIRE(hiers.empty());
+
+    const yac::SingleControlGroupPointer cg1 =
+        yac::SingleControlGroup::forSelf(hier1.id)->attachChild(cgName);
+    const yac::SingleControlGroupPointer cg2 =
+        yac::SingleControlGroup::forSelf(hier2.id)->attachChild(cgName);
+
+    ya::testing::DummyProcess p1, p2, p3;
+
+    cg1->attachTask(p1.pid());
+    {
+        const yac::ControlGroup::Tasks &tasks = cg->tasks();
+        BOOST_CHECK_EQUAL(tasks.size(), 1);
+        BOOST_CHECK(tasks.find(p1.pid()) != tasks.end());
+
+        const yac::ControlGroup::Tasks &t1 = cg1->tasks();
+        BOOST_CHECK_EQUAL(t1.size(), 1);
+        BOOST_CHECK(t1.find(p1.pid()) != t1.end());
+
+        const yac::ControlGroup::Tasks &t2 = cg2->tasks();
+        BOOST_CHECK_EQUAL(t2.empty(), 1);
+    }
+    cg2->attachTask(p2.pid());
+    {
+        const yac::ControlGroup::Tasks &tasks = cg->tasks();
+        BOOST_CHECK_EQUAL(tasks.size(), 2);
+        BOOST_CHECK(tasks.find(p1.pid()) != tasks.end());
+        BOOST_CHECK(tasks.find(p2.pid()) != tasks.end());
+
+        const yac::ControlGroup::Tasks &t1 = cg1->tasks();
+        BOOST_CHECK_EQUAL(t1.size(), 1);
+        BOOST_CHECK(t1.find(p1.pid()) != t1.end());
+
+        const yac::ControlGroup::Tasks &t2 = cg2->tasks();
+        BOOST_CHECK_EQUAL(t2.size(), 1);
+        BOOST_CHECK(t2.find(p2.pid()) != t2.end());
+    }
+    cg->attachTask(p3.pid());
+    {
+        const yac::ControlGroup::Tasks &tasks = cg->tasks();
+        BOOST_CHECK_EQUAL(tasks.size(), 3);
+        BOOST_CHECK(tasks.find(p1.pid()) != tasks.end());
+        BOOST_CHECK(tasks.find(p2.pid()) != tasks.end());
+        BOOST_CHECK(tasks.find(p3.pid()) != tasks.end());
+
+        const yac::ControlGroup::Tasks &t1 = cg1->tasks();
+        BOOST_CHECK_EQUAL(t1.size(), 2);
+        BOOST_CHECK(t1.find(p1.pid()) != t1.end());
+        BOOST_CHECK(t1.find(p3.pid()) != t1.end());
+
+        const yac::ControlGroup::Tasks &t2 = cg2->tasks();
+        BOOST_CHECK_EQUAL(t2.size(), 2);
+        BOOST_CHECK(t2.find(p2.pid()) != t2.end());
+        BOOST_CHECK(t2.find(p3.pid()) != t2.end());
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END() // MultipleControlGroup

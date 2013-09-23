@@ -85,7 +85,13 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
     ControlGroup::Tasks MultipleControlGroup::tasks()
     {
-        // TODO
+        Tasks tasks;
+        for (const std::pair<std::size_t, SingleControlGroupPointer> &id_cgroup: id2cgroup_)
+        {
+            const Tasks &t = id_cgroup.second->tasks();
+            tasks.insert(t.begin(), t.end());
+        }
+        return tasks;
     }
 
     void MultipleControlGroup::attachTask(const pid_t pid)
