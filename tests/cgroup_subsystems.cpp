@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE cgroup_subsystems
 #include <boost/test/unit_test.hpp>
 
-#include "SingleControlGroupFixture.hpp"
+#include "MultipleControlGroupFixture.hpp"
 
 #include <yandex/contest/system/cgroup/ControlGroup.hpp>
 #include <yandex/contest/system/cgroup/CpuAccounting.hpp>
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(fork_bomb)
 
 BOOST_AUTO_TEST_SUITE_END() // ControlGroup
 
-BOOST_FIXTURE_TEST_SUITE(Subsystems, SingleControlGroupFixture)
+BOOST_FIXTURE_TEST_SUITE(Subsystems, MultipleControlGroupFixture)
 
 BOOST_AUTO_TEST_CASE(CpuAccounting)
 {
