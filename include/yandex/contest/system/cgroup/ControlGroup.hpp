@@ -146,7 +146,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     };
 
     template <>
-    void ControlGroup::readField(const std::string &fieldName, detail::IStreamableWrapper &data);
+    void ControlGroup::readField(const std::string &fieldName, const detail::IStreamableWrapper &data);
 
     template <>
     void ControlGroup::writeField(const std::string &fieldName, const detail::OStreamableWrapper &data);
