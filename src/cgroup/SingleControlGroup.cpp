@@ -36,7 +36,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
             {
             case boost::filesystem::file_not_found:
             case boost::filesystem::directory_file:
-                // let child deside
+                // let child decide
                 break;
             case boost::filesystem::regular_file:
                 BOOST_THROW_EXCEPTION(SingleControlGroupPathToFieldError());
