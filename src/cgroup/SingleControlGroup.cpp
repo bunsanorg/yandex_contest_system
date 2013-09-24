@@ -1,5 +1,6 @@
 #include <yandex/contest/system/cgroup/SingleControlGroup.hpp>
 
+#include <yandex/contest/system/cgroup/CpuSet.hpp>
 #include <yandex/contest/system/cgroup/detail/AttachedControlGroup.hpp>
 #include <yandex/contest/system/cgroup/detail/CreatedControlGroup.hpp>
 
@@ -300,6 +301,18 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
                                             hierarchyId(),
                                             controlGroup() / childControlGroup, mode,
                                             SingleControlGroupPointer(this)));
+        // if we create child we want it to be able to attach tasks by default
+        // note: we do not alter attached children
+        if (cgroup->hierarchyInfo().subsystems.find(CpuSet::SUBSYSTEM_NAME) !=
+            cgroup->hierarchyInfo().subsystems.end())
+        {
+            const SingleControlGroupPointer root_ = root(hierarchyId());
+            CpuSet cpuset(cgroup), rootCpuset(root_);
+            if (cpuset.mems().empty())
+                cpuset.setMems(rootCpuset.mems());
+            if (cpuset.cpus().empty())
+                cpuset.setCpus(rootCpuset.cpus());
+        }
         const auto iter_inserted = children_.emplace(childControlGroup, cgroup.get());
         BOOST_ASSERT(iter_inserted.second);
         return cgroup;
