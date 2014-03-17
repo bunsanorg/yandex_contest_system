@@ -20,19 +20,25 @@ namespace yandex{namespace contest{namespace system{namespace unistd
 
     namespace info
     {
-        typedef boost::error_info<struct executableTag, boost::filesystem::path> executable;
+        typedef boost::error_info<
+            struct executableTag,
+            boost::filesystem::path
+        > executable;
     }
 
     class Exec: private boost::noncopyable
     {
     public:
-        typedef std::vector<std::string> ProcessArguments;
-        typedef std::unordered_map<std::string, std::string> ProcessEnvironment;
+        typedef std::vector<std::string>
+            ProcessArguments;
+        typedef std::unordered_map<std::string, std::string>
+            ProcessEnvironment;
 
     public:
-        explicit Exec(const boost::filesystem::path &executable,
-                      const ProcessArguments &arguments=ProcessArguments(),
-                      const ProcessEnvironment &environment=ProcessEnvironment());
+        explicit Exec(
+            const boost::filesystem::path &executable,
+            const ProcessArguments &arguments=ProcessArguments(),
+            const ProcessEnvironment &environment=ProcessEnvironment());
 
         const char *executable() const;
         char **argv();

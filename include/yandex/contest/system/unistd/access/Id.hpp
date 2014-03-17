@@ -7,7 +7,8 @@
 
 #include <sys/types.h>
 
-namespace yandex{namespace contest{namespace system{namespace unistd{namespace access
+namespace yandex{namespace contest{namespace system{
+    namespace unistd{namespace access
 {
     struct Id
     {

@@ -6,11 +6,14 @@ namespace yandex{namespace contest{namespace system{namespace unistd
 {
     namespace
     {
-        std::vector<char> stringPairToVectorChar(const std::pair<std::string, std::string> &p)
+        std::vector<char> stringPairToVectorChar(
+            const std::pair<std::string, std::string> &p)
         {
             if (p.first.find('=') != std::string::npos)
-                BOOST_THROW_EXCEPTION(InvalidEnvironmentKeyError() << InvalidEnvironmentKeyError::key(p.first) <<
-                                      Error::message("Environment key may not contain '='."));
+                BOOST_THROW_EXCEPTION(
+                    InvalidEnvironmentKeyError() <<
+                    InvalidEnvironmentKeyError::key(p.first) <<
+                    Error::message("Environment key may not contain '='."));
             std::vector<char> v(p.first.size() + 1 + p.second.size() + 1);
             auto dst = std::copy(p.first.begin(), p.first.end(), v.begin());
             *(dst++) = '=';
@@ -25,7 +28,11 @@ namespace yandex{namespace contest{namespace system{namespace unistd
                const ProcessArguments &arguments,
                const ProcessEnvironment &environment):
         executable_(executable),
-        argvWrapper_(arguments.empty() ? ProcessArguments{executable.string()} : arguments, CharStarStar::stringToVectorChar),
+        argvWrapper_(
+            arguments.empty() ?
+                ProcessArguments{executable.string()} :
+                arguments,
+            CharStarStar::stringToVectorChar),
         envpWrapper_(environment, stringPairToVectorChar)
     {
     }

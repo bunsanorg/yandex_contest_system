@@ -2,7 +2,8 @@
 
 #include <yandex/contest/system/unistd/access/Id.hpp>
 
-namespace yandex{namespace contest{namespace system{namespace unistd{namespace access
+namespace yandex{namespace contest{namespace system{
+    namespace unistd{namespace access
 {
     /// getresuid(2), getresgid(2)
     void getRealEffectiveSavedId(Id &real, Id &effective, Id &saved) noexcept;
@@ -24,7 +25,8 @@ namespace yandex{namespace contest{namespace system{namespace unistd{namespace a
 
     // FIXME these functions are broken
     /// setresuid(2), setresgid(2)
-    //void setRealEffectiveSavedId(const Id &real, const Id &effective, const Id &saved);
+    //void setRealEffectiveSavedId(
+    //    const Id &real, const Id &effective, const Id &saved);
 
     /// setuid(3), setgid(3)
     //void setId(const Id &id);

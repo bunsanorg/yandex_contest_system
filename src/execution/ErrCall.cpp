@@ -26,7 +26,8 @@ namespace yandex{namespace contest{namespace system{namespace execution
     {
         void executeChildInit(unistd::Pipe &errPipe) noexcept
         {
-            const unistd::Descriptor devNull = unistd::open("/dev/null", O_RDWR);
+            const unistd::Descriptor devNull =
+                unistd::open("/dev/null", O_RDWR);
             // we do not allow child process to interfere with parent's stdin
             unistd::dup2(devNull.get(), STDIN_FILENO);
             // we do not want to get annoying useless messages on console
@@ -56,22 +57,37 @@ namespace yandex{namespace contest{namespace system{namespace execution
             }
             catch (...)
             {
-                BOOST_ASSERT_MSG(false, "It should not happen, but should be checked.");
+                BOOST_ASSERT_MSG(
+                    false,
+                    "It should not happen, but should be checked."
+                );
             }
         }
 
-        void executeParentFunction(const ::pid_t pid, unistd::Pipe &errPipe, Result &result)
+        void executeParentFunction(const ::pid_t pid,
+                                   unistd::Pipe &errPipe,
+                                   Result &result)
         {
             std::error_code ec;
             // errors are ignored
             errPipe.closeWriteEnd(ec);
-            __gnu_cxx::stdio_filebuf<char> errBuf(errPipe.readEnd(), std::ios::in);
+            __gnu_cxx::stdio_filebuf<char> errBuf(
+                errPipe.readEnd(),
+                std::ios::in
+            );
             std::istream errS(&errBuf);
             char buf[BUFSIZ];
             do
             {
-                errS.read(buf, std::min((std::size_t)BUFSIZ, result.err.capacity()-result.err.size()));
-                // string is preallocated, so this should not cause an exception
+                errS.read(
+                    buf,
+                    std::min(
+                        (std::size_t)BUFSIZ,
+                        result.err.capacity() - result.err.size()
+                    )
+                );
+                // string is preallocated,
+                // so this should not cause an exception
                 result.err.append(buf, errS.gcount());
             }
             while (errS && result.err.size() < result.err.capacity());

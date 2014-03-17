@@ -1,6 +1,7 @@
 #include <yandex/contest/system/unistd/access/Id.hpp>
 
-namespace yandex{namespace contest{namespace system{namespace unistd{namespace access
+namespace yandex{namespace contest{namespace system{
+    namespace unistd{namespace access
 {
     bool Id::operator==(const Id &id) const noexcept
     {

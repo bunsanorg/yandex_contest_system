@@ -29,7 +29,10 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         typedef boost::error_info<struct accessIdTag, access::Id> accessId;
         typedef boost::error_info<struct devMajorTag, int> devMajor;
         typedef boost::error_info<struct devMinorTag, int> devMinor;
-        typedef boost::error_info<struct symLinkValueTag, boost::filesystem::path> symLinkValue;
+        typedef boost::error_info<
+            struct symLinkValueTag,
+            boost::filesystem::path
+        > symLinkValue;
         typedef boost::error_info<struct uidTag, uid_t> uid;
         typedef boost::error_info<struct ruidTag, uid_t> ruid;
         typedef boost::error_info<struct euidTag, uid_t> euid;
@@ -82,13 +85,16 @@ namespace yandex{namespace contest{namespace system{namespace unistd
     void rmdir(const boost::filesystem::path &path);
 
     /// mknod(3)
-    void mknod(const boost::filesystem::path &path, const mode_t mode, const dev_t dev);
+    void mknod(const boost::filesystem::path &path,
+               const mode_t mode,
+               const dev_t dev);
 
     /// makedev(3)
     dev_t makedev(const int major, const int minor);
 
     /// symlink(3)
-    void symlink(const boost::filesystem::path &value, const boost::filesystem::path &path);
+    void symlink(const boost::filesystem::path &value,
+                 const boost::filesystem::path &path);
 
     /// mkfifo(3)
     void mkfifo(const boost::filesystem::path &path, const mode_t mode);
@@ -97,7 +103,8 @@ namespace yandex{namespace contest{namespace system{namespace unistd
     FileStatus stat(const boost::filesystem::path &path);
 
     /// same as stat() except it does not treat file-not-found as error
-    boost::optional<FileStatus> statOptional(const boost::filesystem::path &path);
+    boost::optional<FileStatus> statOptional(
+        const boost::filesystem::path &path);
 
     /// fstat(3)
     FileStatus fstat(int fd);
@@ -151,7 +158,9 @@ namespace yandex{namespace contest{namespace system{namespace unistd
     pid_t fork();
 
     /// open(3)
-    Descriptor open(const boost::filesystem::path &path, const int oflag, const mode_t mode=0666);
+    Descriptor open(const boost::filesystem::path &path,
+                    const int oflag,
+                    const mode_t mode=0666);
 
     /// close(3)
     void close(const int fd);
@@ -169,13 +178,20 @@ namespace yandex{namespace contest{namespace system{namespace unistd
     void dup2(const int oldFd, const int newFd);
 
     /// sendfile(2)
-    std::size_t sendfile(const int outFd, const int inFd, off_t &offset, const std::size_t count);
+    std::size_t sendfile(const int outFd,
+                         const int inFd,
+                         off_t &offset,
+                         const std::size_t count);
 
     /// sendfile(outFd, inFd, offset, /* unspecified buffer size */)
-    std::size_t sendfile(const int outFd, const int inFd, off_t &offset);
+    std::size_t sendfile(const int outFd,
+                         const int inFd,
+                         off_t &offset);
 
     /// sendfile(outFd, inFd, nullptr, count)
-    std::size_t sendfile(const int outFd, const int inFd, const std::size_t count);
+    std::size_t sendfile(const int outFd,
+                         const int inFd,
+                         const std::size_t count);
 
     /// sendfile(outFd, inFd, /* unspecified buffer size */)
     std::size_t sendfile(const int outFd, const int inFd);
@@ -196,7 +212,9 @@ namespace yandex{namespace contest{namespace system{namespace unistd
     void setitimer(const int which, const ::itimerval &new_value);
 
     /// setitimer(3)
-    void setitimer(const int which, const ::itimerval &new_value, ::itimerval &old_value);
+    void setitimer(const int which,
+                   const ::itimerval &new_value,
+                   ::itimerval &old_value);
 
     /// kill(3)
     void kill(const pid_t pid, const int sig);
@@ -221,55 +239,76 @@ namespace yandex{namespace contest{namespace system{namespace unistd
     Descriptor epoll_create1(const int flags=0);
 
     /// epoll_ctl(2)
-    void epoll_ctl(const int epfd, const int op, const int fd, ::epoll_event &event);
+    void epoll_ctl(const int epfd,
+                   const int op,
+                   const int fd,
+                   ::epoll_event &event);
 
     /// epoll_ctl(epfd, EPOLL_CTL_ADD, fd, event)
-    void epoll_ctl_add(const int epfd, const int fd, ::epoll_event &event);
+    void epoll_ctl_add(const int epfd,
+                       const int fd,
+                       ::epoll_event &event);
 
     /// epoll_ctl(epfd, EPOLL_CTL_MOD, fd, event)
-    void epoll_ctl_mod(const int epfd, const int fd, ::epoll_event &event);
+    void epoll_ctl_mod(const int epfd,
+                       const int fd,
+                       ::epoll_event &event);
 
     /// epoll_ctl(epfd, EPOLL_CTL_DEL, fd, nullptr)
     void epoll_ctl_del(const int epfd, const int fd);
 
     /// epoll_wait(2)(epfd, events, maxevents, -1)
-    unsigned epoll_wait(const int epfd, ::epoll_event *const events, const unsigned maxevents);
+    unsigned epoll_wait(const int epfd,
+                        ::epoll_event *const events,
+                        const unsigned maxevents);
 
     template <unsigned MaxEvents>
-    unsigned epoll_wait(const int epfd, ::epoll_event (&events)[MaxEvents])
+    unsigned epoll_wait(const int epfd,
+                        ::epoll_event (&events)[MaxEvents])
     {
         return epoll_wait(epfd, events, MaxEvents);
     }
 
     /// epoll_wait(2)
-    unsigned epoll_wait(const int epfd, ::epoll_event *const events, const unsigned maxevents,
+    unsigned epoll_wait(const int epfd,
+                        ::epoll_event *const events,
+                        const unsigned maxevents,
                         const std::chrono::milliseconds &timeout);
 
     template <unsigned MaxEvents>
-    unsigned epoll_wait(const int epfd, ::epoll_event (&events)[MaxEvents],
+    unsigned epoll_wait(const int epfd,
+                        ::epoll_event (&events)[MaxEvents],
                         const std::chrono::milliseconds &timeout)
     {
         return epoll_wait(epfd, events, MaxEvents, timeout);
     }
 
     /// epoll_pwait(2)(epfd, events, maxevents, -1, sigmask)
-    unsigned epoll_pwait(const int epfd, ::epoll_event *const events,
-                         const unsigned maxevents, const sigset_t &sigmask);
+    unsigned epoll_pwait(const int epfd,
+                         ::epoll_event *const events,
+                         const unsigned maxevents,
+                         const sigset_t &sigmask);
 
     template <unsigned MaxEvents>
-    unsigned epoll_pwait(const int epfd, ::epoll_event (&events)[MaxEvents],
+    unsigned epoll_pwait(const int epfd,
+                         ::epoll_event (&events)[MaxEvents],
                          const sigset_t &sigmask)
     {
         return epoll_pwait(epfd, events, MaxEvents, sigmask);
     }
 
     /// epoll_pwait(2)
-    unsigned epoll_pwait(const int epfd, ::epoll_event *const events, const unsigned maxevents,
-                         const std::chrono::milliseconds &timeout, const sigset_t &sigmask);
+    unsigned epoll_pwait(const int epfd,
+                         ::epoll_event *const events,
+                         const unsigned maxevents,
+                         const std::chrono::milliseconds &timeout,
+                         const sigset_t &sigmask);
 
     template <unsigned MaxEvents>
-    unsigned epoll_pwait(const int epfd, ::epoll_event (&events)[MaxEvents],
-                         const std::chrono::milliseconds &timeout, const sigset_t &sigmask)
+    unsigned epoll_pwait(const int epfd,
+                         ::epoll_event (&events)[MaxEvents],
+                         const std::chrono::milliseconds &timeout,
+                         const sigset_t &sigmask)
     {
         return epoll_pwait(epfd, events, MaxEvents, timeout, sigmask);
     }
