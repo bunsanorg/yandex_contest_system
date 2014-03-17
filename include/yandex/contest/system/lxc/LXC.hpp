@@ -34,14 +34,18 @@ namespace yandex{namespace contest{namespace system{namespace lxc
         void unfreeze();
 
         template <typename Ctor>
-        auto execute(const Ctor &ctor, const execution::AsyncProcess::Options &options) -> decltype(ctor(options))
+        auto execute(
+            const Ctor &ctor,
+            const execution::AsyncProcess::Options &options) ->
+                decltype(ctor(options))
         {
             typedef decltype(ctor(options)) result_type;
             struct ExecutorLocal: Executor
             {
                 explicit ExecutorLocal(const Ctor &ctor): ctor_(ctor) {}
 
-                void operator()(const execution::AsyncProcess::Options &options) override
+                void operator()(
+                    const execution::AsyncProcess::Options &options) override
                 {
                     result = ctor_(options);
                 }
@@ -73,16 +77,19 @@ namespace yandex{namespace contest{namespace system{namespace lxc
         class Executor
         {
         public:
-            virtual void operator()(const execution::AsyncProcess::Options &options)=0;
+            virtual void operator()(
+                const execution::AsyncProcess::Options &options)=0;
         };
 
     private:
-        void execute_(Executor &executor, const execution::AsyncProcess::Options &options);
+        void execute_(
+            Executor &executor,
+            const execution::AsyncProcess::Options &options);
 
         void prepare(Config &config);
         void prepare(unistd::MountEntry &entry);
 
-        /// Transform process options to make them execute process in container.
+        /// Transform process options to make them execute process in container
         execution::AsyncProcess::Options transform(
             const execution::AsyncProcess::Options &options) const;
 
