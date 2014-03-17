@@ -2,7 +2,8 @@
 
 #include "yandex/contest/system/unistd/Operations.hpp"
 
-namespace yandex{namespace contest{namespace system{namespace unistd{namespace access
+namespace yandex{namespace contest{namespace system{
+    namespace unistd{namespace access
 {
     void getRealEffectiveSavedId(Id &real, Id &effective, Id &saved) noexcept
     {
@@ -34,7 +35,8 @@ namespace yandex{namespace contest{namespace system{namespace unistd{namespace a
         setuid(id.uid);
     }
 
-    void setRealEffectiveSavedId(const Id &real, const Id &effective, const Id &saved)
+    void setRealEffectiveSavedId(
+        const Id &real, const Id &effective, const Id &saved)
     {
         setresuid(real.uid, effective.uid, saved.uid);
         setresgid(real.gid, effective.gid, saved.gid);

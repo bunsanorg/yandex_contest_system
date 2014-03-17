@@ -50,7 +50,8 @@ namespace yandex{namespace contest{namespace system{namespace lxc
 
         // TODO network (seems to be useless for now)
 
-        // TODO pts (is not fully implemented by LXC, seems to be useless for now)
+        // TODO pts (is not fully implemented by LXC,
+        // seems to be useless for now)
 
         /// Path to a file where the console output will be written.
         boost::optional<boost::filesystem::path> console;
@@ -58,7 +59,8 @@ namespace yandex{namespace contest{namespace system{namespace lxc
         /// The number of tty available to the container.
         boost::optional<int> tty;
 
-        /// A directory under /dev under which to create the container console devices.
+        /// A directory under /dev under which to create
+        /// the container console devices.
         boost::optional<boost::filesystem::path> devttydir;
 
         /// Mount settings.
@@ -86,7 +88,8 @@ namespace yandex{namespace contest{namespace system{namespace lxc
         /*!
          * \brief List of capabilities to be dropped in the container.
          *
-         * The format is the lower case of the  capability  definition without the "CAP_" prefix,
+         * The format is the lower case of the  capability
+         * definition without the "CAP_" prefix,
          * eg. CAP_SYS_MODULE should be specified as sys_module.
          * See capabilities(7).
          */

@@ -15,11 +15,17 @@ namespace yandex{namespace contest{namespace system{namespace unistd
     {
         const std::string line = boost::algorithm::trim_copy(line_);
         std::vector<std::string> splitLine;
-        boost::algorithm::split(splitLine, line, boost::is_any_of(" \t"), boost::token_compress_on);
+        boost::algorithm::split(
+            splitLine,
+            line,
+            boost::is_any_of(" \t"),
+            boost::token_compress_on
+        );
         if (splitLine.size() != 6)
-            BOOST_THROW_EXCEPTION(MountEntryInvalidRepresentationError() <<
-                                  Error::message("Wrong fields number") <<
-                                  MountEntryInvalidRepresentationError::line(line));
+            BOOST_THROW_EXCEPTION(
+                MountEntryInvalidRepresentationError() <<
+                Error::message("Wrong fields number") <<
+                MountEntryInvalidRepresentationError::line(line));
         fsname = unescape(splitLine[0]);
         dir = unescape(splitLine[1]);
         type = unescape(splitLine[2]);
@@ -31,8 +37,9 @@ namespace yandex{namespace contest{namespace system{namespace unistd
 
 #define MOUNT_ENTRY_ASSIGN_NON_EMPTY(INDEX, FIELD) \
     if (FIELD.empty()) \
-        BOOST_THROW_EXCEPTION(MountEntryUninitializedFieldError() << \
-                              MountEntryUninitializedFieldError::field(#FIELD)); \
+        BOOST_THROW_EXCEPTION( \
+            MountEntryUninitializedFieldError() << \
+            MountEntryUninitializedFieldError::field(#FIELD)); \
     else \
         splitLine[INDEX] = escape(FIELD)
 

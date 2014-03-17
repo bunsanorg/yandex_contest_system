@@ -16,11 +16,16 @@ namespace yandex{namespace contest{namespace system{namespace unistd
 
     struct DynamicLibraryError: virtual DynamicLoaderError
     {
-        typedef boost::error_info<struct filenameTag, boost::filesystem::path> filename;
+        typedef boost::error_info<
+            struct filenameTag,
+            boost::filesystem::path
+        > filename;
+
         typedef boost::error_info<struct flagsTag, int> flags;
     };
 
-    struct DynamicLibraryIsAlreadyResidentError: virtual DynamicLoaderError {};
+    struct DynamicLibraryIsAlreadyResidentError:
+        virtual DynamicLoaderError {};
 
     /// \warning Does not support multiple load of one library.
     class DynamicLibrary
@@ -29,12 +34,16 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         DynamicLibrary();
 
         /*!
-         * If filename does not contain '/', it is transformed into lib${filename}.so.
-         * That means that user may specify library similar to compiler option:
+         * If filename does not contain '/',
+         * it is transformed into lib${filename}.so.
+         * That means that user may specify library
+         * similar to compiler option:
          * "-lm" or "-l/usr/lib/libm.so" <=>
          * DynamicLibrary("m", ...) or DynamicLibrary("/usr/lib/libm.so", ...).
          */
-        DynamicLibrary(const boost::filesystem::path &filename, const int flags);
+        DynamicLibrary(
+            const boost::filesystem::path &filename,
+            const int flags);
 
         DynamicLibrary(DynamicLibrary &&dl) noexcept;
         DynamicLibrary &operator=(DynamicLibrary &&dl) noexcept;

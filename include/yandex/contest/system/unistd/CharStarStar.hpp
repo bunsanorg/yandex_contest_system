@@ -21,10 +21,19 @@ namespace yandex{namespace contest{namespace system{namespace unistd
             vvc_(container.size()),
             vcs_(container.size() + 1)
         {
-            std::transform(container.begin(), container.end(), vvc_.begin(), op);
+            std::transform(
+                container.begin(), container.end(), vvc_.begin(), op
+            );
             vcs_.resize(vvc_.size() + 1, nullptr);
-            const auto vchar2charStar = [](std::vector<char> &v) { return &v[0]; };
-            std::transform(vvc_.begin(), vvc_.end(), vcs_.begin(), vchar2charStar);
+            const auto vchar2charStar =
+                [](std::vector<char> &v)
+                {
+                    return &v[0];
+                };
+            std::transform(
+                vvc_.begin(), vvc_.end(),
+                vcs_.begin(), vchar2charStar
+            );
             vcs_[vvc_.size()] = nullptr;
         }
 

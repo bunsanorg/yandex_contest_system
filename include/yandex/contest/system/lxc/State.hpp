@@ -2,7 +2,8 @@
 
 #include "bunsan/stream_enum.hpp"
 
-namespace yandex{namespace contest{namespace system{namespace lxc{namespace lxc_detail
+namespace yandex{namespace contest{namespace system{
+    namespace lxc{namespace lxc_detail
 {
     /*!
      * \brief LXC states.

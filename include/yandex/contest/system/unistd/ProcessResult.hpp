@@ -25,8 +25,9 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         boost::optional<int> exitStatus;
 
         /*!
-         * \brief If child process was terminated due to the receipt of a signal
-         * that was not caught, the field is initialized by the signal number.
+         * \brief If child process was terminated due to
+         * the receipt of a signal that was not caught,
+         * the field is initialized by the signal number.
          *
          * See wait(3), WTERMSIG, WIFSIGNALED.
          */

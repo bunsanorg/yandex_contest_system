@@ -8,7 +8,8 @@
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/nvp.hpp>
 
-namespace yandex{namespace contest{namespace system{namespace lxc{namespace config
+namespace yandex{namespace contest{namespace system{
+    namespace lxc{namespace config
 {
     class OutputArchive
     {
@@ -39,15 +40,19 @@ namespace yandex{namespace contest{namespace system{namespace lxc{namespace conf
         }
 
         template <typename T>
-        OutputArchive &operator<<(const boost::serialization::nvp<boost::optional<T>> &nvp)
+        OutputArchive &operator<<(
+            const boost::serialization::nvp<boost::optional<T>> &nvp)
         {
+            using boost::serialization::make_nvp;
+
             if (nvp.value())
-                *this << boost::serialization::make_nvp(nvp.name(), nvp.value().get());
+                *this << make_nvp(nvp.name(), nvp.value().get());
             return *this;
         }
 
         template <typename T>
-        static void saveToStream(const T &obj, std::ostream &out, const std::string &prefix)
+        static void saveToStream(
+            const T &obj, std::ostream &out, const std::string &prefix)
         {
             OutputArchive oa(out, prefix);
             oa << obj;

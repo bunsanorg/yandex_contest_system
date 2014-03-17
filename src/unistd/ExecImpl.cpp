@@ -18,7 +18,9 @@ namespace yandex{namespace contest{namespace system{namespace unistd
     { \
         std::error_code ec; \
         X(ec); \
-        BOOST_THROW_EXCEPTION(SystemError(ec, __func__) << info::executable(executable_)); \
+        BOOST_THROW_EXCEPTION( \
+            SystemError(ec, __func__) << \
+            info::executable(executable_)); \
     }
 
     YANDEX_UNISTD_EXEC_IMPL(execv)

@@ -92,7 +92,10 @@ namespace yandex{namespace contest{namespace system{namespace execution
             }
             catch (...)
             {
-                BOOST_ASSERT_MSG(false, "It should not happen, but should be checked.");
+                BOOST_ASSERT_MSG(
+                    false,
+                    "It should not happen, but should be checked."
+                );
             }
         }
     }
@@ -130,7 +133,8 @@ namespace yandex{namespace contest{namespace system{namespace execution
                 // process has terminated
                 result_ = Result(statLoc);
                 collectOutput();
-                STREAM_DEBUG << "Process result was collected for process " << pid_ << ".";
+                STREAM_DEBUG << "Process result was collected for process " <<
+                                pid_ << ".";
             }
         }
         BOOST_ASSERT(result_);
@@ -184,10 +188,12 @@ namespace yandex{namespace contest{namespace system{namespace execution
     void AsyncProcess::collectOutput()
     {
         BOOST_ASSERT(result_);
-        STREAM_DEBUG << "Trying to collect data from temporary file at " << out_.path() << ".";
+        STREAM_DEBUG << "Trying to collect data from temporary file at " <<
+                        out_.path() << ".";
         result_->out = readAll(out_.path());
         out_.remove();
-        STREAM_DEBUG << "Trying to collect data from temporary file at " << err_.path() << ".";
+        STREAM_DEBUG << "Trying to collect data from temporary file at " <<
+                        err_.path() << ".";
         result_->err = readAll(err_.path());
         err_.remove();
     }
