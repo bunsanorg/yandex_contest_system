@@ -1,5 +1,5 @@
-#include "yandex/contest/system/lxc/LXC.hpp"
-#include "yandex/contest/system/lxc/LXC.h"
+#include "yandex/contest/system/lxc/Lxc.hpp"
+#include "yandex/contest/system/lxc/lxc.h"
 
 #include "yandex/contest/detail/LogHelper.hpp"
 
@@ -15,7 +15,7 @@ namespace yandex{namespace contest{namespace system{namespace lxc
 {
     using execution::ProcessArguments;
 
-    LXC::LXC(const std::string &name,
+    Lxc::Lxc(const std::string &name,
              const boost::filesystem::path &dir,
              const Config &config):
         name_(name),
@@ -54,7 +54,7 @@ namespace yandex{namespace contest{namespace system{namespace lxc
         }
     }
 
-    void LXC::freeze()
+    void Lxc::freeze()
     {
         STREAM_INFO << "Trying to freeze \"" << name_ << "\" LXC.";
         const execution::Result result =
@@ -75,7 +75,7 @@ namespace yandex{namespace contest{namespace system{namespace lxc
         }
     }
 
-    void LXC::unfreeze()
+    void Lxc::unfreeze()
     {
         STREAM_INFO << "Trying to unfreeze \"" << name_ << "\" LXC.";
         const execution::Result result =
@@ -96,7 +96,7 @@ namespace yandex{namespace contest{namespace system{namespace lxc
         }
     }
 
-    void LXC::execute_(
+    void Lxc::execute_(
         Executor &executor,
         const execution::AsyncProcess::Options &options)
     {
@@ -122,7 +122,7 @@ namespace yandex{namespace contest{namespace system{namespace lxc
                        "in \"" << name_ << "\" LXC.";
     }
 
-    void LXC::stop()
+    void Lxc::stop()
     {
         STREAM_INFO << "Trying to stop \"" << name_ << "\" LXC.";
         const State state_ = state();
@@ -151,13 +151,13 @@ namespace yandex{namespace contest{namespace system{namespace lxc
         }
     }
 
-    LXC::State LXC::state()
+    Lxc::State Lxc::state()
     {
         const int st = ::yandex_contest_system_lxc_getstate(name_.c_str());
         return static_cast<State>(st);
     }
 
-    LXC::~LXC()
+    Lxc::~Lxc()
     {
         STREAM_INFO << "Trying to remove \"" << name_ << "\" LXC.";
         try
@@ -185,12 +185,12 @@ namespace yandex{namespace contest{namespace system{namespace lxc
                            "was successfully removed.";
     }
 
-    const boost::filesystem::path &LXC::rootfs() const
+    const boost::filesystem::path &Lxc::rootfs() const
     {
         return rootfs_;
     }
 
-    void LXC::prepare(Config &config)
+    void Lxc::prepare(Config &config)
     {
         config.rootfs = RootfsConfig{
             .fsname = rootfs_,
@@ -216,14 +216,14 @@ namespace yandex{namespace contest{namespace system{namespace lxc
         }
     }
 
-    void LXC::prepare(unistd::MountEntry &entry)
+    void Lxc::prepare(unistd::MountEntry &entry)
     {
         const boost::filesystem::path dst = rootfs_ / entry.dir;
         boost::filesystem::create_directories(dst);
         entry.dir = dst.string();
     }
 
-    execution::AsyncProcess::Options LXC::transform(
+    execution::AsyncProcess::Options Lxc::transform(
         const execution::AsyncProcess::Options &options) const
     {
         execution::AsyncProcess::Options opts = options;
@@ -243,7 +243,7 @@ namespace yandex{namespace contest{namespace system{namespace lxc
         return opts;
     }
 
-    UtilityError LXC::toUtilityError(const execution::Result &result) const
+    UtilityError Lxc::toUtilityError(const execution::Result &result) const
     {
         return UtilityError(result) << Error::name(name_);
     }

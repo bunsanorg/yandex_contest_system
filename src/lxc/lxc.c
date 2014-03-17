@@ -1,4 +1,4 @@
-#include "yandex/contest/system/lxc/LXC.h"
+#include "yandex/contest/system/lxc/lxc.h"
 
 #include <lxc/lxc.h>
 

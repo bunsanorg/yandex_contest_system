@@ -54,10 +54,10 @@ bunsan_add_shared_library(${PROJECT_NAME}
     src/cgroup/MemorySwap.cpp
 
     src/lxc/Config.cpp
-    src/lxc/LXC.c
+    src/lxc/lxc.c
     src/lxc/MountConfig.cpp
     src/lxc/RootfsConfig.cpp
-    src/lxc/LXC.cpp
+    src/lxc/Lxc.cpp
 )
 
 bunsan_install_headers()

@@ -20,13 +20,13 @@
 
 namespace yandex{namespace contest{namespace system{namespace lxc
 {
-    class LXC: private boost::noncopyable
+    class Lxc: private boost::noncopyable
     {
     public:
         typedef lxc_detail::State State;
 
     public:
-        LXC(const std::string &name,
+        Lxc(const std::string &name,
             const boost::filesystem::path &dir,
             const Config &settings);
 
@@ -69,7 +69,7 @@ namespace yandex{namespace contest{namespace system{namespace lxc
         /// Container's state.
         State state();
 
-        ~LXC();
+        ~Lxc();
 
         const boost::filesystem::path &rootfs() const;
 
