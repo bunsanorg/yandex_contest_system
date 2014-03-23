@@ -35,6 +35,16 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         return fd_[WRITE_END].get();
     }
 
+    Descriptor Pipe::releaseReadEnd() noexcept
+    {
+        return std::move(fd_[READ_END]);
+    }
+
+    Descriptor Pipe::releaseWriteEnd() noexcept
+    {
+        return std::move(fd_[WRITE_END]);
+    }
+
     void Pipe::closeReadEnd(std::error_code &ec) noexcept
     {
         fd_[READ_END].close(ec);
