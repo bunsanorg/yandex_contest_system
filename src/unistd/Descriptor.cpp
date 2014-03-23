@@ -69,6 +69,14 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         // ignore ec
     }
 
+    int Descriptor::release() noexcept
+    {
+        BOOST_ASSERT(*this);
+        const int fd = fd_.get();
+        fd_.reset();
+        return fd;
+    }
+
     Descriptor::operator bool() const noexcept
     {
         return fd_;

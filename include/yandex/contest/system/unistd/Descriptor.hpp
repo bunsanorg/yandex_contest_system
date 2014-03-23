@@ -26,6 +26,8 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         void close();
         void close(std::error_code &ec) noexcept;
 
+        int release() noexcept;
+
         explicit operator bool() const noexcept;
 
         void swap(Descriptor &descriptor) noexcept;
