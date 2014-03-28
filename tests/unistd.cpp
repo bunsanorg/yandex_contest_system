@@ -243,3 +243,41 @@ BOOST_AUTO_TEST_CASE(operator_bool)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+
+#include <yandex/contest/system/unistd/Descriptor.hpp>
+#include <yandex/contest/system/unistd/Operations.hpp>
+#include <yandex/contest/system/unistd/Pipe.hpp>
+
+BOOST_AUTO_TEST_SUITE(descriptor)
+
+BOOST_AUTO_TEST_CASE(Descriptor)
+{
+    unistd::Descriptor fd1 = unistd::dup(1);
+    BOOST_REQUIRE(fd1);
+    const int fd = fd1.get();
+    unistd::Descriptor fd2(fd1.release());
+    BOOST_REQUIRE(!fd1);
+    BOOST_REQUIRE_EQUAL(fd2.get(), fd);
+}
+
+BOOST_AUTO_TEST_CASE(Pipe)
+{
+    unistd::Pipe pipe;
+    BOOST_REQUIRE(pipe.readEndIsOpened());
+    BOOST_REQUIRE(pipe.writeEndIsOpened());
+    const int rfd = pipe.readEnd(), wfd = pipe.writeEnd();
+
+    unistd::Descriptor readEnd = pipe.releaseReadEnd();
+    BOOST_REQUIRE(!pipe.readEndIsOpened());
+    BOOST_REQUIRE(pipe.writeEndIsOpened());
+    BOOST_REQUIRE(readEnd);
+    BOOST_REQUIRE_EQUAL(readEnd.get(), rfd);
+
+    unistd::Descriptor writeEnd(pipe.releaseWriteEnd().release());
+    BOOST_REQUIRE(!pipe.readEndIsOpened());
+    BOOST_REQUIRE(!pipe.writeEndIsOpened());
+    BOOST_REQUIRE(writeEnd);
+    BOOST_REQUIRE_EQUAL(writeEnd.get(), wfd);
+}
+
+BOOST_AUTO_TEST_SUITE_END() // descriptor
