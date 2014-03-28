@@ -23,6 +23,7 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         void closeWriteEnd();
         bool readEndIsOpened() const noexcept;
         bool writeEndIsOpened() const noexcept;
+
     private:
         enum End: unsigned;
 
