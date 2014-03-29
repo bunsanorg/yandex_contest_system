@@ -35,7 +35,7 @@ namespace yandex{namespace contest{namespace system{namespace unistd
          */
         mode_t type() const noexcept;
 
-        bool isFIFO() const noexcept;
+        bool isFifo() const noexcept;
         bool isCharDevice() const noexcept;
         bool isDirectory() const noexcept;
         bool isBlockDevice() const noexcept;
