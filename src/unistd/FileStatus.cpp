@@ -14,7 +14,7 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         return mode & S_IFMT;
     }
 
-    bool FileStatus::isFIFO() const noexcept
+    bool FileStatus::isFifo() const noexcept
     {
         return mode & S_IFIFO;
     }
