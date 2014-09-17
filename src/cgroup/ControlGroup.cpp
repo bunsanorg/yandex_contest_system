@@ -105,7 +105,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
     ControlGroup::operator bool() const
     {
-        return data_;
+        return static_cast<bool>(data_);
     }
 
     void ControlGroup::swap(ControlGroup &controlGroup) noexcept
