@@ -58,4 +58,41 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         waitEmpty_(controlGroup);
         return terminated;
     }
+
+    TerminationGuard::TerminationGuard(
+        const ControlGroupPointer &controlGroup):
+            controlGroup_(controlGroup) {}
+
+    TerminationGuard::operator bool() const
+    {
+        return static_cast<bool>(controlGroup_);
+    }
+
+    void TerminationGuard::detach()
+    {
+        controlGroup_ = nullptr;
+    }
+
+    TerminationGuard::~TerminationGuard()
+    {
+        if (controlGroup_)
+        {
+            try
+            {
+                terminate(controlGroup_);
+            }
+            catch (std::exception &e)
+            {
+                STREAM_ERROR << "Unable to terminate tasks " <<
+                                "in " << *controlGroup_ << " "
+                                "due to: " << e.what();
+            }
+            catch (...)
+            {
+                STREAM_ERROR << "Unable to terminate tasks " <<
+                                "in " << *controlGroup_ << " "
+                                "due to unknown exception";
+            }
+        }
+    }
 }}}}

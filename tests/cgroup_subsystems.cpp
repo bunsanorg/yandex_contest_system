@@ -68,6 +68,63 @@ BOOST_AUTO_TEST_CASE(fork_bomb)
     BOOST_CHECK_EQUAL(cg->tasks().size(), 0);
 }
 
+BOOST_AUTO_TEST_SUITE(TerminationGuard)
+
+BOOST_AUTO_TEST_CASE(default_constructor)
+{
+    yac::TerminationGuard tg; // does nothing
+    BOOST_CHECK(!tg);
+}
+
+BOOST_AUTO_TEST_CASE(destructor)
+{
+    ya::testing::DummyProcess process;
+    cg->attachTask(process.pid());
+    {
+        yac::TerminationGuard tg(cg);
+        BOOST_CHECK(tg);
+    }
+    waitCheck(process);
+    BOOST_CHECK_EQUAL(cg->tasks().size(), 0);
+}
+
+BOOST_AUTO_TEST_CASE(detach)
+{
+    ya::testing::DummyProcess process;
+    cg->attachTask(process.pid());
+    {
+        yac::TerminationGuard tg(cg);
+        BOOST_CHECK(tg);
+        tg.detach();
+        BOOST_CHECK(!tg);
+    }
+    BOOST_CHECK(!process.poll());
+}
+
+BOOST_AUTO_TEST_CASE(move)
+{
+    ya::testing::DummyProcess process;
+    cg->attachTask(process.pid());
+    {
+        yac::TerminationGuard tg1(cg);
+        BOOST_CHECK(tg1);
+
+        yac::TerminationGuard tg2 = std::move(tg1);
+        BOOST_CHECK(!tg1);
+        BOOST_CHECK(tg2);
+
+        tg1 = std::move(tg2);
+        BOOST_CHECK(tg1);
+        BOOST_CHECK(!tg2);
+
+        BOOST_CHECK(!process.poll());
+    }
+    waitCheck(process);
+    BOOST_CHECK_EQUAL(cg->tasks().size(), 0);
+}
+
+BOOST_AUTO_TEST_SUITE_END() // TerminationGuard
+
 BOOST_AUTO_TEST_SUITE_END() // Terminate
 
 BOOST_FIXTURE_TEST_SUITE(Subsystems, MultipleControlGroupFixture)

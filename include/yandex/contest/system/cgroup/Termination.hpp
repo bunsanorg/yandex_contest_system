@@ -14,4 +14,27 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
      * can be removed if no child control groups are created.
      */
     std::size_t terminate(const ControlGroupPointer &controlGroup);
+
+    class TerminationGuard
+    {
+    public:
+        TerminationGuard()=default;
+
+        TerminationGuard(TerminationGuard &&)=default;
+        TerminationGuard &operator=(TerminationGuard &&)=default;
+
+        TerminationGuard(const TerminationGuard &)=delete;
+        TerminationGuard &operator=(const TerminationGuard &)=delete;
+
+        explicit TerminationGuard(const ControlGroupPointer &controlGroup);
+
+        explicit operator bool() const;
+
+        void detach();
+
+        ~TerminationGuard();
+
+    private:
+        ControlGroupPointer controlGroup_;
+    };
 }}}}
