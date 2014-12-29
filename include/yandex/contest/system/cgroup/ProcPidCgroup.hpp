@@ -10,7 +10,11 @@
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
+    struct ProcPidCgroupError: virtual Error {};
+    struct ProcPidCgroupLoadError: virtual ProcPidCgroupError {};
+
     struct ProcPidCgroupFormatError:
+        virtual ProcPidCgroupError,
         virtual FileFormatError {};
     struct ProcPidCgroupLineFormatError:
         virtual ProcPidCgroupFormatError,

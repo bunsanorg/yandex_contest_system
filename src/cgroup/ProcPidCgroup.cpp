@@ -14,7 +14,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     void ProcPidCgroup::load(const boost::filesystem::path &path)
     {
         entries.clear();
-        BUNSAN_EXCEPTIONS_WRAP_BEGIN()
+        try
         {
             bunsan::filesystem::ifstream fin(path);
             BUNSAN_FILESYSTEM_FSTREAM_WRAP_BEGIN(fin)
@@ -56,6 +56,12 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
             BUNSAN_FILESYSTEM_FSTREAM_WRAP_END(fin)
             fin.close();
         }
-        BUNSAN_EXCEPTIONS_WRAP_END_ERROR_INFO(FileFormatError::path(path))
+        catch (std::exception &)
+        {
+            BOOST_THROW_EXCEPTION(
+                ProcPidCgroupLoadError() <<
+                ProcPidCgroupLoadError::path(path) <<
+                bunsan::enable_nested_current());
+        }
     }
 }}}}
