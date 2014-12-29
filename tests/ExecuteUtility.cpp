@@ -6,6 +6,8 @@
 
 #include "bunsan/testing/exec_test.hpp"
 
+#include <boost/optional/optional_io.hpp>
+
 namespace ya = yandex::contest::system::execution;
 
 BOOST_AUTO_TEST_SUITE(ErrCall)
