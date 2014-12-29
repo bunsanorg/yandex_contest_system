@@ -22,8 +22,14 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
     struct ControlGroupFieldError: virtual ControlGroupError
     {
-        typedef boost::error_info<struct fieldNameTag, std::string> fieldName;
-        typedef boost::error_info<struct fieldPathTag, boost::filesystem::path> fieldPath;
+        typedef boost::error_info<
+            struct fieldNameTag,
+            std::string
+        > fieldName;
+        typedef boost::error_info<
+            struct fieldPathTag,
+            boost::filesystem::path
+        > fieldPath;
     };
 
     struct ControlGroupInvalidFieldNameError: virtual ControlGroupFieldError {};
@@ -32,7 +38,8 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
     /*!
      * \warning Objects of this class are not thread-safe, but reentrant.
-     * Static functions guarantee to allocate new instances of ControlGroup -- root objects.
+     * Static functions guarantee to allocate new instances of ControlGroup --
+     * root objects.
      * Root objects may allocate new cgroups by member functions -- child objects.
      * Child objects may allocate new cgroups by member functions or return
      * previously allocated child objects related to root object.
@@ -49,13 +56,17 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
     public:
         /// Attach to existing child cgroup.
-        ControlGroupPointer attachChild(const boost::filesystem::path &childControlGroup);
+        ControlGroupPointer attachChild(
+            const boost::filesystem::path &childControlGroup);
 
         /// Create new child cgroup.
-        ControlGroupPointer createChild(const boost::filesystem::path &childControlGroup);
+        ControlGroupPointer createChild(
+            const boost::filesystem::path &childControlGroup);
 
         /// Create new child cgroup.
-        ControlGroupPointer createChild(const boost::filesystem::path &childControlGroup, const mode_t mode);
+        ControlGroupPointer createChild(
+            const boost::filesystem::path &childControlGroup,
+            const mode_t mode);
 
         ControlGroupPointer parent();
 
@@ -85,13 +96,19 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         template <typename T>
         void readField(const std::string &fieldName, T &data)
         {
-            readField<const detail::IStreamableWrapper>(fieldName, detail::IStreamableWrapper(data));
+            readField<const detail::IStreamableWrapper>(
+                fieldName,
+                detail::IStreamableWrapper(data)
+            );
         }
 
         template <typename T>
         void writeField(const std::string &fieldName, const T &data)
         {
-            writeField<detail::OStreamableWrapper>(fieldName, detail::OStreamableWrapper(data));
+            writeField<detail::OStreamableWrapper>(
+                fieldName,
+                detail::OStreamableWrapper(data)
+            );
         }
 
         template <typename T>
@@ -105,17 +122,23 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         template <typename T>
         T readFieldAll(const std::string &fieldName)
         {
-            return boost::lexical_cast<T>(readFieldAll<std::string>(fieldName));
+            return boost::lexical_cast<T>(
+                readFieldAll<std::string>(fieldName)
+            );
         }
 
         template <typename T>
         T readFieldAllRtrimmed(const std::string &fieldName)
         {
-            return boost::lexical_cast<T>(readFieldAllRtrimmed<std::string>(fieldName));
+            return boost::lexical_cast<T>(
+                readFieldAllRtrimmed<std::string>(fieldName)
+            );
         }
 
-        void readFieldByReader(const std::string &fieldName, const Reader &reader);
-        void writeFieldByWriter(const std::string &fieldName, const Writer &writer);
+        void readFieldByReader(const std::string &fieldName,
+                               const Reader &reader);
+        void writeFieldByWriter(const std::string &fieldName,
+                                const Writer &writer);
 
     protected:
         ControlGroup()=default;
@@ -123,33 +146,42 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         /*!
          * \brief Hypothetical field path.
          *
-         * \param fieldName Correct field name (checked by ControlGroup::fieldPath()).
+         * \param fieldName Correct field name
+         * (checked by ControlGroup::fieldPath()).
          * Otherwise behavior is undefined.
          *
          * \warning Returned path may not exist or may point to invalid file.
          * This will be checked by ControlGroup::fieldPath().
          */
-        virtual boost::filesystem::path fieldPath__(const std::string &fieldName) const=0;
+        virtual boost::filesystem::path fieldPath__(
+            const std::string &fieldName) const=0;
 
         virtual void print(std::ostream &out) const=0;
 
-        friend std::ostream &operator<<(std::ostream &out, const ControlGroup &cgroup);
+        friend std::ostream &operator<<(std::ostream &out,
+                                        const ControlGroup &cgroup);
 
         /// Attach to existing child cgroup.
-        virtual ControlGroupPointer attachChild__(const boost::filesystem::path &childControlGroup)=0;
+        virtual ControlGroupPointer attachChild__(
+            const boost::filesystem::path &childControlGroup)=0;
 
         /// Create new child cgroup.
-        virtual ControlGroupPointer createChild__(const boost::filesystem::path &childControlGroup,
-                                                  const mode_t mode)=0;
+        virtual ControlGroupPointer createChild__(
+            const boost::filesystem::path &childControlGroup,
+            const mode_t mode)=0;
 
         virtual ControlGroupPointer parent__()=0;
     };
 
     template <>
-    void ControlGroup::readField(const std::string &fieldName, const detail::IStreamableWrapper &data);
+    void ControlGroup::readField(
+        const std::string &fieldName,
+        const detail::IStreamableWrapper &data);
 
     template <>
-    void ControlGroup::writeField(const std::string &fieldName, const detail::OStreamableWrapper &data);
+    void ControlGroup::writeField(
+        const std::string &fieldName,
+        const detail::OStreamableWrapper &data);
 
     template <>
     std::string ControlGroup::readFieldAll(const std::string &fieldName);

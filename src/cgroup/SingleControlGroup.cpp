@@ -15,19 +15,24 @@
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
-    SingleControlGroup::SingleControlGroup(const SystemInfoPointer &systemInfo,
-                                           const std::size_t hierarchyId,
-                                           const boost::filesystem::path &controlGroup,
-                                           const SingleControlGroupPointer &parent):
-        systemInfo_(systemInfo),
-        hierarchyInfo_(systemInfo_->byHierarchyId(hierarchyId)),
-        controlGroup_(controlGroup),
-        parent_(parent)
+    SingleControlGroup::SingleControlGroup(
+        const SystemInfoPointer &systemInfo,
+        const std::size_t hierarchyId,
+        const boost::filesystem::path &controlGroup,
+        const SingleControlGroupPointer &parent):
+            systemInfo_(systemInfo),
+            hierarchyInfo_(systemInfo_->byHierarchyId(hierarchyId)),
+            controlGroup_(controlGroup),
+            parent_(parent)
     {
-        BOOST_ASSERT(parent ? parent->controlGroup() == controlGroup.parent_path() : controlGroup == "/");
+        BOOST_ASSERT(parent ?
+            parent->controlGroup() == controlGroup.parent_path() :
+            controlGroup == "/"
+        );
         if (!hierarchyInfo_.mountpoint)
-            BOOST_THROW_EXCEPTION(SingleControlGroupNotMountedError() <<
-                                  SingleControlGroupNotMountedError::hierarchyId(hierarchyId));
+            BOOST_THROW_EXCEPTION(
+                SingleControlGroupNotMountedError() <<
+                SingleControlGroupNotMountedError::hierarchyId(hierarchyId));
         location_ = mountpoint() / controlGroup;
         BUNSAN_EXCEPTIONS_WRAP_BEGIN()
         {
@@ -143,11 +148,13 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
             if (childControlGroup.is_absolute())
                 BOOST_THROW_EXCEPTION(
                     SingleControlGroupAbsoluteControlGroupPathError() <<
-                    SingleControlGroupAbsoluteControlGroupPathError::controlGroupPath(childControlGroup));
+                    SingleControlGroupAbsoluteControlGroupPathError::controlGroupPath(
+                        childControlGroup));
         }
     }
 
-    SingleControlGroupPointer SingleControlGroup::attachChild(const boost::filesystem::path &childControlGroup)
+    SingleControlGroupPointer SingleControlGroup::attachChild(
+        const boost::filesystem::path &childControlGroup)
     {
         checkChildControlGroup(childControlGroup);
         SingleControlGroupPointer current(this);
@@ -156,13 +163,14 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         return current;
     }
 
-    SingleControlGroupPointer SingleControlGroup::createChild(const boost::filesystem::path &childControlGroup)
+    SingleControlGroupPointer SingleControlGroup::createChild(
+        const boost::filesystem::path &childControlGroup)
     {
         return createChild(childControlGroup, 0777);
     }
 
-    SingleControlGroupPointer SingleControlGroup::createChild(const boost::filesystem::path &childControlGroup,
-                                                              const mode_t mode)
+    SingleControlGroupPointer SingleControlGroup::createChild(
+        const boost::filesystem::path &childControlGroup, const mode_t mode)
     {
         checkChildControlGroup(childControlGroup);
         SingleControlGroupPointer current(this);
@@ -176,15 +184,20 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         return parent_;
     }
 
-    ControlGroupPointer SingleControlGroup::attachChild__(const boost::filesystem::path &childControlGroup)
+    ControlGroupPointer SingleControlGroup::attachChild__(
+        const boost::filesystem::path &childControlGroup)
     {
-        return boost::static_pointer_cast<ControlGroup>(attachChild(childControlGroup));
+        return boost::static_pointer_cast<ControlGroup>(
+            attachChild(childControlGroup)
+        );
     }
 
-    ControlGroupPointer SingleControlGroup::createChild__(const boost::filesystem::path &childControlGroup,
-                                                         const mode_t mode)
+    ControlGroupPointer SingleControlGroup::createChild__(
+        const boost::filesystem::path &childControlGroup, const mode_t mode)
     {
-        return boost::static_pointer_cast<ControlGroup>(createChild(childControlGroup, mode));
+        return boost::static_pointer_cast<ControlGroup>(
+            createChild(childControlGroup, mode)
+        );
     }
 
     ControlGroupPointer SingleControlGroup::parent__()
@@ -198,13 +211,14 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         return attach(processHierarchyInfo.hierarchy.id, processHierarchyInfo.controlGroup);
     }
 
-    SingleControlGroupPointer SingleControlGroup::forProcessInfo(const std::size_t hierarchyId,
-                                                                 const ProcessInfo &processInfo)
+    SingleControlGroupPointer SingleControlGroup::forProcessInfo(
+        const std::size_t hierarchyId, const ProcessInfo &processInfo)
     {
         return forProcessHierarchyInfo(processInfo.byHierarchyId(hierarchyId));
     }
 
-    SingleControlGroupPointer SingleControlGroup::forPid(const std::size_t hierarchyId, const pid_t pid)
+    SingleControlGroupPointer SingleControlGroup::forPid(
+        const std::size_t hierarchyId, const pid_t pid)
     {
         return forProcessInfo(hierarchyId, ProcessInfo::forPid(pid));
     }
@@ -217,20 +231,28 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     SingleControlGroupPointer SingleControlGroup::root(const std::size_t hierarchyId)
     {
         return SingleControlGroupPointer(
-            new detail::AttachedControlGroup(SystemInfo::instance(), hierarchyId, "/", SingleControlGroupPointer()));
+            new detail::AttachedControlGroup(
+                SystemInfo::instance(),
+                hierarchyId,
+                "/",
+                SingleControlGroupPointer()
+            )
+        );
     }
 
-    SingleControlGroupPointer SingleControlGroup::attach(const std::size_t hierarchyId,
-                                                         const boost::filesystem::path &controlGroup)
+    SingleControlGroupPointer SingleControlGroup::attach(
+        const std::size_t hierarchyId, const boost::filesystem::path &controlGroup)
     {
         if (controlGroup.is_relative())
             BOOST_THROW_EXCEPTION(
                 SingleControlGroupRelativeControlGroupError() <<
-                SingleControlGroupRelativeControlGroupError::controlGroupPath(controlGroup));
+                SingleControlGroupRelativeControlGroupError::controlGroupPath(
+                    controlGroup));
         return root(hierarchyId)->attachChild(controlGroup.relative_path());
     }
 
-    boost::filesystem::path SingleControlGroup::fieldPath__(const std::string &fieldName) const
+    boost::filesystem::path SingleControlGroup::fieldPath__(
+        const std::string &fieldName) const
     {
         return hierarchyInfo().mountpoint.get() / controlGroup() / fieldName;
     }
@@ -266,11 +288,15 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
             if (iter == children_.end())
             {
                 const SingleControlGroupPointer cgroup(
-                    new detail::AttachedControlGroup(systemInfo(),
-                                                     hierarchyId(),
-                                                     controlGroup() / childControlGroup,
-                                                     SingleControlGroupPointer(this)));
-                const auto iter_inserted = children_.emplace(childControlGroup, cgroup.get());
+                    new detail::AttachedControlGroup(
+                        systemInfo(),
+                        hierarchyId(),
+                        controlGroup() / childControlGroup,
+                        SingleControlGroupPointer(this)
+                    )
+                );
+                const auto iter_inserted =
+                    children_.emplace(childControlGroup, cgroup.get());
                 BOOST_ASSERT(iter_inserted.second);
                 return cgroup;
             }
@@ -287,20 +313,29 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         BOOST_ASSERT(childControlGroup.is_relative());
         BOOST_ASSERT(childControlGroup == childControlGroup.filename());
         if (childControlGroup == "." || childControlGroup == "..")
-            BOOST_THROW_EXCEPTION(SingleControlGroupPathError() <<
-                                  SingleControlGroupPathError::controlGroupPath(controlGroup() / childControlGroup) <<
-                                  SingleControlGroupPathError::message("Invalid path."));
+            BOOST_THROW_EXCEPTION(
+                SingleControlGroupPathError() <<
+                SingleControlGroupPathError::controlGroupPath(
+                    controlGroup() / childControlGroup) <<
+                SingleControlGroupPathError::message("Invalid path."));
         if (childControlGroup.empty())
-            BOOST_THROW_EXCEPTION(SingleControlGroupEmptyControlGroupPathError() <<
-                                  SingleControlGroupEmptyControlGroupPathError::controlGroupPath(controlGroup()));
+            BOOST_THROW_EXCEPTION(
+                SingleControlGroupEmptyControlGroupPathError() <<
+                SingleControlGroupEmptyControlGroupPathError::controlGroupPath(
+                    controlGroup()));
         if (children_.find(childControlGroup) != children_.end())
-            BOOST_THROW_EXCEPTION(SingleControlGroupExistsError() <<
-                                  SingleControlGroupExistsError::controlGroupPath(controlGroup() / childControlGroup));
+            BOOST_THROW_EXCEPTION(
+                SingleControlGroupExistsError() <<
+                SingleControlGroupExistsError::controlGroupPath(
+                    controlGroup() / childControlGroup));
         const SingleControlGroupPointer cgroup(
-            new detail::CreatedControlGroup(systemInfo(),
-                                            hierarchyId(),
-                                            controlGroup() / childControlGroup, mode,
-                                            SingleControlGroupPointer(this)));
+            new detail::CreatedControlGroup(
+                systemInfo(),
+                hierarchyId(),
+                controlGroup() / childControlGroup, mode,
+                SingleControlGroupPointer(this)
+            )
+        );
         // if we create child we want it to be able to attach tasks by default
         // note: we do not alter attached children
         if (cgroup->hierarchyInfo().subsystems.find(CpuSet::SUBSYSTEM_NAME) !=
@@ -313,7 +348,8 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
             if (cpuset.cpus().empty())
                 cpuset.setCpus(rootCpuset.cpus());
         }
-        const auto iter_inserted = children_.emplace(childControlGroup, cgroup.get());
+        const auto iter_inserted =
+            children_.emplace(childControlGroup, cgroup.get());
         BOOST_ASSERT(iter_inserted.second);
         return cgroup;
     }

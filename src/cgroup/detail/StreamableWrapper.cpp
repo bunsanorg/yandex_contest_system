@@ -7,7 +7,9 @@ namespace yandex{namespace contest{namespace system{namespace cgroup{namespace d
 #define YANDEX_CONTEST_SYSTEM_CGROUP_DETAIL_STREAMABLE_WRAPPER(PREFIX, STREAM, OPERATOR) \
     PREFIX##StreamableWrapper::ImplBase::~ImplBase() {} \
  \
-    STREAM &operator OPERATOR(STREAM &stream, const PREFIX##StreamableWrapper &streamable) \
+    STREAM &operator OPERATOR( \
+        STREAM &stream, \
+        const PREFIX##StreamableWrapper &streamable) \
     { \
         BOOST_ASSERT(streamable.impl_); \
         streamable.impl_->dispatch(stream); \

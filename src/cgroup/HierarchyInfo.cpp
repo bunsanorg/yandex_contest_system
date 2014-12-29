@@ -2,7 +2,8 @@
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
-    std::ostream &operator<<(std::ostream &out, const HierarchyInfo &hierarchyInfo)
+    std::ostream &operator<<(std::ostream &out,
+                             const HierarchyInfo &hierarchyInfo)
     {
         out << "{ id = " << hierarchyInfo.id << ", subsystems = {";
         {

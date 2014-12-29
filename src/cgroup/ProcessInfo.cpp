@@ -7,7 +7,8 @@
 
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
-    ProcessInfo::value_type ProcessInfo::IteratorConverter::operator()(const map_value_type &value) const
+    ProcessInfo::value_type ProcessInfo::IteratorConverter::operator()(
+        const map_value_type &value) const
     {
         ProcessHierarchyInfo processHierarchyInfo = {
             .hierarchy = SystemInfo::instance()->byHierarchyId(value.first),
@@ -21,19 +22,28 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         id2controlGroup_.swap(processInfo.id2controlGroup_);
     }
 
-    ProcessHierarchyInfo ProcessInfo::byHierarchyId(const std::size_t hierarchyId) const
+    ProcessHierarchyInfo ProcessInfo::byHierarchyId(
+        const std::size_t hierarchyId) const
     {
-        return getProcessHierarchyInfo(SystemInfo::instance()->byHierarchyId(hierarchyId));
+        return getProcessHierarchyInfo(
+            SystemInfo::instance()->byHierarchyId(hierarchyId)
+        );
     }
 
-    ProcessHierarchyInfo ProcessInfo::bySubsystem(const std::string &subsystem) const
+    ProcessHierarchyInfo ProcessInfo::bySubsystem(
+        const std::string &subsystem) const
     {
-        return getProcessHierarchyInfo(SystemInfo::instance()->bySubsystem(subsystem));
+        return getProcessHierarchyInfo(
+            SystemInfo::instance()->bySubsystem(subsystem)
+        );
     }
 
-    ProcessHierarchyInfo ProcessInfo::byMountpoint(const boost::filesystem::path &mountpoint) const
+    ProcessHierarchyInfo ProcessInfo::byMountpoint(
+        const boost::filesystem::path &mountpoint) const
     {
-        return getProcessHierarchyInfo(SystemInfo::instance()->byMountpoint(mountpoint));
+        return getProcessHierarchyInfo(
+            SystemInfo::instance()->byMountpoint(mountpoint)
+        );
     }
 
     ProcessInfo::const_iterator ProcessInfo::begin() const
@@ -56,14 +66,16 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         return const_iterator(id2controlGroup_.cend());
     }
 
-    ProcessHierarchyInfo ProcessInfo::getProcessHierarchyInfo(const HierarchyInfo &hierarchyInfo) const
+    ProcessHierarchyInfo ProcessInfo::getProcessHierarchyInfo(
+        const HierarchyInfo &hierarchyInfo) const
     {
         const auto iter = id2controlGroup_.find(hierarchyInfo.id);
         if (iter == id2controlGroup_.end())
-            BOOST_THROW_EXCEPTION(ProcessInfoInconsistencyError() <<
-                                  ProcessInfoInconsistencyError::message(
-                                      "Unable to find cgroup for hierarchy's id.") <<
-                                  ProcessInfoInconsistencyError::hierarchyId(hierarchyInfo.id));
+            BOOST_THROW_EXCEPTION(
+                ProcessInfoInconsistencyError() <<
+                ProcessInfoInconsistencyError::message(
+                    "Unable to find cgroup for hierarchy's id.") <<
+                ProcessInfoInconsistencyError::hierarchyId(hierarchyInfo.id));
         ProcessHierarchyInfo processHierarchyInfo = {
             .hierarchy = hierarchyInfo,
             .controlGroup = iter->second,
@@ -78,12 +90,19 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         cgroup.load(path);
         for (const ProcPidCgroup::Entry &entry: cgroup)
         {
-            if (processInfo.id2controlGroup_.find(entry.hierarchyId) != processInfo.id2controlGroup_.end())
-                BOOST_THROW_EXCEPTION(ProcessInfoDuplicateHierarchiesError() <<
-                                      ProcessInfoDuplicateHierarchiesError::path(path) <<
-                                      ProcessInfoDuplicateHierarchiesError::hierarchyId(entry.hierarchyId));
-            processInfo.id2controlGroup_[entry.hierarchyId] = entry.controlGroup;
-            // TODO Should we check subsystems field for consistency with SystemInfo::instance()?
+            if (processInfo.id2controlGroup_.find(entry.hierarchyId) !=
+                processInfo.id2controlGroup_.end())
+            {
+                BOOST_THROW_EXCEPTION(
+                    ProcessInfoDuplicateHierarchiesError() <<
+                    ProcessInfoDuplicateHierarchiesError::path(path) <<
+                    ProcessInfoDuplicateHierarchiesError::hierarchyId(
+                        entry.hierarchyId));
+            }
+            processInfo.id2controlGroup_[entry.hierarchyId] =
+                entry.controlGroup;
+            // TODO Should we check subsystems field
+            // for consistency with SystemInfo::instance()?
         }
         return processInfo;
     }

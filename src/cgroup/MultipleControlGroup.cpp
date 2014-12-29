@@ -29,7 +29,8 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         return cgroup;
     }
 
-    MultipleControlGroupPointer MultipleControlGroup::attach(const boost::filesystem::path &controlGroup)
+    MultipleControlGroupPointer MultipleControlGroup::attach(
+        const boost::filesystem::path &controlGroup)
     {
         const MultipleControlGroupPointer cgroup(new MultipleControlGroup);
         for (const HierarchyInfo &hierarchyInfo: *SystemInfo::instance())
@@ -43,38 +44,47 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         fieldName2path_.clear();
         const std::size_t hierarchyId = cgroup->hierarchyId();
         if (id2cgroup_.find(hierarchyId) != id2cgroup_.end())
-            BOOST_THROW_EXCEPTION(MultipleControlGroupHierarchyConflictError() <<
-                                  MultipleControlGroupHierarchyConflictError::hierarchyId(hierarchyId));
+            BOOST_THROW_EXCEPTION(
+                MultipleControlGroupHierarchyConflictError() <<
+                MultipleControlGroupHierarchyConflictError::hierarchyId(
+                    hierarchyId));
         id2cgroup_[hierarchyId] = cgroup;
     }
 
-    SingleControlGroupPointer MultipleControlGroup::replace(const SingleControlGroupPointer &cgroup)
+    SingleControlGroupPointer MultipleControlGroup::replace(
+        const SingleControlGroupPointer &cgroup)
     {
         BOOST_ASSERT(cgroup);
         fieldName2path_.clear();
         const std::size_t hierarchyId = cgroup->hierarchyId();
         auto iter = id2cgroup_.find(hierarchyId);
         if (iter == id2cgroup_.end())
-            BOOST_THROW_EXCEPTION(MultipleControlGroupHierarchyNotFoundError() <<
-                                  MultipleControlGroupHierarchyNotFoundError::hierarchyId(hierarchyId));
+            BOOST_THROW_EXCEPTION(
+                MultipleControlGroupHierarchyNotFoundError() <<
+                MultipleControlGroupHierarchyNotFoundError::hierarchyId(
+                    hierarchyId));
         const SingleControlGroupPointer ret = iter->second;
         iter->second = cgroup;
         return ret;
     }
 
-    SingleControlGroupPointer MultipleControlGroup::remove(const std::size_t hierarchyId)
+    SingleControlGroupPointer MultipleControlGroup::remove(
+        const std::size_t hierarchyId)
     {
         fieldName2path_.clear();
         const auto iter = id2cgroup_.find(hierarchyId);
         if (iter == id2cgroup_.end())
-            BOOST_THROW_EXCEPTION(MultipleControlGroupHierarchyNotFoundError() <<
-                                  MultipleControlGroupHierarchyNotFoundError::hierarchyId(hierarchyId));
+            BOOST_THROW_EXCEPTION(
+                MultipleControlGroupHierarchyNotFoundError() <<
+                MultipleControlGroupHierarchyNotFoundError::hierarchyId(
+                    hierarchyId));
         const SingleControlGroupPointer ret = iter->second;
         id2cgroup_.erase(iter);
         return ret;
     }
 
-    SingleControlGroupPointer MultipleControlGroup::find(const std::size_t hierarchyId) const
+    SingleControlGroupPointer MultipleControlGroup::find(
+        const std::size_t hierarchyId) const
     {
         SingleControlGroupPointer ret;
         const auto iter = id2cgroup_.find(hierarchyId);
@@ -86,7 +96,8 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     ControlGroup::Tasks MultipleControlGroup::tasks()
     {
         Tasks tasks;
-        for (const std::pair<std::size_t, SingleControlGroupPointer> &id_cgroup: id2cgroup_)
+        for (const std::pair<std::size_t, SingleControlGroupPointer> &id_cgroup:
+             id2cgroup_)
         {
             const Tasks &t = id_cgroup.second->tasks();
             tasks.insert(t.begin(), t.end());
@@ -96,15 +107,19 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
     void MultipleControlGroup::attachTask(const pid_t pid)
     {
-        for (const std::pair<std::size_t, SingleControlGroupPointer> &id_cgroup: id2cgroup_)
+        for (const std::pair<std::size_t, SingleControlGroupPointer> &id_cgroup:
+             id2cgroup_)
+        {
             id_cgroup.second->attachTask(pid);
+        }
     }
 
     namespace
     {
         template <typename Ret, typename Iter>
         Ret foldFields(Iter begin, const Iter end,
-                       Ret (SingleControlGroup::*getter)(), const std::string &fieldName)
+                       Ret (SingleControlGroup::*getter)(),
+                       const std::string &fieldName)
         {
             if (begin == end)
                 BOOST_THROW_EXCEPTION(EmptyMultipleControlGroupError());
@@ -118,7 +133,8 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
                     if (value != nextValue)
                         BOOST_THROW_EXCEPTION(
                             MultipleControlGroupFieldValueConflictError() <<
-                            MultipleControlGroupFieldValueConflictError::fieldName(fieldName));
+                            MultipleControlGroupFieldValueConflictError::fieldName(
+                                fieldName));
                 }
                 else
                 {
@@ -134,13 +150,17 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     bool MultipleControlGroup::notifyOnRelease()
     {
         return foldFields(id2cgroup_.begin(), id2cgroup_.end(),
-                          &SingleControlGroup::notifyOnRelease, "notify_on_release");
+                          &SingleControlGroup::notifyOnRelease,
+                          "notify_on_release");
     }
 
     void MultipleControlGroup::setNotifyOnRelease(const bool notifyOnRelease)
     {
-        for (const std::pair<std::size_t, SingleControlGroupPointer> &id_cgroup: id2cgroup_)
+        for (const std::pair<std::size_t, SingleControlGroupPointer> &id_cgroup:
+             id2cgroup_)
+        {
             id_cgroup.second->setNotifyOnRelease(notifyOnRelease);
+        }
     }
 
     std::string MultipleControlGroup::releaseAgent()
@@ -151,51 +171,73 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
     void MultipleControlGroup::setReleaseAgent(const std::string &releaseAgent)
     {
-        for (const std::pair<std::size_t, SingleControlGroupPointer> &id_cgroup: id2cgroup_)
+        for (const std::pair<std::size_t, SingleControlGroupPointer> &id_cgroup:
+             id2cgroup_)
+        {
             id_cgroup.second->setReleaseAgent(releaseAgent);
+        }
     }
 
     bool MultipleControlGroup::cloneChildren()
     {
         return foldFields(id2cgroup_.begin(), id2cgroup_.end(),
-                          &SingleControlGroup::cloneChildren, "cgroup.clone_children");
+                          &SingleControlGroup::cloneChildren,
+                          "cgroup.clone_children");
     }
 
     void MultipleControlGroup::setCloneChildren(const bool cloneChildren)
     {
-        for (const std::pair<std::size_t, SingleControlGroupPointer> &id_cgroup: id2cgroup_)
+        for (const std::pair<std::size_t, SingleControlGroupPointer> &id_cgroup:
+             id2cgroup_)
+        {
             id_cgroup.second->setCloneChildren(cloneChildren);
+        }
     }
 
-    MultipleControlGroupPointer MultipleControlGroup::attachChild(const boost::filesystem::path &childControlGroup)
+    MultipleControlGroupPointer MultipleControlGroup::attachChild(
+        const boost::filesystem::path &childControlGroup)
     {
         const MultipleControlGroupPointer child(new MultipleControlGroup);
-        for (const std::pair<std::size_t, SingleControlGroupPointer> &id_cgroup: id2cgroup_)
-            child->id2cgroup_[id_cgroup.first] = id_cgroup.second->attachChild(childControlGroup);
+        for (const std::pair<std::size_t, SingleControlGroupPointer> &id_cgroup:
+             id2cgroup_)
+        {
+            child->id2cgroup_[id_cgroup.first] =
+                id_cgroup.second->attachChild(childControlGroup);
+        }
         return child;
     }
 
-    MultipleControlGroupPointer MultipleControlGroup::createChild(const boost::filesystem::path &childControlGroup)
+    MultipleControlGroupPointer MultipleControlGroup::createChild(
+        const boost::filesystem::path &childControlGroup)
     {
         const MultipleControlGroupPointer child(new MultipleControlGroup);
-        for (const std::pair<std::size_t, SingleControlGroupPointer> &id_cgroup: id2cgroup_)
-            child->id2cgroup_[id_cgroup.first] = id_cgroup.second->createChild(childControlGroup);
+        for (const std::pair<std::size_t, SingleControlGroupPointer> &id_cgroup:
+             id2cgroup_)
+        {
+            child->id2cgroup_[id_cgroup.first] =
+                id_cgroup.second->createChild(childControlGroup);
+        }
         return child;
     }
 
-    MultipleControlGroupPointer MultipleControlGroup::createChild(const boost::filesystem::path &childControlGroup,
-                                                                  const mode_t mode)
+    MultipleControlGroupPointer MultipleControlGroup::createChild(
+        const boost::filesystem::path &childControlGroup, const mode_t mode)
     {
         const MultipleControlGroupPointer child(new MultipleControlGroup);
-        for (const std::pair<std::size_t, SingleControlGroupPointer> &id_cgroup: id2cgroup_)
-            child->id2cgroup_[id_cgroup.first] = id_cgroup.second->createChild(childControlGroup, mode);
+        for (const std::pair<std::size_t, SingleControlGroupPointer> &id_cgroup:
+             id2cgroup_)
+        {
+            child->id2cgroup_[id_cgroup.first] =
+                id_cgroup.second->createChild(childControlGroup, mode);
+        }
         return child;
     }
 
     MultipleControlGroupPointer MultipleControlGroup::parent()
     {
         const MultipleControlGroupPointer child(new MultipleControlGroup);
-        for (const std::pair<std::size_t, SingleControlGroupPointer> &id_cgroup: id2cgroup_)
+        for (const std::pair<std::size_t, SingleControlGroupPointer> &id_cgroup:
+             id2cgroup_)
         {
             const SingleControlGroupPointer parent = id_cgroup.second->parent();
             if (!parent)
@@ -205,16 +247,19 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         return child;
     }
 
-    boost::filesystem::path MultipleControlGroup::fieldPath__(const std::string &fieldName) const
+    boost::filesystem::path MultipleControlGroup::fieldPath__(
+        const std::string &fieldName) const
     {
         const auto iter = fieldName2path_.find(fieldName);
         if (iter == fieldName2path_.end())
         {
-            for (const std::pair<std::size_t, SingleControlGroupPointer> &id_cgroup: id2cgroup_)
+            for (const std::pair<std::size_t, SingleControlGroupPointer> &id_cgroup:
+                 id2cgroup_)
             {
                 try
                 {
-                    const boost::filesystem::path path = id_cgroup.second->fieldPath(fieldName);
+                    const boost::filesystem::path path =
+                        id_cgroup.second->fieldPath(fieldName);
                     fieldName2path_[fieldName] = path;
                     return path;
                 }
@@ -223,8 +268,9 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
                     // continue
                 }
             }
-            BOOST_THROW_EXCEPTION(ControlGroupFieldDoesNotExistError() <<
-                                  ControlGroupFieldDoesNotExistError::fieldName(fieldName));
+            BOOST_THROW_EXCEPTION(
+                ControlGroupFieldDoesNotExistError() <<
+                ControlGroupFieldDoesNotExistError::fieldName(fieldName));
         }
         else
         {
@@ -232,15 +278,20 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         }
     }
 
-    ControlGroupPointer MultipleControlGroup::attachChild__(const boost::filesystem::path &childControlGroup)
+    ControlGroupPointer MultipleControlGroup::attachChild__(
+        const boost::filesystem::path &childControlGroup)
     {
-        return boost::static_pointer_cast<ControlGroup>(attachChild(childControlGroup));
+        return boost::static_pointer_cast<ControlGroup>(
+            attachChild(childControlGroup)
+        );
     }
 
-    ControlGroupPointer MultipleControlGroup::createChild__(const boost::filesystem::path &childControlGroup,
-                                                            const mode_t mode)
+    ControlGroupPointer MultipleControlGroup::createChild__(
+        const boost::filesystem::path &childControlGroup, const mode_t mode)
     {
-        return boost::static_pointer_cast<ControlGroup>(createChild(childControlGroup, mode));
+        return boost::static_pointer_cast<ControlGroup>(
+            createChild(childControlGroup, mode)
+        );
     }
 
     ControlGroupPointer MultipleControlGroup::parent__()
@@ -252,7 +303,8 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     {
         out << "{ ";
         bool first = true;
-        for (const std::pair<std::size_t, SingleControlGroupPointer> &id_cgroup: id2cgroup_)
+        for (const std::pair<std::size_t, SingleControlGroupPointer> &id_cgroup:
+             id2cgroup_)
         {
             if (!first)
                 out << ", ";

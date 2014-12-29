@@ -14,17 +14,20 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     YANDEX_CONTEST_INTRUSIVE_PTR_DEFINE(ControlGroup)
 
-    ControlGroupPointer ControlGroup::attachChild(const boost::filesystem::path &childControlGroup)
+    ControlGroupPointer ControlGroup::attachChild(
+        const boost::filesystem::path &childControlGroup)
     {
         return attachChild__(childControlGroup);
     }
 
-    ControlGroupPointer ControlGroup::createChild(const boost::filesystem::path &childControlGroup)
+    ControlGroupPointer ControlGroup::createChild(
+        const boost::filesystem::path &childControlGroup)
     {
         return createChild(childControlGroup, 0777);
     }
 
-    ControlGroupPointer ControlGroup::createChild(const boost::filesystem::path &childControlGroup, const mode_t mode)
+    ControlGroupPointer ControlGroup::createChild(
+        const boost::filesystem::path &childControlGroup, const mode_t mode)
     {
         return createChild__(childControlGroup, mode);
     }
@@ -34,16 +37,19 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         return parent__();
     }
 
-    boost::filesystem::path ControlGroup::fieldPath(const std::string &fieldName) const
+    boost::filesystem::path ControlGroup::fieldPath(
+        const std::string &fieldName) const
     {
         const boost::filesystem::path name(fieldName);
         if (name.is_absolute() || name.filename() != name)
-            BOOST_THROW_EXCEPTION(ControlGroupInvalidFieldNameError() <<
-                                  ControlGroupInvalidFieldNameError::fieldName(fieldName));
+            BOOST_THROW_EXCEPTION(
+                ControlGroupInvalidFieldNameError() <<
+                ControlGroupInvalidFieldNameError::fieldName(fieldName));
         const boost::filesystem::path path = fieldPath__(fieldName);
         BUNSAN_EXCEPTIONS_WRAP_BEGIN()
         {
-            const boost::filesystem::file_status status = boost::filesystem::symlink_status(path);
+            const boost::filesystem::file_status status =
+                boost::filesystem::symlink_status(path);
             switch (status.type())
             {
             case boost::filesystem::regular_file:
@@ -61,7 +67,8 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         return path;
     }
 
-    void ControlGroup::readFieldByReader(const std::string &fieldName, const Reader &reader)
+    void ControlGroup::readFieldByReader(const std::string &fieldName,
+                                         const Reader &reader)
     {
         const boost::filesystem::path fpath = fieldPath(fieldName);
         bunsan::filesystem::ifstream fin(fpath);
@@ -73,7 +80,8 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         fin.close();
     }
 
-    void ControlGroup::writeFieldByWriter(const std::string &fieldName, const Writer &writer)
+    void ControlGroup::writeFieldByWriter(const std::string &fieldName,
+                                          const Writer &writer)
     {
         const boost::filesystem::path fpath = fieldPath(fieldName);
         bunsan::filesystem::ofstream fout(fpath);
@@ -86,7 +94,8 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     }
 
     template <>
-    void ControlGroup::readField(const std::string &fieldName, const detail::IStreamableWrapper &data)
+    void ControlGroup::readField(const std::string &fieldName,
+                                 const detail::IStreamableWrapper &data)
     {
         readFieldByReader(fieldName,
             [&data](std::istream &in)
@@ -96,7 +105,8 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     }
 
     template <>
-    void ControlGroup::writeField(const std::string &fieldName, const detail::OStreamableWrapper &data)
+    void ControlGroup::writeField(const std::string &fieldName,
+                                  const detail::OStreamableWrapper &data)
     {
         writeFieldByWriter(fieldName,
             [&data](std::ostream &out)

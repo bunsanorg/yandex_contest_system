@@ -25,17 +25,21 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         for (ProcPidCgroup::Entry &entry: cgroup)
         {
             if (id2hierarchy_.find(entry.hierarchyId) != id2hierarchy_.end())
-                BOOST_THROW_EXCEPTION(SystemInfoDuplicateHierarchiesError() <<
-                                      SystemInfoDuplicateHierarchiesError::hierarchyId(entry.hierarchyId));
+                BOOST_THROW_EXCEPTION(
+                    SystemInfoDuplicateHierarchiesError() <<
+                    SystemInfoDuplicateHierarchiesError::hierarchyId(
+                        entry.hierarchyId));
             HierarchyInfo &hierarchyInfo = id2hierarchy_[entry.hierarchyId];
             hierarchyInfo.id = std::move(entry.hierarchyId);
             hierarchyInfo.subsystems = std::move(entry.subsystems);
             for (const std::string &subsystem: hierarchyInfo.subsystems)
             {
                 if (subsystem2id_.find(subsystem) != subsystem2id_.end())
-                    BOOST_THROW_EXCEPTION(SystemInfoDuplicateSubsystemsError() <<
-                                          SystemInfoDuplicateSubsystemsError::hierarchyId(hierarchyInfo.id) <<
-                                          SystemInfoDuplicateSubsystemsError::subsystem(subsystem));
+                    BOOST_THROW_EXCEPTION(
+                        SystemInfoDuplicateSubsystemsError() <<
+                        SystemInfoDuplicateSubsystemsError::hierarchyId(
+                            hierarchyInfo.id) <<
+                        SystemInfoDuplicateSubsystemsError::subsystem(subsystem));
                 subsystem2id_[subsystem] = hierarchyInfo.id;
             }
         }
@@ -43,6 +47,20 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
     void SystemInfo::loadMountpoints()
     {
+        static const std::unordered_set<std::string> knownSubsystems = {
+            "blkio",
+            "cpu",
+            "cpuacct",
+            "cpuset",
+            "devices",
+            "freezer",
+            "memory",
+            "net_cls",
+            "net_prio",
+            "ns",
+            "perf_event",
+        };
+
         unistd::Fstab fstab;
         fstab.load("/proc/mounts");
         for (const unistd::MountEntry &entry: fstab)
@@ -53,22 +71,13 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
                 {
                     std::unordered_set<std::string> subsystems;
                     std::vector<std::string> opts;
-                    boost::algorithm::split(opts, entry.opts, boost::algorithm::is_any_of(","));
+                    boost::algorithm::split(
+                        opts,
+                        entry.opts,
+                        boost::algorithm::is_any_of(",")
+                    );
                     for (const std::string &opt: opts)
                     {
-                        static const std::unordered_set<std::string> knownSubsystems = {
-                            "blkio",
-                            "cpu",
-                            "cpuacct",
-                            "cpuset",
-                            "devices",
-                            "freezer",
-                            "memory",
-                            "net_cls",
-                            "net_prio",
-                            "ns",
-                            "perf_event",
-                        };
                         if (boost::algorithm::starts_with(opt, "name=") ||
                             knownSubsystems.find(opt) != knownSubsystems.end())
                         {
@@ -80,17 +89,20 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
                     const std::string subsystem = *subsystems.begin();
                     const auto iter = subsystem2id_.find(subsystem);
                     if (iter == subsystem2id_.end())
-                        BOOST_THROW_EXCEPTION(SystemInfoInconsistencyError() <<
-                                              SystemInfoInconsistencyError::message(
-                                                  "/proc/mounts is not consistent with /proc/self/cgroup"));
+                        BOOST_THROW_EXCEPTION(
+                            SystemInfoInconsistencyError() <<
+                            SystemInfoInconsistencyError::message(
+                                "/proc/mounts is not consistent "
+                                "with /proc/self/cgroup"));
                     const auto iter2 = id2hierarchy_.find(iter->second);
                     BOOST_ASSERT(iter2 != id2hierarchy_.end());
                     HierarchyInfo &hierarchyInfo = iter2->second;
                     if (subsystems != hierarchyInfo.subsystems)
-                        BOOST_THROW_EXCEPTION(SystemInfoInconsistencyError() <<
-                                              SystemInfoInconsistencyError::message(
-                                                  "subsystems from /proc/mounts are not equal "
-                                                  "to subsystems from /proc/self/cgroup"));
+                        BOOST_THROW_EXCEPTION(
+                            SystemInfoInconsistencyError() <<
+                            SystemInfoInconsistencyError::message(
+                                "subsystems from /proc/mounts are not equal "
+                                "to subsystems from /proc/self/cgroup"));
                     hierarchyInfo.mountpoint = entry.dir;
                     mountpoint2id_[entry.dir] = hierarchyInfo.id;
                 }
@@ -101,30 +113,36 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         }
     }
 
-    const HierarchyInfo &SystemInfo::byHierarchyId(const std::size_t hierarchyId) const
+    const HierarchyInfo &SystemInfo::byHierarchyId(
+        const std::size_t hierarchyId) const
     {
         const auto iter = id2hierarchy_.find(hierarchyId);
         if (iter == id2hierarchy_.end())
-            BOOST_THROW_EXCEPTION(SystemInfoUnknownHierarchyError() <<
-                                  SystemInfoUnknownHierarchyError::hierarchyId(hierarchyId));
+            BOOST_THROW_EXCEPTION(
+                SystemInfoUnknownHierarchyError() <<
+                SystemInfoUnknownHierarchyError::hierarchyId(hierarchyId));
         return iter->second;
     }
 
-    const HierarchyInfo &SystemInfo::bySubsystem(const std::string &subsystem) const
+    const HierarchyInfo &SystemInfo::bySubsystem(
+        const std::string &subsystem) const
     {
         const auto iter = subsystem2id_.find(subsystem);
         if (iter == subsystem2id_.end())
-            BOOST_THROW_EXCEPTION(SystemInfoUnknownHierarchyError() <<
-                                  SystemInfoUnknownHierarchyError::subsystem(subsystem));
+            BOOST_THROW_EXCEPTION(
+                SystemInfoUnknownHierarchyError() <<
+                SystemInfoUnknownHierarchyError::subsystem(subsystem));
         return byIdNoFail(iter->second);
     }
 
-    const HierarchyInfo &SystemInfo::byMountpoint(const boost::filesystem::path &mountpoint) const
+    const HierarchyInfo &SystemInfo::byMountpoint(
+        const boost::filesystem::path &mountpoint) const
     {
         const auto iter = mountpoint2id_.find(mountpoint);
         if (iter == mountpoint2id_.end())
-            BOOST_THROW_EXCEPTION(SystemInfoUnknownHierarchyError() <<
-                                  SystemInfoUnknownHierarchyError::mountpoint(mountpoint));
+            BOOST_THROW_EXCEPTION(
+                SystemInfoUnknownHierarchyError() <<
+                SystemInfoUnknownHierarchyError::mountpoint(mountpoint));
         return byIdNoFail(iter->second);
     }
 

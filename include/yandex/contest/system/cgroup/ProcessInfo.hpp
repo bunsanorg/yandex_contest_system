@@ -14,13 +14,20 @@
 namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     struct ProcessInfoError: virtual Error {};
-    struct ProcessInfoInconsistencyError: virtual ProcessInfoError, virtual InconsistencyError {};
-    struct ProcessInfoDuplicateHierarchiesError: virtual ProcessInfoError, virtual FileFormatError {};
+    struct ProcessInfoInconsistencyError:
+        virtual ProcessInfoError,
+        virtual InconsistencyError {};
+    struct ProcessInfoDuplicateHierarchiesError:
+        virtual ProcessInfoError,
+        virtual FileFormatError {};
 
     class ProcessInfo
     {
     private:
-        typedef std::unordered_map<std::size_t, boost::filesystem::path> id2controlGroupType;
+        typedef std::unordered_map<
+            std::size_t,
+            boost::filesystem::path
+        > id2controlGroupType;
         typedef id2controlGroupType::const_iterator map_const_iterator;
         typedef id2controlGroupType::value_type map_value_type;
 
@@ -28,13 +35,17 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         typedef ProcessHierarchyInfo value_type;
 
     private:
-        struct IteratorConverter: std::unary_function<const map_value_type &, value_type>
+        struct IteratorConverter:
+            std::unary_function<const map_value_type &, value_type>
         {
             value_type operator()(const map_value_type &value) const;
         };
 
     public:
-        typedef boost::transform_iterator<IteratorConverter, map_const_iterator> const_iterator;
+        typedef boost::transform_iterator<
+            IteratorConverter,
+            map_const_iterator
+        > const_iterator;
 
     public:
         ProcessInfo()=default;
@@ -45,9 +56,12 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
         void swap(ProcessInfo &processInfo) noexcept;
 
-        ProcessHierarchyInfo byHierarchyId(const std::size_t hierarchyId) const;
-        ProcessHierarchyInfo bySubsystem(const std::string &subsystem) const;
-        ProcessHierarchyInfo byMountpoint(const boost::filesystem::path &mountpoint) const;
+        ProcessHierarchyInfo byHierarchyId(
+            const std::size_t hierarchyId) const;
+        ProcessHierarchyInfo bySubsystem(
+            const std::string &subsystem) const;
+        ProcessHierarchyInfo byMountpoint(
+            const boost::filesystem::path &mountpoint) const;
 
         const_iterator begin() const;
         const_iterator cbegin() const;
@@ -60,7 +74,8 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         static ProcessInfo forSelf();
 
     private:
-        ProcessHierarchyInfo getProcessHierarchyInfo(const HierarchyInfo &info) const;
+        ProcessHierarchyInfo getProcessHierarchyInfo(
+            const HierarchyInfo &info) const;
 
     private:
         id2controlGroupType id2controlGroup_;

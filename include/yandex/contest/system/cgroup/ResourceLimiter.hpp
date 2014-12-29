@@ -6,7 +6,8 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 {
     template <typename Config, typename Units_=Count,
               typename Converter=detail::UnitsConverter<Units_>>
-    class ResourceLimiter: public virtual ResourceCounter<Config, Units_, Converter>
+    class ResourceLimiter:
+        public virtual ResourceCounter<Config, Units_, Converter>
     {
     public:
         typedef typename ResourceCounter<Config>::Units Units;

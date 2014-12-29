@@ -12,5 +12,6 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         boost::filesystem::path controlGroup;
     };
 
-    std::ostream &operator<<(std::ostream &out, const ProcessHierarchyInfo &processHierarchyInfo);
+    std::ostream &operator<<(std::ostream &out,
+                             const ProcessHierarchyInfo &processHierarchyInfo);
 }}}}

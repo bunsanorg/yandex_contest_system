@@ -10,11 +10,12 @@
 
 namespace yandex{namespace contest{namespace system{namespace cgroup{namespace detail
 {
-    CreatedControlGroup::CreatedControlGroup(const SystemInfoPointer &systemInfo,
-                                             const std::size_t hierarchyId,
-                                             const boost::filesystem::path &controlGroup,
-                                             const mode_t mode,
-                                             const SingleControlGroupPointer &parent):
+    CreatedControlGroup::CreatedControlGroup(
+        const SystemInfoPointer &systemInfo,
+        const std::size_t hierarchyId,
+        const boost::filesystem::path &controlGroup,
+        const mode_t mode,
+        const SingleControlGroupPointer &parent):
         SingleControlGroup(systemInfo, hierarchyId, controlGroup, parent)
     {
         BUNSAN_EXCEPTIONS_WRAP_BEGIN()
@@ -42,9 +43,11 @@ namespace yandex{namespace contest{namespace system{namespace cgroup{namespace d
                 STREAM_TRACE << "Attempt to remove cgroup = " << *this << ".";
                 if (!boost::filesystem::remove(location()))
                 {
-                    STREAM_ERROR << "Unable to remove cgroup = " << *this << " (does not exist).";
+                    STREAM_ERROR << "Unable to remove cgroup = " <<
+                                    *this << " (does not exist).";
                 }
-                STREAM_TRACE << "Control group " << *this << " was successfully removed.";
+                STREAM_TRACE << "Control group " << *this << " " <<
+                                "was successfully removed.";
             }
             BUNSAN_EXCEPTIONS_WRAP_END_ERROR_INFO(
                 SingleControlGroupError::hierarchyId(hierarchyId()) <<

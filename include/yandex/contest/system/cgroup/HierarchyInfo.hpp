@@ -16,5 +16,6 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         boost::optional<boost::filesystem::path> mountpoint;
     };
 
-    std::ostream &operator<<(std::ostream &out, const HierarchyInfo &hierarchyInfo);
+    std::ostream &operator<<(std::ostream &out,
+                             const HierarchyInfo &hierarchyInfo);
 }}}}

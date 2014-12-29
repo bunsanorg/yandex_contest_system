@@ -10,13 +10,20 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
     struct MultipleControlGroupError: virtual ControlGroupError {};
     struct EmptyMultipleControlGroupError: virtual MultipleControlGroupError {};
 
-    struct MultipleControlGroupHierarchyError: virtual MultipleControlGroupError {};
-    struct MultipleControlGroupHierarchyConflictError: virtual MultipleControlGroupHierarchyError {};
-    struct MultipleControlGroupHierarchyNotFoundError: virtual MultipleControlGroupHierarchyError {};
+    struct MultipleControlGroupHierarchyError:
+        virtual MultipleControlGroupError {};
+    struct MultipleControlGroupHierarchyConflictError:
+        virtual MultipleControlGroupHierarchyError {};
+    struct MultipleControlGroupHierarchyNotFoundError:
+        virtual MultipleControlGroupHierarchyError {};
 
-    struct MultipleControlGroupFieldError: virtual MultipleControlGroupError, virtual ControlGroupFieldError {};
-    struct MultipleControlGroupFieldValueError: virtual MultipleControlGroupFieldError {};
-    struct MultipleControlGroupFieldValueConflictError: virtual MultipleControlGroupFieldValueError {};
+    struct MultipleControlGroupFieldError:
+        virtual MultipleControlGroupError,
+        virtual ControlGroupFieldError {};
+    struct MultipleControlGroupFieldValueError:
+        virtual MultipleControlGroupFieldError {};
+    struct MultipleControlGroupFieldValueConflictError:
+        virtual MultipleControlGroupFieldValueError {};
 
     class MultipleControlGroup: public ControlGroup
     {
@@ -31,7 +38,8 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         static MultipleControlGroupPointer root();
 
         /// For all available hierarchies.
-        static MultipleControlGroupPointer attach(const boost::filesystem::path &controlGroup);
+        static MultipleControlGroupPointer attach(
+            const boost::filesystem::path &controlGroup);
 
         /// Unite specified cgroups.
         template <typename Iter>
@@ -45,7 +53,8 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
         /// For specified hierarchies.
         template <typename Iter>
-        static MultipleControlGroupPointer forPid(const pid_t pid, Iter begin, const Iter end)
+        static MultipleControlGroupPointer forPid(
+            const pid_t pid, Iter begin, const Iter end)
         {
             const MultipleControlGroupPointer cgroup(new MultipleControlGroup);
             for (; begin != end; ++begin)
@@ -75,8 +84,9 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
         /// For specified hierarchies.
         template <typename Iter>
-        static MultipleControlGroupPointer attach(const boost::filesystem::path &controlGroup,
-                                                  Iter begin, const Iter end)
+        static MultipleControlGroupPointer attach(
+            const boost::filesystem::path &controlGroup,
+            Iter begin, const Iter end)
         {
             const MultipleControlGroupPointer cgroup(new MultipleControlGroup);
             for (; begin != end; ++begin)
@@ -111,21 +121,27 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         bool cloneChildren() override;
         void setCloneChildren(const bool cloneChildren=true) override;
 
-        MultipleControlGroupPointer attachChild(const boost::filesystem::path &childControlGroup);
-        MultipleControlGroupPointer createChild(const boost::filesystem::path &childControlGroup);
-        MultipleControlGroupPointer createChild(const boost::filesystem::path &childControlGroup,
-                                                const mode_t mode);
+        MultipleControlGroupPointer attachChild(
+            const boost::filesystem::path &childControlGroup);
+        MultipleControlGroupPointer createChild(
+            const boost::filesystem::path &childControlGroup);
+        MultipleControlGroupPointer createChild(
+            const boost::filesystem::path &childControlGroup,
+            const mode_t mode);
         MultipleControlGroupPointer parent();
 
     protected:
         MultipleControlGroup()=default;
 
-        ControlGroupPointer attachChild__(const boost::filesystem::path &childControlGroup) override;
-        ControlGroupPointer createChild__(const boost::filesystem::path &childControlGroup,
-                                          const mode_t mode) override;
+        ControlGroupPointer attachChild__(
+            const boost::filesystem::path &childControlGroup) override;
+        ControlGroupPointer createChild__(
+            const boost::filesystem::path &childControlGroup,
+            const mode_t mode) override;
         ControlGroupPointer parent__() override;
 
-        boost::filesystem::path fieldPath__(const std::string &fieldName) const override;
+        boost::filesystem::path fieldPath__(
+            const std::string &fieldName) const override;
 
         void print(std::ostream &out) const override;
 
@@ -133,6 +149,9 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         std::unordered_map<std::size_t, SingleControlGroupPointer> id2cgroup_;
 
         /// field path cache
-        mutable std::unordered_map<std::string, boost::filesystem::path> fieldName2path_;
+        mutable std::unordered_map<
+            std::string,
+            boost::filesystem::path
+        > fieldName2path_;
     };
 }}}}

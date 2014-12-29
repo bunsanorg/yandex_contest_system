@@ -44,13 +44,17 @@ namespace yandex{namespace contest{namespace system{namespace cgroup{namespace d
             T *object_; \
         }; \
  \
-        friend STREAM &operator OPERATOR(STREAM &stream, const PREFIX##StreamableWrapper &streamable); \
+        friend STREAM &operator OPERATOR( \
+            STREAM &stream, \
+            const PREFIX##StreamableWrapper &streamable); \
  \
     private: \
         std::shared_ptr<ImplBase> impl_; \
     }; \
  \
-    STREAM &operator OPERATOR(STREAM &stream, const PREFIX##StreamableWrapper &streamable);
+    STREAM &operator OPERATOR( \
+        STREAM &stream, \
+        const PREFIX##StreamableWrapper &streamable);
 
     YANDEX_CONTEST_SYSTEM_CGROUP_DETAIL_STREAMABLE_WRAPPER(I, std::istream, >>)
     YANDEX_CONTEST_SYSTEM_CGROUP_DETAIL_STREAMABLE_WRAPPER(O, std::ostream, <<)

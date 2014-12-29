@@ -37,17 +37,19 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         static SingleControlGroupPointer forProcessHierarchyInfo(
             const ProcessHierarchyInfo &processHierarchyInfo);
 
-        static SingleControlGroupPointer forProcessInfo(const std::size_t hierarchyId,
-                                                        const ProcessInfo &processInfo);
+        static SingleControlGroupPointer forProcessInfo(
+            const std::size_t hierarchyId, const ProcessInfo &processInfo);
 
-        static SingleControlGroupPointer forPid(const std::size_t hierarchyId, const pid_t pid);
+        static SingleControlGroupPointer forPid(
+            const std::size_t hierarchyId, const pid_t pid);
 
         static SingleControlGroupPointer forSelf(const std::size_t hierarchyId);
 
         static SingleControlGroupPointer root(const std::size_t hierarchyId);
 
-        static SingleControlGroupPointer attach(const std::size_t hierarchyId,
-                                                const boost::filesystem::path &controlGroup);
+        static SingleControlGroupPointer attach(
+            const std::size_t hierarchyId,
+            const boost::filesystem::path &controlGroup);
 
     public:
         const SystemInfoPointer &systemInfo() const;
@@ -71,34 +73,43 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         bool cloneChildren() override;
         void setCloneChildren(const bool cloneChildren=true) override;
 
-        SingleControlGroupPointer attachChild(const boost::filesystem::path &childControlGroup);
-        SingleControlGroupPointer createChild(const boost::filesystem::path &childControlGroup);
-        SingleControlGroupPointer createChild(const boost::filesystem::path &childControlGroup,
-                                              const mode_t mode);
+        SingleControlGroupPointer attachChild(
+            const boost::filesystem::path &childControlGroup);
+        SingleControlGroupPointer createChild(
+            const boost::filesystem::path &childControlGroup);
+        SingleControlGroupPointer createChild(
+            const boost::filesystem::path &childControlGroup,
+            const mode_t mode);
         SingleControlGroupPointer parent();
 
     protected:
-        /// \throws SingleControlGroupPathError if location() is neither directory nor not_found.
+        /// \throws SingleControlGroupPathError if location() is neither
+        /// directory nor not_found.
         SingleControlGroup(const SystemInfoPointer &systemInfo,
                            const std::size_t hierarchyId,
                            const boost::filesystem::path &controlGroup,
                            const SingleControlGroupPointer &parent);
 
-        ControlGroupPointer attachChild__(const boost::filesystem::path &childControlGroup) override;
-        ControlGroupPointer createChild__(const boost::filesystem::path &childControlGroup,
-                                          const mode_t mode) override;
+        ControlGroupPointer attachChild__(
+            const boost::filesystem::path &childControlGroup) override;
+        ControlGroupPointer createChild__(
+            const boost::filesystem::path &childControlGroup,
+            const mode_t mode) override;
         ControlGroupPointer parent__() override;
 
-        boost::filesystem::path fieldPath__(const std::string &fieldName) const override;
+        boost::filesystem::path fieldPath__(
+            const std::string &fieldName) const override;
 
         void print(std::ostream &out) const override;
 
         virtual void printSingle(std::ostream &out) const=0;
 
     private:
-        SingleControlGroupPointer attachDirectChild(const boost::filesystem::path &childControlGroup);
-        SingleControlGroupPointer createDirectChild(const boost::filesystem::path &childControlGroup,
-                                                    const mode_t mode);
+        SingleControlGroupPointer attachDirectChild(
+            const boost::filesystem::path &childControlGroup);
+        SingleControlGroupPointer createDirectChild(
+            const boost::filesystem::path &childControlGroup,
+            const mode_t mode);
 
     private:
         const SystemInfoPointer systemInfo_;

@@ -28,7 +28,10 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         virtual SystemInfoError,
         virtual FileFormatError
     {
-        typedef boost::error_info<struct mountEntryTag, unistd::MountEntry> mountEntry;
+        typedef boost::error_info<
+            struct mountEntryTag,
+            unistd::MountEntry
+        > mountEntry;
     };
 
     struct SystemInfoNoSubsystemsError:
@@ -48,7 +51,8 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         typedef map_value_type::second_type value_type;
 
     private:
-        struct IteratorConverter: std::unary_function<const map_value_type &, const value_type &>
+        struct IteratorConverter:
+            std::unary_function<const map_value_type &, const value_type &>
         {
             inline const value_type &operator()(const map_value_type &value) const
             {
@@ -57,12 +61,16 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         };
 
     public:
-        typedef boost::transform_iterator<IteratorConverter, map_const_iterator> const_iterator;
+        typedef boost::transform_iterator<
+            IteratorConverter,
+            map_const_iterator
+        > const_iterator;
 
     public:
         const HierarchyInfo &byHierarchyId(const std::size_t hierarchyId) const;
         const HierarchyInfo &bySubsystem(const std::string &subsystem) const;
-        const HierarchyInfo &byMountpoint(const boost::filesystem::path &mountpoint) const;
+        const HierarchyInfo &byMountpoint(
+            const boost::filesystem::path &mountpoint) const;
 
         const_iterator begin() const;
         const_iterator cbegin() const;

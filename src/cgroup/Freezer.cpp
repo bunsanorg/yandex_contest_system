@@ -27,12 +27,13 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         /*
          * From cgroup/freezer-subsystem:
          *
-         * It's important to note that freezing can be incomplete. In that case we return
-         * EBUSY. This means that some tasks in the cgroup are busy doing something that
-         * prevents us from completely freezing the cgroup at this time. After EBUSY,
-         * the cgroup will remain partially frozen -- reflected by freezer.state reporting
-         * "FREEZING" when read. The state will remain "FREEZING" until one of these
-         * things happens:
+         * It's important to note that freezing can be incomplete.
+         * In that case we return EBUSY. This means that some tasks
+         * in the cgroup are busy doing something that prevents us
+         * from completely freezing the cgroup at this time. After EBUSY,
+         * the cgroup will remain partially frozen -- reflected by freezer.state
+         * reporting "FREEZING" when read. The state will remain "FREEZING"
+         * until one of these things happens:
          *
          * 1) Userspace cancels the freezing operation by writing "THAWED" to
          *     the freezer.state file
