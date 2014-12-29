@@ -18,9 +18,16 @@ namespace yandex{namespace contest{namespace system{namespace execution
 
     /// \copydoc getErrCallImpl
     template <typename ... Args>
-    Result getErrCall(const std::string &executable, Args &&...args, const bool usePath)
+    Result getErrCall(
+        const std::string &executable,
+        Args &&...args,
+        const bool usePath)
     {
-        return getErrCallImpl(executable, collect(std::forward<Args>(args)...), usePath);
+        return getErrCallImpl(
+            executable,
+            collect(std::forward<Args>(args)...),
+            usePath
+        );
     }
 
     /// \copydoc getErrCallImpl

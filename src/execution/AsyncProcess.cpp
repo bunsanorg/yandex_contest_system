@@ -155,7 +155,8 @@ namespace yandex{namespace contest{namespace system{namespace execution
                 {
                     result_ = Result(statLoc);
                     collectOutput();
-                    STREAM_DEBUG << "Process result was collected for process " << pid_ << ".";
+                    STREAM_DEBUG << "Process result was collected "
+                                    "for process " << pid_ << ".";
                 }
                 else
                 {
@@ -220,7 +221,8 @@ namespace yandex{namespace contest{namespace system{namespace execution
             }
             catch (std::exception &e)
             {
-                STREAM_ERROR << "Unable to terminate process (pid = " << pid_ << ") due to error: \"" <<
+                STREAM_ERROR << "Unable to terminate process "
+                                "(pid = " << pid_ << ") due to error: \"" <<
                                 e.what() << "\" (ignored).";
             }
         }
