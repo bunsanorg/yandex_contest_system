@@ -47,20 +47,6 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
     void SystemInfo::loadMountpoints()
     {
-        static const std::unordered_set<std::string> knownSubsystems = {
-            "blkio",
-            "cpu",
-            "cpuacct",
-            "cpuset",
-            "devices",
-            "freezer",
-            "memory",
-            "net_cls",
-            "net_prio",
-            "ns",
-            "perf_event",
-        };
-
         unistd::Fstab fstab;
         fstab.load("/proc/mounts");
         for (const unistd::MountEntry &entry: fstab)
@@ -78,11 +64,12 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
                     );
                     for (const std::string &opt: opts)
                     {
-                        if (boost::algorithm::starts_with(opt, "name=") ||
-                            knownSubsystems.find(opt) != knownSubsystems.end())
-                        {
+                        // Every process belongs to control group
+                        // if it is mounted. That means subsystem2id_
+                        // knows all subsystems mounted in system
+                        // and we can use it as filter.
+                        if (subsystem2id_.find(opt) != subsystem2id_.end())
                             subsystems.insert(opt);
-                        }
                     }
                     if (subsystems.empty())
                         BOOST_THROW_EXCEPTION(SystemInfoNoSubsystemsError());
