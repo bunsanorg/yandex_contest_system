@@ -79,7 +79,7 @@ namespace yandex{namespace contest{namespace system{namespace unistd
 
     Descriptor::operator bool() const noexcept
     {
-        return fd_;
+        return static_cast<bool>(fd_);
     }
 
     void Descriptor::swap(Descriptor &descriptor) noexcept
