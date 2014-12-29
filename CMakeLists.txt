@@ -8,13 +8,7 @@ include(BunsanCommon)
 
 # BOOST
 bunsan_use_boost(system filesystem serialization)
-
-# LXC
-find_package(PkgConfig)
-pkg_check_modules(LXC REQUIRED lxc)
-link_directories(${LXC_LIBRARY_DIRS})
-include_directories(${LXC_INCLUDE_DIRS})
-bunsan_use(${LXC_LIBRARIES})
+bunsan_use_pkgconfig(LXC lxc)
 
 bunsan_use_bunsan(common)
 bunsan_use(yandex_contest_common)
