@@ -145,14 +145,29 @@ BOOST_AUTO_TEST_CASE(fieldPath)
     );
 }
 
+BOOST_AUTO_TEST_CASE(bySubsystem)
+{
+    const std::size_t freezerId =
+        yac::SystemInfo::instance()->bySubsystem("freezer").id;
+    const yac::SingleControlGroupPointer cgroup =
+        yac::SingleControlGroup::forSelf(freezerId);
+    BOOST_CHECK_EQUAL(cgroup->hierarchyId(), freezerId);
+    const yac::SingleControlGroupPointer cgroup2 =
+        yac::SingleControlGroup::forSelf("freezer");
+    BOOST_CHECK_EQUAL(cgroup2->hierarchyId(), freezerId);
+    BOOST_CHECK_EQUAL(cgroup->location(), cgroup2->location());
+}
+
 BOOST_AUTO_TEST_CASE(container)
 {
     const std::size_t freezerId =
         yac::SystemInfo::instance()->bySubsystem("freezer").id;
     const yac::SingleControlGroupPointer cgroup =
         yac::SingleControlGroup::forSelf(freezerId);
+    BOOST_CHECK_EQUAL(cgroup->hierarchyId(), freezerId);
     const yac::SingleControlGroupPointer cgroup2 =
         yac::SingleControlGroup::forSelf(freezerId);
+    BOOST_CHECK_EQUAL(cgroup2->hierarchyId(), freezerId);
     BOOST_CHECK_THROW(
         thisCG->add(cgroup),
         yac::MultipleControlGroupHierarchyConflictError
@@ -169,10 +184,8 @@ BOOST_AUTO_TEST_CASE(container)
 
 BOOST_AUTO_TEST_CASE(fields)
 {
-    const std::size_t freezerId =
-        yac::SystemInfo::instance()->bySubsystem("freezer").id;
     const yac::SingleControlGroupPointer freezerCG =
-        yac::SingleControlGroup::forSelf(freezerId)->attachChild(cgName);
+        yac::SingleControlGroup::forSelf("freezer")->attachChild(cgName);
     cg->setCloneChildren();
     BOOST_CHECK(cg->cloneChildren());
     BOOST_CHECK(freezerCG->cloneChildren());

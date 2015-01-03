@@ -217,15 +217,32 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         return forProcessHierarchyInfo(processInfo.byHierarchyId(hierarchyId));
     }
 
+    SingleControlGroupPointer SingleControlGroup::forProcessInfo(
+        const std::string &subsystem, const ProcessInfo &processInfo)
+    {
+        return forProcessHierarchyInfo(processInfo.bySubsystem(subsystem));
+    }
+
     SingleControlGroupPointer SingleControlGroup::forPid(
         const std::size_t hierarchyId, const pid_t pid)
     {
         return forProcessInfo(hierarchyId, ProcessInfo::forPid(pid));
     }
 
+    SingleControlGroupPointer SingleControlGroup::forPid(
+        const std::string &subsystem, const pid_t pid)
+    {
+        return forProcessInfo(subsystem, ProcessInfo::forPid(pid));
+    }
+
     SingleControlGroupPointer SingleControlGroup::forSelf(const std::size_t hierarchyId)
     {
         return forProcessInfo(hierarchyId, ProcessInfo::forSelf());
+    }
+
+    SingleControlGroupPointer SingleControlGroup::forSelf(const std::string &subsystem)
+    {
+        return forProcessInfo(subsystem, ProcessInfo::forSelf());
     }
 
     SingleControlGroupPointer SingleControlGroup::root(const std::size_t hierarchyId)
@@ -240,8 +257,16 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         );
     }
 
+    SingleControlGroupPointer SingleControlGroup::root(const std::string &subsystem)
+    {
+        return root(
+            SystemInfo::instance()->bySubsystem(subsystem).id
+        );
+    }
+
     SingleControlGroupPointer SingleControlGroup::attach(
-        const std::size_t hierarchyId, const boost::filesystem::path &controlGroup)
+        const std::size_t hierarchyId,
+        const boost::filesystem::path &controlGroup)
     {
         if (controlGroup.is_relative())
             BOOST_THROW_EXCEPTION(
@@ -249,6 +274,16 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
                 SingleControlGroupRelativeControlGroupError::controlGroupPath(
                     controlGroup));
         return root(hierarchyId)->attachChild(controlGroup.relative_path());
+    }
+
+    SingleControlGroupPointer SingleControlGroup::attach(
+        const std::string &subsystem,
+        const boost::filesystem::path &controlGroup)
+    {
+        return attach(
+            SystemInfo::instance()->bySubsystem(subsystem).id,
+            controlGroup
+        );
     }
 
     boost::filesystem::path SingleControlGroup::fieldPath__(

@@ -39,16 +39,25 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
 
         static SingleControlGroupPointer forProcessInfo(
             const std::size_t hierarchyId, const ProcessInfo &processInfo);
+        static SingleControlGroupPointer forProcessInfo(
+            const std::string &subsystem, const ProcessInfo &processInfo);
 
         static SingleControlGroupPointer forPid(
             const std::size_t hierarchyId, const pid_t pid);
+        static SingleControlGroupPointer forPid(
+            const std::string &subsystem, const pid_t pid);
 
         static SingleControlGroupPointer forSelf(const std::size_t hierarchyId);
+        static SingleControlGroupPointer forSelf(const std::string &hierarchy);
 
         static SingleControlGroupPointer root(const std::size_t hierarchyId);
+        static SingleControlGroupPointer root(const std::string &subsystem);
 
         static SingleControlGroupPointer attach(
             const std::size_t hierarchyId,
+            const boost::filesystem::path &controlGroup);
+        static SingleControlGroupPointer attach(
+            const std::string &subsystem,
             const boost::filesystem::path &controlGroup);
 
     public:
