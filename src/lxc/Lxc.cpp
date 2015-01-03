@@ -135,7 +135,7 @@ namespace yandex{namespace contest{namespace system{namespace lxc
             unfreeze();
         }
         const execution::Result result =
-            execution::getErrCallArgv("lxc-stop", "-n", name_);
+            execution::getErrCallArgv("lxc-stop", "-n", name_, "--kill");
         if (result)
         {
             STREAM_INFO << "\"" << name_ << "\" LXC " <<
