@@ -76,6 +76,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         virtual Tasks tasks()=0;
 
         virtual void attachTask(const pid_t pid)=0;
+        virtual void attachSelf();
 
         virtual bool notifyOnRelease()=0;
         virtual void setNotifyOnRelease(const bool notifyOnRelease=true)=0;

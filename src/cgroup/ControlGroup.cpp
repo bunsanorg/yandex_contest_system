@@ -1,6 +1,7 @@
 #include <yandex/contest/system/cgroup/ControlGroup.hpp>
 
 #include <yandex/contest/system/cgroup/SystemInfo.hpp>
+#include <yandex/contest/system/unistd/Operations.hpp>
 
 #include <yandex/contest/detail/IntrusivePointerHelper.hpp>
 
@@ -65,6 +66,11 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
             ControlGroupFieldError::fieldName(fieldName) <<
             ControlGroupFieldError::fieldPath(path))
         return path;
+    }
+
+    void ControlGroup::attachSelf()
+    {
+        attachTask(unistd::getpid());
     }
 
     void ControlGroup::readFieldByReader(const std::string &fieldName,

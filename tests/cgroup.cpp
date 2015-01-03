@@ -74,10 +74,12 @@ BOOST_AUTO_TEST_CASE(attachTask)
     BOOST_CHECK(cg->tasks().empty());
     BOOST_SCOPE_EXIT_ALL(this)
     {
-        thisCG->attachTask(pid);
+        thisCG->attachSelf();
+        const yac::ControlGroup::Tasks tasks = thisCG->tasks();
+        BOOST_CHECK(tasks.find(pid) != tasks.end());
         BOOST_CHECK(cg->tasks().empty());
     };
-    cg->attachTask(pid);
+    cg->attachTask(pid); // do not replace with attachSelf()
     const yac::ControlGroup::Tasks tasks = cg->tasks();
     BOOST_CHECK(tasks.find(pid) != tasks.end());
 }
