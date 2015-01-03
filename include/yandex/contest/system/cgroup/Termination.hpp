@@ -31,6 +31,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         explicit operator bool() const;
 
         void detach();
+        void terminate();
 
         ~TerminationGuard();
 

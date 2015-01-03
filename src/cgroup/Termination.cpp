@@ -73,13 +73,18 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         controlGroup_ = nullptr;
     }
 
+    void TerminationGuard::terminate()
+    {
+        cgroup::terminate(controlGroup_);
+    }
+
     TerminationGuard::~TerminationGuard()
     {
         if (controlGroup_)
         {
             try
             {
-                terminate(controlGroup_);
+                terminate();
             }
             catch (std::exception &e)
             {
