@@ -5,7 +5,6 @@
 #include <yandex/contest/system/execution/ResultError.hpp>
 #include <yandex/contest/system/lxc/Config.hpp>
 #include <yandex/contest/system/lxc/Error.hpp>
-#include <yandex/contest/system/lxc/State.hpp>
 #include <yandex/contest/system/unistd/Pipe.hpp>
 
 #include <boost/filesystem/path.hpp>
@@ -21,15 +20,9 @@ namespace yandex{namespace contest{namespace system{namespace lxc
     class Lxc: private boost::noncopyable
     {
     public:
-        typedef lxc_detail::State State;
-
-    public:
         Lxc(const std::string &name,
             const boost::filesystem::path &dir,
             const Config &settings);
-
-        void freeze();
-        void unfreeze();
 
         template <typename Ctor>
         auto execute(
@@ -63,9 +56,6 @@ namespace yandex{namespace contest{namespace system{namespace lxc
 
         /// Kill all processes running in container.
         void stop();
-
-        /// Container's state.
-        State state();
 
         ~Lxc();
 

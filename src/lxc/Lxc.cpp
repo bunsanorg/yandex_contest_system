@@ -1,7 +1,5 @@
 #include <yandex/contest/system/lxc/Lxc.hpp>
 
-#include "lxc.h"
-
 #include <yandex/contest/detail/LogHelper.hpp>
 #include <yandex/contest/system/execution/ErrCall.hpp>
 #include <yandex/contest/system/unistd/Fstab.hpp>
@@ -53,48 +51,6 @@ namespace yandex{namespace contest{namespace system{namespace lxc
         }
     }
 
-    void Lxc::freeze()
-    {
-        STREAM_INFO << "Trying to freeze \"" << name_ << "\" LXC.";
-        const execution::Result result =
-            execution::getErrCallArgv("lxc-freeze", "-n", name_);
-        if (result)
-        {
-            STREAM_INFO << "\"" << name_ << "\" LXC " <<
-                           "was successfully frozen.";
-        }
-        else
-        {
-            STREAM_ERROR << "Error while freezing \"" << name_ <<
-                            "\" LXC: \"" << result.err << "\", " <<
-                            "exception is thrown.";
-            BOOST_THROW_EXCEPTION(
-                toUtilityError(result) <<
-                Error::message("Error while freezing LXC."));
-        }
-    }
-
-    void Lxc::unfreeze()
-    {
-        STREAM_INFO << "Trying to unfreeze \"" << name_ << "\" LXC.";
-        const execution::Result result =
-            execution::getErrCallArgv("lxc-unfreeze", "-n", name_);
-        if (result)
-        {
-            STREAM_INFO << "\"" << name_ << "\" LXC "
-                           "was successfully unfrozen.";
-        }
-        else
-        {
-            STREAM_ERROR << "Error while unfreezing \"" << name_ <<
-                            "\" LXC: \"" << result.err << "\", " <<
-                            "exception is thrown.";
-            BOOST_THROW_EXCEPTION(
-                toUtilityError(result) <<
-                Error::message("Error while unfreezing LXC."));
-        }
-    }
-
     void Lxc::execute_(
         Executor &executor,
         const execution::AsyncProcess::Options &options)
@@ -105,17 +61,6 @@ namespace yandex{namespace contest{namespace system{namespace lxc
                        "in \"" << name_ << "\" LXC.";
         // we need to use it twice
         // and do not want it to change
-        const State state_ = state();
-        if (state_ != State::STOPPED)
-        {
-            STREAM_ERROR << "Command execution is impossible " <<
-                            "in \"" << name_ << "\" LXC " <<
-                            "due to illegal state, exception is thrown.";
-            BOOST_THROW_EXCEPTION(
-                IllegalStateError() <<
-                IllegalStateError::state(state_) <<
-                Error::message("It is impossible to spawn process in LXC."));
-        }
         executor(transform(options));
         STREAM_INFO << "Command execution is started " <<
                        "in \"" << name_ << "\" LXC.";
@@ -124,20 +69,17 @@ namespace yandex{namespace contest{namespace system{namespace lxc
     void Lxc::stop()
     {
         STREAM_INFO << "Trying to stop \"" << name_ << "\" LXC.";
-        const State state_ = state();
-        if (state_ == State::FROZEN)
-        {
-            STREAM_INFO << "\"" << name_ <<
-                           "\" LXC is " << state_ << ", "
-                           "it should be unfrozen first.";
-            unfreeze();
-        }
         const execution::Result result =
             execution::getErrCallArgv("lxc-stop", "-n", name_, "--kill");
         if (result)
         {
             STREAM_INFO << "\"" << name_ << "\" LXC " <<
-                           "was successfully unfrozen.";
+                           "was successfully stopped.";
+        }
+        else if (result.exitStatus == 2)
+        {
+            STREAM_INFO << "\"" << name_ << "\" LXC " <<
+                           "was already stopped.";
         }
         else
         {
@@ -150,26 +92,12 @@ namespace yandex{namespace contest{namespace system{namespace lxc
         }
     }
 
-    Lxc::State Lxc::state()
-    {
-        const int st = ::lxc_getstate(
-            dir_.filename().c_str(),
-            dir_.parent_path().c_str()
-        );
-        return static_cast<State>(st);
-    }
-
     Lxc::~Lxc()
     {
         STREAM_INFO << "Trying to remove \"" << name_ << "\" LXC.";
         try
         {
-            if (state() != State::STOPPED)
-            {
-                STREAM_INFO << "\"" << name_ <<
-                               "\" LXC is not stopped, trying to stop it.";
-                stop();
-            }
+            stop();
         }
         catch (std::exception &e)
         {
