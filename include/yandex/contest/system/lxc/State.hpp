@@ -19,7 +19,6 @@ namespace yandex{namespace contest{namespace system{
         ABORTING,
         FREEZING,
         FROZEN,
-        THAWED,
-        MAX_STATE
+        THAWED
     ))
 }}}}}
