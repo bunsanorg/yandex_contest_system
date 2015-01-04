@@ -19,19 +19,40 @@ void intrusive_ptr_release(::lxc_container *container) noexcept
 namespace yandex{namespace contest{namespace system{namespace lxc{
     namespace api
 {
-    container_ptr container_new(
-        const std::string &name,
-        const boost::filesystem::path &config)
+    static container_ptr container_new(
+        const char *const name,
+        const char *const configPath)
     {
+        BOOST_ASSERT(name);
+
         container_ptr ptr(
-            ::lxc_container_new(name.c_str(), config.string().c_str()),
+            ::lxc_container_new(name, configPath),
             false
         );
         if (!ptr)
             BOOST_THROW_EXCEPTION(
                 UnableToCreateContainerError() <<
-                UnableToCreateContainerError::name(name) <<
-                UnableToCreateContainerError::config(config));
+                UnableToCreateContainerError::name(name));
         return ptr;
+    }
+
+    container_ptr container_new(const std::string &name)
+    {
+        return container_new(name.c_str(), nullptr);
+    }
+
+    container_ptr container_new(
+        const std::string &name,
+        const boost::filesystem::path &configPath)
+    {
+        try
+        {
+            return container_new(name.c_str(), configPath.string().c_str());
+        }
+        catch (boost::exception &e)
+        {
+            e << UnableToCreateContainerError::configPath(configPath);
+            throw;
+        }
     }
 }}}}}

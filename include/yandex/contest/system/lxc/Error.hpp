@@ -37,9 +37,9 @@ namespace yandex{namespace contest{namespace system{namespace lxc
     struct ApiContainerNewError: virtual ApiError
     {
         typedef boost::error_info<
-            struct configTag,
+            struct configPathTag,
             boost::filesystem::path
-        > config;
+        > configPath;
     };
     struct UnableToCreateContainerError: virtual ApiContainerNewError {};
 }}}}
