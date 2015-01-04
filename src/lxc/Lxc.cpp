@@ -22,7 +22,7 @@ namespace yandex{namespace contest{namespace system{namespace lxc
         rootfs_(dir_ / "rootfs"),
         rootfsMount_(dir_ / "rootfs.mount"),
         configPath_(dir_ / "config"),
-        container_(api::container_new(name_, configPath_))
+        container_(api::container_new(name_))
     {
         STREAM_INFO << "Trying to create \"" << name_ << "\" LXC.";
         Config config_ = config;
@@ -52,6 +52,9 @@ namespace yandex{namespace contest{namespace system{namespace lxc
             STREAM_INFO << "lxc.conf(5) was successfully written " <<
                            "for \"" << name << "\" LXC.";
         }
+        STREAM_DEBUG << "Loading LXC config for \"" << name_ << "\" at " << configPath_;
+        if (!container_->load_config(container_.get(), configPath_.string().c_str()))
+            BOOST_THROW_EXCEPTION(Error());
     }
 
     void Lxc::freeze()
