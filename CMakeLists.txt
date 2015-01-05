@@ -63,6 +63,7 @@ bunsan_add_shared_library(${PROJECT_NAME}
     src/lxc/Config.cpp
     src/lxc/RootfsConfig.cpp
     src/lxc/Lxc.cpp
+    src/lxc/LxcApi.cpp
     src/lxc/MountConfig.cpp
 )
 

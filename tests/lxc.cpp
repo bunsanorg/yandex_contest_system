@@ -2,6 +2,9 @@
 #include <boost/test/unit_test.hpp>
 
 #include "yandex/contest/system/lxc/ConfigHelper.hpp"
+#include "yandex/contest/system/lxc/LxcApi.hpp"
+
+#include <lxc/lxccontainer.h>
 
 #include <sstream>
 
@@ -9,6 +12,19 @@ BOOST_AUTO_TEST_SUITE(ConfigHelper)
 
 namespace ya = yandex::contest::system::lxc;
 namespace cfg = ya::config_helper;
+
+BOOST_AUTO_TEST_SUITE(api)
+
+BOOST_AUTO_TEST_CASE(ptr)
+{
+    const ya::api::container_ptr ptr =
+        ya::api::container_new("hello", "/some/path");
+    BOOST_CHECK_EQUAL(ptr->numthreads, 1);
+    const auto ptr2 = ptr;
+    BOOST_CHECK_EQUAL(ptr2->numthreads, 2);
+}
+
+BOOST_AUTO_TEST_SUITE_END() // api
 
 BOOST_AUTO_TEST_CASE(general)
 {
