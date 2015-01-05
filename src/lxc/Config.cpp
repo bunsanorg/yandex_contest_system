@@ -1,6 +1,6 @@
-#include "yandex/contest/system/lxc/Config.hpp"
+#include <yandex/contest/system/lxc/Config.hpp>
 
-#include "yandex/contest/system/lxc/ConfigHelper.hpp"
+#include <yandex/contest/system/lxc/ConfigHelper.hpp>
 
 namespace yandex{namespace contest{namespace system{namespace lxc
 {

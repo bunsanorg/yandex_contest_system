@@ -1,12 +1,10 @@
 #pragma once
 
-#include "yandex/contest/system/Error.hpp"
+#include <yandex/contest/system/Error.hpp>
+#include <yandex/contest/system/execution/ResultError.hpp>
+#include <yandex/contest/system/lxc/State.hpp>
 
-#include "yandex/contest/system/execution/ResultError.hpp"
-
-#include "yandex/contest/system/lxc/State.hpp"
-
-#include "bunsan/forward_constructor.hpp"
+#include <bunsan/forward_constructor.hpp>
 
 #include <string>
 

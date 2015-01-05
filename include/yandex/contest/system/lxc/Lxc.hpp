@@ -1,22 +1,20 @@
 #pragma once
 
-#include "yandex/contest/system/lxc/Config.hpp"
-#include "yandex/contest/system/lxc/State.hpp"
-#include "yandex/contest/system/lxc/Error.hpp"
+#include <yandex/contest/system/execution/AsyncProcess.hpp>
+#include <yandex/contest/system/execution/Result.hpp>
+#include <yandex/contest/system/execution/ResultError.hpp>
+#include <yandex/contest/system/lxc/Config.hpp>
+#include <yandex/contest/system/lxc/Error.hpp>
+#include <yandex/contest/system/lxc/State.hpp>
+#include <yandex/contest/system/unistd/Pipe.hpp>
 
-#include "yandex/contest/system/execution/Result.hpp"
-#include "yandex/contest/system/execution/ResultError.hpp"
-#include "yandex/contest/system/execution/AsyncProcess.hpp"
-
-#include "yandex/contest/system/unistd/Pipe.hpp"
-
-#include <string>
-#include <vector>
-#include <utility>
-
+#include <boost/filesystem/path.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/optional.hpp>
-#include <boost/filesystem/path.hpp>
+
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace yandex{namespace contest{namespace system{namespace lxc
 {

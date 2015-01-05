@@ -1,9 +1,9 @@
 #pragma once
 
+#include <boost/filesystem/path.hpp>
+#include <boost/optional.hpp>
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/nvp.hpp>
-#include <boost/optional.hpp>
-#include <boost/filesystem/path.hpp>
 
 namespace yandex{namespace contest{namespace system{namespace lxc
 {

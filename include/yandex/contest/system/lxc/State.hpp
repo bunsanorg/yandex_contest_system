@@ -1,6 +1,6 @@
 #pragma once
 
-#include "bunsan/stream_enum.hpp"
+#include <bunsan/stream_enum.hpp>
 
 namespace yandex{namespace contest{namespace system{
     namespace lxc{namespace lxc_detail

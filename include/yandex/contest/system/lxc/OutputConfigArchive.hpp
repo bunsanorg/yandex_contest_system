@@ -1,12 +1,12 @@
 #pragma once
 
-#include <iostream>
-#include <string>
-#include <type_traits>
-
 #include <boost/noncopyable.hpp>
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/nvp.hpp>
+
+#include <iostream>
+#include <string>
+#include <type_traits>
 
 namespace yandex{namespace contest{namespace system{
     namespace lxc{namespace config
