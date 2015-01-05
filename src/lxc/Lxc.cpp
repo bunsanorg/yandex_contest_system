@@ -1,10 +1,10 @@
 #include <yandex/contest/system/lxc/Lxc.hpp>
 
-#include "lxc.h"
-
 #include <yandex/contest/detail/LogHelper.hpp>
 #include <yandex/contest/system/execution/ErrCall.hpp>
 #include <yandex/contest/system/unistd/Fstab.hpp>
+
+#include <lxc/lxccontainer.h>
 
 #include <bunsan/filesystem/fstream.hpp>
 
@@ -21,7 +21,8 @@ namespace yandex{namespace contest{namespace system{namespace lxc
         dir_(boost::filesystem::absolute(dir)),
         rootfs_(dir_ / "rootfs"),
         rootfsMount_(dir_ / "rootfs.mount"),
-        configPath_(dir_ / "config")
+        configPath_(dir_ / "config"),
+        container_(api::container_new(name_, configPath_))
     {
         STREAM_INFO << "Trying to create \"" << name_ << "\" LXC.";
         Config config_ = config;
@@ -152,11 +153,8 @@ namespace yandex{namespace contest{namespace system{namespace lxc
 
     Lxc::State Lxc::state()
     {
-        const int st = ::lxc_getstate(
-            dir_.filename().c_str(),
-            dir_.parent_path().c_str()
-        );
-        return static_cast<State>(st);
+        const char *const st = container_->state(container_.get());
+        return boost::lexical_cast<State>(st);
     }
 
     Lxc::~Lxc()
@@ -176,6 +174,7 @@ namespace yandex{namespace contest{namespace system{namespace lxc
             STREAM_ERROR << "Unable to stop \"" <<
                             name_ << "\" LXC (ignoring).";
         }
+        container_.reset(); // after stop && before remove
         boost::system::error_code ec;
         boost::filesystem::remove_all(dir_, ec);
         if (ec)

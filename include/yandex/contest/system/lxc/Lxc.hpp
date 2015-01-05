@@ -5,6 +5,7 @@
 #include <yandex/contest/system/execution/ResultError.hpp>
 #include <yandex/contest/system/lxc/Config.hpp>
 #include <yandex/contest/system/lxc/Error.hpp>
+#include <yandex/contest/system/lxc/LxcApi.hpp>
 #include <yandex/contest/system/lxc/State.hpp>
 #include <yandex/contest/system/unistd/Pipe.hpp>
 
@@ -99,5 +100,6 @@ namespace yandex{namespace contest{namespace system{namespace lxc
         const boost::filesystem::path rootfs_;
         const boost::filesystem::path rootfsMount_;
         const boost::filesystem::path configPath_;
+        api::container_ptr container_;
     };
 }}}}
