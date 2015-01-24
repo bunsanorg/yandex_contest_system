@@ -16,8 +16,10 @@ bunsan_use(yandex_contest_common)
 bunsan_use(dl)
 
 bunsan_add_shared_library(${PROJECT_NAME}
+    src/unistd/access/Group.cpp
     src/unistd/access/Id.cpp
     src/unistd/access/Operations.cpp
+    src/unistd/access/Passwd.cpp
 
     src/unistd/Pipe.cpp
     src/unistd/Descriptor.cpp
@@ -32,6 +34,7 @@ bunsan_add_shared_library(${PROJECT_NAME}
     src/unistd/MountEntryAlias.cpp
     src/unistd/Operations.cpp
     src/unistd/DynamicLoader.cpp
+    src/unistd/SysConfBuffer.cpp
 
     src/execution/ResultError.cpp
     src/execution/ErrCall.cpp

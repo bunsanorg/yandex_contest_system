@@ -1,6 +1,10 @@
 #pragma once
 
+#include <yandex/contest/system/unistd/access/Group.hpp>
 #include <yandex/contest/system/unistd/access/Id.hpp>
+#include <yandex/contest/system/unistd/access/Passwd.hpp>
+
+#include <vector>
 
 namespace yandex{namespace contest{namespace system{
     namespace unistd{namespace access
@@ -33,4 +37,12 @@ namespace yandex{namespace contest{namespace system{
 
     /// seteuid(3), setegid(3)
     //void setEffectiveId(const Id &id);
+
+    std::vector<Passwd> getPasswd();
+    Passwd getPasswdByName(const std::string &name);
+    Passwd getPasswdByUid(const uid_t uid);
+
+    std::vector<Group> getGroup();
+    Group getGroupByName(const std::string &name);
+    Group getGroupByGid(const gid_t gid);
 }}}}}
