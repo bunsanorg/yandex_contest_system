@@ -104,11 +104,5 @@ namespace yandex{namespace contest{namespace system{namespace unistd
     {
         return detail::dladdr(reinterpret_cast<void *>(fn));
     }
-
-    template <typename Class, typename Ret, typename ... Args>
-    DLInfo dladdr(Ret (Class::*memfn)(Args...))
-    {
-        return detail::dladdr(reinterpret_cast<void *>(memfn));
-    }
 #pragma GCC diagnostic pop
 }}}}

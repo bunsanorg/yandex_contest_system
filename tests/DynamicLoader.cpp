@@ -19,7 +19,6 @@ static int sfunction(int a, int b)
 
 BOOST_AUTO_TEST_CASE(dladdr)
 {
-    BOOST_TEST_MESSAGE("test_method: " << unistd::dladdr(&dladdr::test_method));
     BOOST_TEST_MESSAGE("function: " << unistd::dladdr(&function));
     BOOST_TEST_MESSAGE("sfunction: " << unistd::dladdr(&sfunction));
 }
