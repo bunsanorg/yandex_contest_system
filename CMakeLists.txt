@@ -2,18 +2,9 @@ project(yandex_contest_system)
 
 include(${CMAKE_SOURCE_DIR}/system-config.cmake OPTIONAL)
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0)
 
-include(BunsanCommon)
-
-bunsan_use_boost(system filesystem serialization)
-
-bunsan_use_pkgconfig(LXC lxc)
-
-bunsan_use_bunsan(common)
-bunsan_use(yandex_contest_common)
-
-bunsan_use(dl)
+find_package(BunsanCMake CONFIG REQUIRED)
 
 bunsan_add_shared_library(${PROJECT_NAME}
     src/unistd/access/Id.cpp
@@ -66,8 +57,12 @@ bunsan_add_shared_library(${PROJECT_NAME}
     src/lxc/LxcApi.cpp
     src/lxc/MountConfig.cpp
 )
+bunsan_use_bunsan_package(${PROJECT_NAME} yandex_contest_common yandex_contest_common)
+target_link_libraries(${PROJECT_NAME} PRIVATE dl)
+bunsan_use_pkgconfig(${PROJECT_NAME} LXC lxc)
 
 bunsan_install_headers()
 bunsan_install_targets(${PROJECT_NAME})
+bunsan_install_project()
 
 bunsan_include_tests()
