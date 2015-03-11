@@ -17,16 +17,13 @@
 #define do_safe(cmd, ...) \
     do { const int ret = cmd(__VA_ARGS__); if (ret) handle_error(#cmd); } while (0)
 
-#define posix_do_safe(cmd, ...) \
-    do { const int ret = cmd(__VA_ARGS__); if (ret) handle_error_en(ret, #cmd); } while (0)
-
 int main(void)
 {
     sigset_t set;
     sigemptyset(&set);
     sigaddset(&set, SIGTERM);
     sigaddset(&set, SIGINT);
-    posix_do_safe(pthread_sigmask, SIG_BLOCK, &set, NULL);
+    do_safe(sigprocmask, SIG_BLOCK, &set, NULL);
     for (;;)
     {
         int sig;
