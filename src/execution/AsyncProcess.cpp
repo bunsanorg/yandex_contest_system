@@ -7,6 +7,7 @@
 #include <yandex/contest/SystemError.hpp>
 
 #include <bunsan/filesystem/fstream.hpp>
+#include <bunsan/logging/fallback.hpp>
 
 #include <boost/assert.hpp>
 
@@ -77,6 +78,7 @@ namespace yandex{namespace contest{namespace system{namespace execution
         }
         else
         { // child
+            Log::disableLogging();
             try
             {
                 prepareChild(in_.path(), out_.path(), err_.path());
@@ -87,15 +89,13 @@ namespace yandex{namespace contest{namespace system{namespace execution
             }
             catch (std::exception &e)
             {
-                std::cerr << e.what() << std::endl;
+                BUNSAN_LOG_ERROR_INTO(std::cerr) << "Unable to start due to: " << e.what();
                 std::abort();
             }
             catch (...)
             {
-                BOOST_ASSERT_MSG(
-                    false,
-                    "It should not happen, but should be checked."
-                );
+                BUNSAN_LOG_ERROR_INTO(std::cerr) << "Unable to start due to unknown error";
+                std::abort();
             }
         }
     }
