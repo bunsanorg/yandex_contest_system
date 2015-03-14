@@ -1,8 +1,9 @@
 #include <yandex/contest/system/lxc/Lxc.hpp>
 
-#include <yandex/contest/detail/LogHelper.hpp>
 #include <yandex/contest/system/execution/ErrCall.hpp>
 #include <yandex/contest/system/unistd/Fstab.hpp>
+
+#include <yandex/contest/StreamLog.hpp>
 
 #include <lxc/lxccontainer.h>
 

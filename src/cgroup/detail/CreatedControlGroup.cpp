@@ -2,7 +2,7 @@
 
 #include <yandex/contest/system/unistd/Operations.hpp>
 
-#include <yandex/contest/detail/LogHelper.hpp>
+#include <yandex/contest/StreamLog.hpp>
 
 #include <bunsan/enable_error_info.hpp>
 

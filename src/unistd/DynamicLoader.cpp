@@ -1,6 +1,6 @@
 #include <yandex/contest/system/unistd/DynamicLoader.hpp>
 
-#include <yandex/contest/detail/LogHelper.hpp>
+#include <yandex/contest/StreamLog.hpp>
 #include <yandex/contest/TypeInfo.hpp>
 
 #include <boost/format.hpp>

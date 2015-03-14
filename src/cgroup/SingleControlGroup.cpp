@@ -4,7 +4,7 @@
 #include <yandex/contest/system/cgroup/detail/AttachedControlGroup.hpp>
 #include <yandex/contest/system/cgroup/detail/CreatedControlGroup.hpp>
 
-#include <yandex/contest/detail/LogHelper.hpp>
+#include <yandex/contest/StreamLog.hpp>
 
 #include <bunsan/enable_error_info.hpp>
 
