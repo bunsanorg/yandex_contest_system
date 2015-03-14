@@ -27,7 +27,7 @@ namespace yandex{namespace contest{namespace system
 
     void Trace::handler(int sig, siginfo_t * /*siginfo*/, void * /*context*/)
     {
-        STREAM_ERROR << "Processing signal: " << strsignal(sig) << '\n' <<
+        STREAM_FATAL << "Processing signal: " << strsignal(sig) << '\n' <<
                         "backtrace:\n" << get();
         exit(EXIT_FAILURE);
     }

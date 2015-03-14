@@ -55,12 +55,12 @@ namespace yandex{namespace contest{namespace system{namespace execution
             }
             catch (std::exception &e)
             {
-                BUNSAN_LOG_ERROR_INTO(std::cerr) << "Unable to start due to: " << e.what();
+                BUNSAN_LOG_FATAL_INTO(std::cerr) << "Unable to start due to: " << e.what();
                 std::abort();
             }
             catch (...)
             {
-                BUNSAN_LOG_ERROR_INTO(std::cerr) << "Unable to start due to unknown error";
+                BUNSAN_LOG_FATAL_INTO(std::cerr) << "Unable to start due to unknown error";
                 std::abort();
             }
         }
