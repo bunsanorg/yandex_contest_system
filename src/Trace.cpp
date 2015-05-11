@@ -29,14 +29,14 @@ namespace yandex{namespace contest{namespace system
     {
         STREAM_FATAL << "Processing signal: " << strsignal(sig) << '\n' <<
                         "backtrace:\n" << get();
-        exit(EXIT_FAILURE);
+        ::raise(sig);
     }
 
     void Trace::handle(const int sig, void (*h)(int, siginfo_t *, void *))
     {
         struct sigaction sigact;
         sigact.sa_sigaction = h;
-        sigact.sa_flags = SA_RESTART | SA_SIGINFO;
+        sigact.sa_flags = SA_RESTART | SA_SIGINFO | SA_RESETHAND;
         if (sigaction(sig, &sigact, nullptr) < 0)
             BOOST_THROW_EXCEPTION(SystemError("sigaction"));
     }
