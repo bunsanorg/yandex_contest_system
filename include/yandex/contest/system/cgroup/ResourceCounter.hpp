@@ -31,7 +31,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         }
 
     protected:
-        static inline std::string fieldNameInUnits(const std::string &fieldName)
+        static std::string fieldNameInUnits(const std::string &fieldName)
         {
             if (Config::UNITS)
                 return fieldName + "_in_" + *Config::UNITS;

@@ -17,7 +17,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         virtual ControlGroup &controlGroup() const=0;
 
     protected:
-        static inline std::string fieldName(const std::string &fieldName_)
+        static std::string fieldName(const std::string &fieldName_)
         {
             return Config::SUBSYSTEM_NAME + "." + fieldName_;
         }

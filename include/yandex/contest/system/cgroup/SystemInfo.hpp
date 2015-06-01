@@ -54,7 +54,7 @@ namespace yandex{namespace contest{namespace system{namespace cgroup
         struct IteratorConverter:
             std::unary_function<const map_value_type &, const value_type &>
         {
-            inline const value_type &operator()(const map_value_type &value) const
+            const value_type &operator()(const map_value_type &value) const
             {
                 return value.second;
             }

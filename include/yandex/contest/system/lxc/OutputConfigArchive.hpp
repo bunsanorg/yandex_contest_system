@@ -17,7 +17,7 @@ namespace yandex{namespace contest{namespace system{
         typedef std::integral_constant<bool, false> is_loading;
         typedef std::integral_constant<bool, true> is_saving;
 
-        inline unsigned int get_library_version() { return 0; }
+        unsigned int get_library_version() { return 0; }
 
     public:
         OutputArchive(std::ostream &out, const std::string &prefix):

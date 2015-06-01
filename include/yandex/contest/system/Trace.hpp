@@ -22,7 +22,7 @@ namespace yandex{namespace contest{namespace system
 
         static void handle(const int sig, void (*h)(int, siginfo_t *, void *));
 
-        static inline void handle(const int sig)
+        static void handle(const int sig)
         {
             handle(sig, &handler);
         }
