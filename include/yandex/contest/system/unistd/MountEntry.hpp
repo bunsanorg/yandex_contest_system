@@ -67,6 +67,9 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         /// Pass number for `fsck'.
         int passno = 0;
 
+        /// If opts containts opt.
+        bool hasOpt(const std::string &opt) const;
+
         /// Replace some space characters by octal codes.
         static std::string escape(const std::string &field);
 

@@ -11,6 +11,13 @@ namespace unistd = ya::system::unistd;
 
 BOOST_AUTO_TEST_SUITE(MountEntry)
 
+BOOST_AUTO_TEST_CASE(hasOpt)
+{
+    BOOST_CHECK(unistd::MountEntry::bind("/hello", "/world").hasOpt("bind"));
+    BOOST_CHECK(!unistd::MountEntry::bind("/hello", "/world").hasOpt("noopt"));
+    BOOST_CHECK(unistd::MountEntry::bindRO("/hello", "/world").hasOpt("ro"));
+}
+
 BOOST_AUTO_TEST_CASE(escape)
 {
     BOOST_CHECK_EQUAL(

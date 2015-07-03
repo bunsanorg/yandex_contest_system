@@ -8,6 +8,7 @@
 
 #include <iomanip>
 #include <sstream>
+#include <unordered_set>
 
 namespace yandex{namespace contest{namespace system{namespace unistd
 {
@@ -53,6 +54,17 @@ namespace yandex{namespace contest{namespace system{namespace unistd
         splitLine[4] = boost::lexical_cast<std::string>(freq);
         splitLine[5] = boost::lexical_cast<std::string>(passno);
         return boost::join(splitLine, " ");
+    }
+
+    bool MountEntry::hasOpt(const std::string &opt) const
+    {
+        std::unordered_set<std::string> splitOpts;
+        boost::algorithm::split(
+            splitOpts,
+            opts,
+            boost::is_any_of(",")
+        );
+        return splitOpts.find(opt) != splitOpts.end();
     }
 
     std::string MountEntry::escape(const std::string &field)
