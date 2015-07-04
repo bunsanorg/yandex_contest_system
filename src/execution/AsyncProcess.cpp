@@ -7,7 +7,7 @@
 #include <yandex/contest/SystemError.hpp>
 
 #include <bunsan/filesystem/fstream.hpp>
-#include <bunsan/logging/fallback.hpp>
+#include <bunsan/log/fallback.hpp>
 
 #include <boost/assert.hpp>
 

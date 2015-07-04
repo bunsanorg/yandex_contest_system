@@ -7,7 +7,7 @@
 #include <yandex/contest/Log.hpp>
 #include <yandex/contest/SystemError.hpp>
 
-#include <bunsan/logging/fallback.hpp>
+#include <bunsan/log/fallback.hpp>
 
 #include <boost/assert.hpp>
 
