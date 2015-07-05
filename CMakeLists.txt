@@ -54,12 +54,6 @@ bunsan_add_library(${PROJECT_NAME}
 
     src/cgroup/detail/AttachedControlGroup.cpp
     src/cgroup/detail/CreatedControlGroup.cpp
-
-    src/lxc/Config.cpp
-    src/lxc/RootfsConfig.cpp
-    src/lxc/Lxc.cpp
-    src/lxc/LxcApi.cpp
-    src/lxc/MountConfig.cpp
 )
 bunsan_use_bunsan_package(${PROJECT_NAME} yandex_contest_common yandex_contest_common)
 target_link_libraries(${PROJECT_NAME} PRIVATE dl)
