@@ -11,7 +11,7 @@
 #include <yandex/contest/system/cgroup/ProcessInfo.hpp>
 #include <yandex/contest/system/cgroup/SystemInfo.hpp>
 
-#include <bunsan/testing/exec_test.hpp>
+#include <bunsan/test/exec_test.hpp>
 
 #include <boost/scope_exit.hpp>
 
@@ -230,7 +230,7 @@ BOOST_AUTO_TEST_CASE(tasks)
     const yac::SingleControlGroupPointer cg2 =
         yac::SingleControlGroup::forSelf(hier2.id)->attachChild(cgName);
 
-    ya::testing::DummyProcess p1, p2, p3;
+    ya::test::DummyProcess p1, p2, p3;
 
     cg1->attachTask(p1.pid());
     {

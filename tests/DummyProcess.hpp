@@ -2,10 +2,10 @@
 
 #include <yandex/contest/system/execution/AsyncProcess.hpp>
 
-#include <bunsan/testing/environment.hpp>
-#include <bunsan/testing/exec_test.hpp>
+#include <bunsan/test/environment.hpp>
+#include <bunsan/test/exec_test.hpp>
 
-namespace yandex{namespace contest{namespace system{namespace testing
+namespace yandex{namespace contest{namespace system{namespace test
 {
     class DummyProcess: public execution::AsyncProcess
     {
@@ -17,7 +17,7 @@ namespace yandex{namespace contest{namespace system{namespace testing
         {
             execution::AsyncProcess::Options opt;
             opt.executable =
-                bunsan::testing::dir::tests::resources::binary() /
+                bunsan::test::dir::tests::resources::binary() /
                 "dummy_process";
             opt.usePath = false;
             return opt;

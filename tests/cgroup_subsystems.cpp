@@ -8,7 +8,7 @@
 #include <yandex/contest/system/cgroup/CpuAccounting.hpp>
 #include <yandex/contest/system/cgroup/Termination.hpp>
 
-#include <bunsan/testing/exec_test.hpp>
+#include <bunsan/test/exec_test.hpp>
 
 #include <thread>
 
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(default_constructor)
 
 BOOST_AUTO_TEST_CASE(destructor)
 {
-    ya::testing::DummyProcess process;
+    ya::test::DummyProcess process;
     cg->attachTask(process.pid());
     {
         yac::TerminationGuard tg(cg);
@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE(destructor)
 
 BOOST_AUTO_TEST_CASE(detach)
 {
-    ya::testing::DummyProcess process;
+    ya::test::DummyProcess process;
     cg->attachTask(process.pid());
     {
         yac::TerminationGuard tg(cg);
@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE(detach)
 
 BOOST_AUTO_TEST_CASE(move)
 {
-    ya::testing::DummyProcess process;
+    ya::test::DummyProcess process;
     cg->attachTask(process.pid());
     {
         yac::TerminationGuard tg1(cg);

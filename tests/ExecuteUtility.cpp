@@ -4,7 +4,7 @@
 #include <yandex/contest/system/execution/AsyncProcess.hpp>
 #include <yandex/contest/system/execution/ErrCall.hpp>
 
-#include <bunsan/testing/exec_test.hpp>
+#include <bunsan/test/exec_test.hpp>
 
 #include <boost/optional/optional_io.hpp>
 
