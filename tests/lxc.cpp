@@ -1,8 +1,8 @@
 #define BOOST_TEST_MODULE lxc
 #include <boost/test/unit_test.hpp>
 
-#include "yandex/contest/system/lxc/ConfigHelper.hpp"
-#include "yandex/contest/system/lxc/LxcApi.hpp"
+#include <yandex/contest/system/lxc/ConfigHelper.hpp>
+#include <yandex/contest/system/lxc/LxcApi.hpp>
 
 #include <lxc/lxccontainer.h>
 
