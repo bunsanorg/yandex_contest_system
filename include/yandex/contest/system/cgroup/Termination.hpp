@@ -2,40 +2,46 @@
 
 #include <yandex/contest/system/cgroup/ControlGroup.hpp>
 
-namespace yandex{namespace contest{namespace system{namespace cgroup
-{
-    /*!
-     * \brief Terminates all tasks in specified control group.
-     *
-     * \return Number of terminated tasks.
-     *
-     * \note Requires Freezer subsystem to be available.
-     * \note Blocks until all tasks are terminated and control group
-     * can be removed if no child control groups are created.
-     */
-    std::size_t terminate(const ControlGroupPointer &controlGroup);
+namespace yandex {
+namespace contest {
+namespace system {
+namespace cgroup {
 
-    class TerminationGuard
-    {
-    public:
-        TerminationGuard()=default;
+/*!
+ * \brief Terminates all tasks in specified control group.
+ *
+ * \return Number of terminated tasks.
+ *
+ * \note Requires Freezer subsystem to be available.
+ * \note Blocks until all tasks are terminated and control group
+ * can be removed if no child control groups are created.
+ */
+std::size_t terminate(const ControlGroupPointer &controlGroup);
 
-        TerminationGuard(TerminationGuard &&)=default;
-        TerminationGuard &operator=(TerminationGuard &&)=default;
+class TerminationGuard {
+ public:
+  TerminationGuard() = default;
 
-        TerminationGuard(const TerminationGuard &)=delete;
-        TerminationGuard &operator=(const TerminationGuard &)=delete;
+  TerminationGuard(TerminationGuard &&) = default;
+  TerminationGuard &operator=(TerminationGuard &&) = default;
 
-        explicit TerminationGuard(const ControlGroupPointer &controlGroup);
+  TerminationGuard(const TerminationGuard &) = delete;
+  TerminationGuard &operator=(const TerminationGuard &) = delete;
 
-        explicit operator bool() const;
+  explicit TerminationGuard(const ControlGroupPointer &controlGroup);
 
-        void detach();
-        void terminate();
+  explicit operator bool() const;
 
-        ~TerminationGuard();
+  void detach();
+  void terminate();
 
-    private:
-        ControlGroupPointer controlGroup_;
-    };
-}}}}
+  ~TerminationGuard();
+
+ private:
+  ControlGroupPointer controlGroup_;
+};
+
+}  // namespace cgroup
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

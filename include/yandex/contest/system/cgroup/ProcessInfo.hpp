@@ -11,90 +11,81 @@
 
 #include <sys/types.h>
 
-namespace yandex{namespace contest{namespace system{namespace cgroup
-{
-    struct ProcessInfoError: virtual Error {};
-    struct ProcessInfoInconsistencyError:
-        virtual ProcessInfoError,
-        virtual InconsistencyError {};
-    struct ProcessInfoDuplicateHierarchiesError:
-        virtual ProcessInfoError,
-        virtual FileFormatError {};
+namespace yandex {
+namespace contest {
+namespace system {
+namespace cgroup {
 
-    class ProcessInfo
-    {
-    private:
-        typedef std::unordered_map<
-            std::size_t,
-            boost::filesystem::path
-        > id2controlGroupType;
-        typedef id2controlGroupType::const_iterator map_const_iterator;
-        typedef id2controlGroupType::value_type map_value_type;
+struct ProcessInfoError : virtual Error {};
+struct ProcessInfoInconsistencyError : virtual ProcessInfoError,
+                                       virtual InconsistencyError {};
+struct ProcessInfoDuplicateHierarchiesError : virtual ProcessInfoError,
+                                              virtual FileFormatError {};
 
-    public:
-        typedef ProcessHierarchyInfo value_type;
+class ProcessInfo {
+ private:
+  using id2controlGroupType =
+      std::unordered_map<std::size_t, boost::filesystem::path>;
+  using map_const_iterator = id2controlGroupType::const_iterator;
+  using map_value_type = id2controlGroupType::value_type;
 
-    private:
-        struct IteratorConverter:
-            std::unary_function<const map_value_type &, value_type>
-        {
-            value_type operator()(const map_value_type &value) const;
-        };
+ public:
+  using value_type = ProcessHierarchyInfo;
 
-    public:
-        typedef boost::transform_iterator<
-            IteratorConverter,
-            map_const_iterator
-        > const_iterator;
+ private:
+  struct IteratorConverter
+      : std::unary_function<const map_value_type &, value_type> {
+    value_type operator()(const map_value_type &value) const;
+  };
 
-    public:
-        ProcessInfo()=default;
-        ProcessInfo(const ProcessInfo &)=default;
-        ProcessInfo(ProcessInfo &&)=default;
-        ProcessInfo &operator=(const ProcessInfo &)=default;
-        ProcessInfo &operator=(ProcessInfo &&)=default;
+ public:
+  using const_iterator =
+      boost::transform_iterator<IteratorConverter, map_const_iterator>;
 
-        void swap(ProcessInfo &processInfo) noexcept;
+ public:
+  ProcessInfo() = default;
+  ProcessInfo(const ProcessInfo &) = default;
+  ProcessInfo(ProcessInfo &&) = default;
+  ProcessInfo &operator=(const ProcessInfo &) = default;
+  ProcessInfo &operator=(ProcessInfo &&) = default;
 
-        ProcessHierarchyInfo byHierarchyId(
-            const std::size_t hierarchyId) const;
-        ProcessHierarchyInfo bySubsystem(
-            const std::string &subsystem) const;
-        ProcessHierarchyInfo byMountpoint(
-            const boost::filesystem::path &mountpoint) const;
+  void swap(ProcessInfo &processInfo) noexcept;
 
-        const_iterator begin() const;
-        const_iterator cbegin() const;
-        const_iterator end() const;
-        const_iterator cend() const;
+  ProcessHierarchyInfo byHierarchyId(std::size_t hierarchyId) const;
+  ProcessHierarchyInfo bySubsystem(const std::string &subsystem) const;
+  ProcessHierarchyInfo byMountpoint(
+      const boost::filesystem::path &mountpoint) const;
 
-    public:
-        static ProcessInfo fromFile(const boost::filesystem::path &path);
-        static ProcessInfo forPid(const pid_t pid);
-        static ProcessInfo forSelf();
+  const_iterator begin() const;
+  const_iterator cbegin() const;
+  const_iterator end() const;
+  const_iterator cend() const;
 
-    private:
-        ProcessHierarchyInfo getProcessHierarchyInfo(
-            const HierarchyInfo &info) const;
+ public:
+  static ProcessInfo fromFile(const boost::filesystem::path &path);
+  static ProcessInfo forPid(pid_t pid);
+  static ProcessInfo forSelf();
 
-    private:
-        id2controlGroupType id2controlGroup_;
-    };
+ private:
+  ProcessHierarchyInfo getProcessHierarchyInfo(const HierarchyInfo &info) const;
 
-    inline void swap(ProcessInfo &a, ProcessInfo &b) noexcept
-    {
-        a.swap(b);
-    }
+ private:
+  id2controlGroupType id2controlGroup_;
+};
 
-    inline ProcessInfo::const_iterator begin(const ProcessInfo &processInfo)
-    {
-        return processInfo.cbegin();
-    }
+inline void swap(ProcessInfo &a, ProcessInfo &b) noexcept { a.swap(b); }
 
-    inline ProcessInfo::const_iterator end(const ProcessInfo &processInfo)
-    {
-        return processInfo.cend();
-    }
+inline ProcessInfo::const_iterator begin(const ProcessInfo &processInfo) {
+  return processInfo.cbegin();
+}
 
-    std::ostream &operator<<(std::ostream &out, const ProcessInfo &processInfo);
-}}}}
+inline ProcessInfo::const_iterator end(const ProcessInfo &processInfo) {
+  return processInfo.cend();
+}
+
+std::ostream &operator<<(std::ostream &out, const ProcessInfo &processInfo);
+
+}  // namespace cgroup
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

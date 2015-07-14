@@ -2,26 +2,29 @@
 
 #include <yandex/contest/system/cgroup/Forward.hpp>
 
-namespace yandex{namespace contest{namespace system{namespace cgroup
-{
-    template <typename Base>
-    class Subsystem: public virtual Base
-    {
-    public:
-        explicit Subsystem(const ControlGroupPointer &controlGroup):
-            controlGroup_(controlGroup) {}
+namespace yandex {
+namespace contest {
+namespace system {
+namespace cgroup {
 
-        Subsystem(const Subsystem &)=default;
-        Subsystem &operator=(const Subsystem &)=default;
-        Subsystem(Subsystem &&)=default;
-        Subsystem &operator=(Subsystem &&)=default;
+template <typename Base>
+class Subsystem : public virtual Base {
+ public:
+  explicit Subsystem(const ControlGroupPointer &controlGroup)
+      : controlGroup_(controlGroup) {}
 
-        ControlGroup &controlGroup() const override
-        {
-            return *controlGroup_;
-        }
+  Subsystem(const Subsystem &) = default;
+  Subsystem &operator=(const Subsystem &) = default;
+  Subsystem(Subsystem &&) = default;
+  Subsystem &operator=(Subsystem &&) = default;
 
-    private:
-        ControlGroupPointer controlGroup_;
-    };
-}}}}
+  ControlGroup &controlGroup() const override { return *controlGroup_; }
+
+ private:
+  ControlGroupPointer controlGroup_;
+};
+
+}  // namespace cgroup
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

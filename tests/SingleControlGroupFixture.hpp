@@ -11,23 +11,18 @@ namespace ya = yandex::contest::system;
 namespace yac = ya::cgroup;
 namespace unistd = ya::unistd;
 
-struct SingleControlGroupFixture
-{
-    SingleControlGroupFixture():
-        pid(unistd::getpid()),
+struct SingleControlGroupFixture {
+  SingleControlGroupFixture()
+      : pid(unistd::getpid()),
         processHierarchy(yac::ProcessInfo::forPid(pid).bySubsystem("freezer")),
-        thisCG(yac::SingleControlGroup::forProcessHierarchyInfo(processHierarchy)),
-        cg(thisCG->createChild(boost::filesystem::unique_path()))
-    {
-    }
+        thisCG(
+            yac::SingleControlGroup::forProcessHierarchyInfo(processHierarchy)),
+        cg(thisCG->createChild(boost::filesystem::unique_path())) {}
 
-    ~SingleControlGroupFixture()
-    {
-        thisCG->attachTask(pid);
-    }
+  ~SingleControlGroupFixture() { thisCG->attachTask(pid); }
 
-    const pid_t pid;
-    const yac::ProcessHierarchyInfo processHierarchy;
-    const yac::SingleControlGroupPointer thisCG;
-    const yac::SingleControlGroupPointer cg;
+  const pid_t pid;
+  const yac::ProcessHierarchyInfo processHierarchy;
+  const yac::SingleControlGroupPointer thisCG;
+  const yac::SingleControlGroupPointer cg;
 };

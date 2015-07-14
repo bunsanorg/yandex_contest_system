@@ -5,20 +5,25 @@
 
 #include <boost/optional.hpp>
 
-namespace yandex{namespace contest{namespace system{namespace cgroup
-{
-    /*!
-     * \note Need swapaccount=1 boot options
-     * or CONFIG_CGROUP_MEM_RES_CTLR_SWAP_ENABLED set.
-     */
-    class MemorySwapBase:
-        public virtual ResourceLimiter<MemorySwapBase, Count>,
-        public virtual Stat<MemorySwapBase, Count>
-    {
-    public:
-        static const std::string SUBSYSTEM_NAME;
-        static const boost::optional<std::string> UNITS;
-    };
+namespace yandex {
+namespace contest {
+namespace system {
+namespace cgroup {
 
-    typedef Subsystem<MemorySwapBase> MemorySwap;
-}}}}
+/*!
+ * \note Need swapaccount=1 boot options
+ * or CONFIG_CGROUP_MEM_RES_CTLR_SWAP_ENABLED set.
+ */
+class MemorySwapBase : public virtual ResourceLimiter<MemorySwapBase, Count>,
+                       public virtual Stat<MemorySwapBase, Count> {
+ public:
+  static const std::string SUBSYSTEM_NAME;
+  static const boost::optional<std::string> UNITS;
+};
+
+using MemorySwap = Subsystem<MemorySwapBase>;
+
+}  // namespace cgroup
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

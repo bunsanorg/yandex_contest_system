@@ -6,36 +6,28 @@
 
 #include <string>
 
-namespace yandex{namespace contest{namespace system{namespace cgroup
-{
-    struct Error: virtual system::Error
-    {
-        typedef boost::error_info<
-            struct hierarchyIdTag,
-            std::size_t
-        > hierarchyId;
+namespace yandex {
+namespace contest {
+namespace system {
+namespace cgroup {
 
-        typedef boost::error_info<
-            struct subsystemTag,
-            std::string
-        > subsystem;
+struct Error : virtual system::Error {
+  using hierarchyId = boost::error_info<struct hierarchyIdTag, std::size_t>;
+  using subsystem = boost::error_info<struct subsystemTag, std::string>;
+  using mountpoint =
+      boost::error_info<struct mountpointTag, boost::filesystem::path>;
+  using controlGroupPath =
+      boost::error_info<struct controlGroupTag, boost::filesystem::path>;
+};
 
-        typedef boost::error_info<
-            struct mountpointTag,
-            boost::filesystem::path
-        > mountpoint;
+struct InconsistencyError : virtual Error {};
 
-        typedef boost::error_info<
-            struct controlGroupTag,
-            boost::filesystem::path
-        > controlGroupPath;
-    };
+struct FileFormatError : virtual Error {};
+struct FileLineFormatError : virtual FileFormatError {
+  using line = boost::error_info<struct lineTag, std::string>;
+};
 
-    struct InconsistencyError: virtual Error {};
-
-    struct FileFormatError: virtual Error {};
-    struct FileLineFormatError: virtual FileFormatError
-    {
-        typedef boost::error_info<struct lineTag, std::string> line;
-    };
-}}}}
+}  // namespace cgroup
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

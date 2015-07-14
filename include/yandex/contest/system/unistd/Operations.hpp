@@ -19,297 +19,264 @@ struct rlimit;
 struct itimerval;
 struct epoll_event;
 
-namespace yandex{namespace contest{namespace system{namespace unistd
-{
-    /// Information for exceptions.
-    namespace info
-    {
-        typedef Error::path path;
-        typedef boost::error_info<struct modeTag, mode_t> mode;
-        typedef boost::error_info<struct accessIdTag, access::Id> accessId;
-        typedef boost::error_info<struct devMajorTag, int> devMajor;
-        typedef boost::error_info<struct devMinorTag, int> devMinor;
-        typedef boost::error_info<
-            struct symLinkValueTag,
-            boost::filesystem::path
-        > symLinkValue;
-        typedef boost::error_info<struct uidTag, uid_t> uid;
-        typedef boost::error_info<struct ruidTag, uid_t> ruid;
-        typedef boost::error_info<struct euidTag, uid_t> euid;
-        typedef boost::error_info<struct suidTag, uid_t> suid;
-        typedef boost::error_info<struct gidTag, gid_t> gid;
-        typedef boost::error_info<struct rgidTag, gid_t> rgid;
-        typedef boost::error_info<struct egidTag, gid_t> egid;
-        typedef boost::error_info<struct sgidTag, gid_t> sgid;
-        typedef boost::error_info<struct openFlagsTag, int> openFlags;
-        typedef boost::error_info<struct fdTag, int> fd;
-        typedef boost::error_info<struct oldFdTag, int> oldFd;
-        typedef boost::error_info<struct newFdTag, int> newFd;
-        typedef boost::error_info<struct inFdTag, int> inFd;
-        typedef boost::error_info<struct outFdTag, int> outFd;
-        typedef boost::error_info<struct resourceTag, int> resource;
-        typedef boost::error_info<struct sizeTag, std::size_t> size;
-        typedef boost::error_info<struct offsetTag, off_t> offset;
-        // TODO rlimit (how to do it without <sys/resource.h> include?
-        // TODO interval timer (the same...)
-        typedef boost::error_info<struct pidTag, pid_t> pid;
-        typedef boost::error_info<struct signalTag, int> signal;
-        typedef boost::error_info<struct sysconfNameTag, int> sysconfName;
-        typedef boost::error_info<struct epfdTag, int> epfd;
-        typedef boost::error_info<struct opTag, int> op;
-        typedef boost::error_info<struct maxeventsTag, unsigned> maxevents;
-    }
+namespace yandex {
+namespace contest {
+namespace system {
+namespace unistd {
 
-    /// chmod(3)
-    void chmod(const boost::filesystem::path &path, const mode_t mode);
+namespace info {
+using path = Error::path;
+using mode = boost::error_info<struct modeTag, mode_t>;
+using accessId = boost::error_info<struct accessIdTag, access::Id>;
+using devMajor = boost::error_info<struct devMajorTag, int>;
+using devMinor = boost::error_info<struct devMinorTag, int>;
+using symLinkValue =
+    boost::error_info<struct symLinkValueTag, boost::filesystem::path>;
+using uid = boost::error_info<struct uidTag, uid_t>;
+using ruid = boost::error_info<struct ruidTag, uid_t>;
+using euid = boost::error_info<struct euidTag, uid_t>;
+using suid = boost::error_info<struct suidTag, uid_t>;
+using gid = boost::error_info<struct gidTag, gid_t>;
+using rgid = boost::error_info<struct rgidTag, gid_t>;
+using egid = boost::error_info<struct egidTag, gid_t>;
+using sgid = boost::error_info<struct sgidTag, gid_t>;
+using openFlags = boost::error_info<struct openFlagsTag, int>;
+using fd = boost::error_info<struct fdTag, int>;
+using oldFd = boost::error_info<struct oldFdTag, int>;
+using newFd = boost::error_info<struct newFdTag, int>;
+using inFd = boost::error_info<struct inFdTag, int>;
+using outFd = boost::error_info<struct outFdTag, int>;
+using resource = boost::error_info<struct resourceTag, int>;
+using size = boost::error_info<struct sizeTag, std::size_t>;
+using offset = boost::error_info<struct offsetTag, off_t>;
+// TODO rlimit (how to do it without <sys/resource.h> include?
+// TODO interval timer (the same...)
+using pid = boost::error_info<struct pidTag, pid_t>;
+using signal = boost::error_info<struct signalTag, int>;
+using sysconfName = boost::error_info<struct sysconfNameTag, int>;
+using epfd = boost::error_info<struct epfdTag, int>;
+using op = boost::error_info<struct opTag, int>;
+using maxevents = boost::error_info<struct maxeventsTag, unsigned>;
+}  // namespace info
 
-    /// chown(3)
-    void chown(const boost::filesystem::path &path, const access::Id &id);
+/// chmod(3)
+void chmod(const boost::filesystem::path &path, mode_t mode);
 
-    /// lchown(3)
-    void lchown(const boost::filesystem::path &path, const access::Id &id);
+/// chown(3)
+void chown(const boost::filesystem::path &path, const access::Id &id);
 
-    /// mkdir(3)
-    void mkdir(const boost::filesystem::path &path, const mode_t mode);
+/// lchown(3)
+void lchown(const boost::filesystem::path &path, const access::Id &id);
 
-    /*!
-     * \brief Like mkdir(3), except it does not treat EEXIST as error.
-     *
-     * \see boost::filesystem::create_directory()
-     *
-     * \return false on EEXIST
-     */
-    bool create_directory(const boost::filesystem::path &path, const mode_t mode);
+/// mkdir(3)
+void mkdir(const boost::filesystem::path &path, mode_t mode);
 
-    /// rmdir(3)
-    void rmdir(const boost::filesystem::path &path);
+/*!
+ * \brief Like mkdir(3), except it does not treat EEXIST as error.
+ *
+ * \see boost::filesystem::create_directory()
+ *
+ * \return false on EEXIST
+ */
+bool create_directory(const boost::filesystem::path &path, mode_t mode);
 
-    /// mknod(3)
-    void mknod(const boost::filesystem::path &path,
-               const mode_t mode,
-               const dev_t dev);
+/// rmdir(3)
+void rmdir(const boost::filesystem::path &path);
 
-    /// makedev(3)
-    dev_t makedev(const int major, const int minor);
+/// mknod(3)
+void mknod(const boost::filesystem::path &path, mode_t mode, dev_t dev);
 
-    /// symlink(3)
-    void symlink(const boost::filesystem::path &value,
-                 const boost::filesystem::path &path);
+/// makedev(3)
+dev_t makedev(int major, int minor);
 
-    /// mkfifo(3)
-    void mkfifo(const boost::filesystem::path &path, const mode_t mode);
+/// symlink(3)
+void symlink(const boost::filesystem::path &value,
+             const boost::filesystem::path &path);
 
-    /// stat(3)
-    FileStatus stat(const boost::filesystem::path &path);
+/// mkfifo(3)
+void mkfifo(const boost::filesystem::path &path, mode_t mode);
 
-    /// same as stat() except it does not treat file-not-found as error
-    boost::optional<FileStatus> statOptional(
-        const boost::filesystem::path &path);
+/// stat(3)
+FileStatus stat(const boost::filesystem::path &path);
 
-    /// fstat(3)
-    FileStatus fstat(int fd);
+/// same as stat() except it does not treat file-not-found as error
+boost::optional<FileStatus> statOptional(const boost::filesystem::path &path);
 
-    /// lstat(3)
-    FileStatus lstat(const boost::filesystem::path &path);
+/// fstat(3)
+FileStatus fstat(int fd);
 
-    /// getuid(3)
-    uid_t getuid() noexcept;
+/// lstat(3)
+FileStatus lstat(const boost::filesystem::path &path);
 
-    /// getgid(3)
-    gid_t getgid() noexcept;
+/// getuid(3)
+uid_t getuid() noexcept;
 
-    /// geteuid(3)
-    uid_t geteuid() noexcept;
+/// getgid(3)
+gid_t getgid() noexcept;
 
-    /// getegid(3)
-    gid_t getegid() noexcept;
+/// geteuid(3)
+uid_t geteuid() noexcept;
 
-    /// getresuid(2)
-    void getresuid(uid_t &ruid, uid_t &euid, uid_t &suid) noexcept;
+/// getegid(3)
+gid_t getegid() noexcept;
 
-    /// getresgid(2)
-    void getresgid(gid_t &rgid, gid_t &egid, gid_t &sgid) noexcept;
+/// getresuid(2)
+void getresuid(uid_t &ruid, uid_t &euid, uid_t &suid) noexcept;
 
-    /// setuid(3)
-    void setuid(const uid_t uid);
+/// getresgid(2)
+void getresgid(gid_t &rgid, gid_t &egid, gid_t &sgid) noexcept;
 
-    /// setgid(3)
-    void setgid(const gid_t gid);
+/// setuid(3)
+void setuid(const uid_t uid);
 
-    /// seteuid(3)
-    void seteuid(const uid_t uid);
+/// setgid(3)
+void setgid(const gid_t gid);
 
-    /// setegid(3)
-    void setegid(const gid_t gid);
+/// seteuid(3)
+void seteuid(const uid_t uid);
 
-    /// setreuid(3)
-    void setreuid(const uid_t ruid, const uid_t euid);
+/// setegid(3)
+void setegid(const gid_t gid);
 
-    /// setregid(3)
-    void setregid(const gid_t rgid, const gid_t egid);
+/// setreuid(3)
+void setreuid(uid_t ruid, uid_t euid);
 
-    /// setresuid(2)
-    void setresuid(const uid_t ruid, const uid_t euid, const uid_t suid);
+/// setregid(3)
+void setregid(gid_t rgid, gid_t egid);
 
-    /// setresgid(2)
-    void setresgid(const gid_t rgid, const gid_t egid, const gid_t sgid);
+/// setresuid(2)
+void setresuid(uid_t ruid, uid_t euid, uid_t suid);
 
-    /// fork(3)
-    pid_t fork();
+/// setresgid(2)
+void setresgid(gid_t rgid, gid_t egid, gid_t sgid);
 
-    /// open(3)
-    Descriptor open(const boost::filesystem::path &path,
-                    const int oflag,
-                    const mode_t mode=0666);
+/// fork(3)
+pid_t fork();
 
-    /// close(3)
-    void close(const int fd);
+/// open(3)
+Descriptor open(const boost::filesystem::path &path, int oflag,
+                mode_t mode = 0666);
 
-    /// dup(3)
-    Descriptor dup(const int fd);
+/// close(3)
+void close(int fd);
 
-    /*!
-     * \brief dup2(3)
-     *
-     * \code{.cpp}
-     * dup2(1, 2); // redirect stderr to stdout
-     * \endcode
-     */
-    void dup2(const int oldFd, const int newFd);
+/// dup(3)
+Descriptor dup(int fd);
 
-    /// sendfile(2)
-    std::size_t sendfile(const int outFd,
-                         const int inFd,
-                         off_t &offset,
-                         const std::size_t count);
+/*!
+ * \brief dup2(3)
+ *
+ * \code{.cpp}
+ * dup2(1, 2); // redirect stderr to stdout
+ * \endcode
+ */
+void dup2(int oldFd, int newFd);
 
-    /// sendfile(outFd, inFd, offset, /* unspecified buffer size */)
-    std::size_t sendfile(const int outFd,
-                         const int inFd,
-                         off_t &offset);
+/// sendfile(2)
+std::size_t sendfile(int outFd, int inFd, off_t &offset, std::size_t count);
 
-    /// sendfile(outFd, inFd, nullptr, count)
-    std::size_t sendfile(const int outFd,
-                         const int inFd,
-                         const std::size_t count);
+/// sendfile(outFd, inFd, offset, /* unspecified buffer size */)
+std::size_t sendfile(int outFd, int inFd, off_t &offset);
 
-    /// sendfile(outFd, inFd, /* unspecified buffer size */)
-    std::size_t sendfile(const int outFd, const int inFd);
+/// sendfile(outFd, inFd, nullptr, count)
+std::size_t sendfile(int outFd, int inFd, std::size_t count);
 
-    /// getdtablesize(3)
-    unsigned getdtablesize();
+/// sendfile(outFd, inFd, /* unspecified buffer size */)
+std::size_t sendfile(int outFd, int inFd);
 
-    /// getrlimit(3)
-    void getrlimit(const int resource, struct rlimit &rlp);
+/// getdtablesize(3)
+unsigned getdtablesize();
 
-    /// setrlimit(3)
-    void setrlimit(const int resource, const struct rlimit &rlp);
+/// getrlimit(3)
+void getrlimit(int resource, struct rlimit &rlp);
 
-    /// getitimer(3)
-    void getitimer(const int which, ::itimerval &curr_value);
+/// setrlimit(3)
+void setrlimit(int resource, const struct rlimit &rlp);
 
-    /// setitimer(3)
-    void setitimer(const int which, const ::itimerval &new_value);
+/// getitimer(3)
+void getitimer(int which, ::itimerval &curr_value);
 
-    /// setitimer(3)
-    void setitimer(const int which,
-                   const ::itimerval &new_value,
-                   ::itimerval &old_value);
+/// setitimer(3)
+void setitimer(int which, const ::itimerval &new_value);
 
-    /// kill(3)
-    void kill(const pid_t pid, const int sig);
+/// setitimer(3)
+void setitimer(int which, const ::itimerval &new_value, ::itimerval &old_value);
 
-    /*!
-     * \brief kill(pid, 0)
-     *
-     * \return error if happened.
-     */
-    std::error_code kill0(const pid_t pid) noexcept;
+/// kill(3)
+void kill(pid_t pid, int sig);
 
-    /// getpid(3)
-    pid_t getpid() noexcept;
+/*!
+ * \brief kill(pid, 0)
+ *
+ * \return error if happened.
+ */
+std::error_code kill0(pid_t pid) noexcept;
 
-    /// gettid(2)
-    pid_t gettid() noexcept;
+/// getpid(3)
+pid_t getpid() noexcept;
 
-    /// sysconf(3)
-    long sysconf(const int name);
+/// gettid(2)
+pid_t gettid() noexcept;
 
-    /// epoll_create1(2)
-    Descriptor epoll_create1(const int flags=0);
+/// sysconf(3)
+long sysconf(int name);
 
-    /// epoll_ctl(2)
-    void epoll_ctl(const int epfd,
-                   const int op,
-                   const int fd,
-                   ::epoll_event &event);
+/// epoll_create1(2)
+Descriptor epoll_create1(int flags = 0);
 
-    /// epoll_ctl(epfd, EPOLL_CTL_ADD, fd, event)
-    void epoll_ctl_add(const int epfd,
-                       const int fd,
-                       ::epoll_event &event);
+/// epoll_ctl(2)
+void epoll_ctl(int epfd, int op, int fd, ::epoll_event &event);
 
-    /// epoll_ctl(epfd, EPOLL_CTL_MOD, fd, event)
-    void epoll_ctl_mod(const int epfd,
-                       const int fd,
-                       ::epoll_event &event);
+/// epoll_ctl(epfd, EPOLL_CTL_ADD, fd, event)
+void epoll_ctl_add(int epfd, int fd, ::epoll_event &event);
 
-    /// epoll_ctl(epfd, EPOLL_CTL_DEL, fd, nullptr)
-    void epoll_ctl_del(const int epfd, const int fd);
+/// epoll_ctl(epfd, EPOLL_CTL_MOD, fd, event)
+void epoll_ctl_mod(int epfd, int fd, ::epoll_event &event);
 
-    /// epoll_wait(2)(epfd, events, maxevents, -1)
-    unsigned epoll_wait(const int epfd,
-                        ::epoll_event *const events,
-                        const unsigned maxevents);
+/// epoll_ctl(epfd, EPOLL_CTL_DEL, fd, nullptr)
+void epoll_ctl_del(int epfd, int fd);
 
-    template <unsigned MaxEvents>
-    unsigned epoll_wait(const int epfd,
-                        ::epoll_event (&events)[MaxEvents])
-    {
-        return epoll_wait(epfd, events, MaxEvents);
-    }
+/// epoll_wait(2)(epfd, events, maxevents, -1)
+unsigned epoll_wait(int epfd, ::epoll_event *events, unsigned maxevents);
 
-    /// epoll_wait(2)
-    unsigned epoll_wait(const int epfd,
-                        ::epoll_event *const events,
-                        const unsigned maxevents,
-                        const std::chrono::milliseconds &timeout);
+template <unsigned MaxEvents>
+unsigned epoll_wait(const int epfd, ::epoll_event(&events)[MaxEvents]) {
+  return epoll_wait(epfd, events, MaxEvents);
+}
 
-    template <unsigned MaxEvents>
-    unsigned epoll_wait(const int epfd,
-                        ::epoll_event (&events)[MaxEvents],
-                        const std::chrono::milliseconds &timeout)
-    {
-        return epoll_wait(epfd, events, MaxEvents, timeout);
-    }
+/// epoll_wait(2)
+unsigned epoll_wait(int epfd, ::epoll_event *events, unsigned maxevents,
+                    const std::chrono::milliseconds &timeout);
 
-    /// epoll_pwait(2)(epfd, events, maxevents, -1, sigmask)
-    unsigned epoll_pwait(const int epfd,
-                         ::epoll_event *const events,
-                         const unsigned maxevents,
-                         const sigset_t &sigmask);
+template <unsigned MaxEvents>
+unsigned epoll_wait(int epfd, ::epoll_event(&events)[MaxEvents],
+                    const std::chrono::milliseconds &timeout) {
+  return epoll_wait(epfd, events, MaxEvents, timeout);
+}
 
-    template <unsigned MaxEvents>
-    unsigned epoll_pwait(const int epfd,
-                         ::epoll_event (&events)[MaxEvents],
-                         const sigset_t &sigmask)
-    {
-        return epoll_pwait(epfd, events, MaxEvents, sigmask);
-    }
+/// epoll_pwait(2)(epfd, events, maxevents, -1, sigmask)
+unsigned epoll_pwait(int epfd, ::epoll_event *events, unsigned maxevents,
+                     const sigset_t &sigmask);
 
-    /// epoll_pwait(2)
-    unsigned epoll_pwait(const int epfd,
-                         ::epoll_event *const events,
-                         const unsigned maxevents,
-                         const std::chrono::milliseconds &timeout,
-                         const sigset_t &sigmask);
+template <unsigned MaxEvents>
+unsigned epoll_pwait(const int epfd, ::epoll_event(&events)[MaxEvents],
+                     const sigset_t &sigmask) {
+  return epoll_pwait(epfd, events, MaxEvents, sigmask);
+}
 
-    template <unsigned MaxEvents>
-    unsigned epoll_pwait(const int epfd,
-                         ::epoll_event (&events)[MaxEvents],
-                         const std::chrono::milliseconds &timeout,
-                         const sigset_t &sigmask)
-    {
-        return epoll_pwait(epfd, events, MaxEvents, timeout, sigmask);
-    }
-}}}}
+/// epoll_pwait(2)
+unsigned epoll_pwait(int epfd, ::epoll_event *events, unsigned maxevents,
+                     const std::chrono::milliseconds &timeout,
+                     const sigset_t &sigmask);
+
+template <unsigned MaxEvents>
+unsigned epoll_pwait(const int epfd, ::epoll_event(&events)[MaxEvents],
+                     const std::chrono::milliseconds &timeout,
+                     const sigset_t &sigmask) {
+  return epoll_pwait(epfd, events, MaxEvents, timeout, sigmask);
+}
+
+}  // namespace unistd
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

@@ -4,14 +4,20 @@
 
 #include <iostream>
 
-namespace yandex{namespace contest{namespace system{namespace cgroup
-{
-    struct ProcessHierarchyInfo
-    {
-        HierarchyInfo hierarchy;
-        boost::filesystem::path controlGroup;
-    };
+namespace yandex {
+namespace contest {
+namespace system {
+namespace cgroup {
 
-    std::ostream &operator<<(std::ostream &out,
-                             const ProcessHierarchyInfo &processHierarchyInfo);
-}}}}
+struct ProcessHierarchyInfo {
+  HierarchyInfo hierarchy;
+  boost::filesystem::path controlGroup;
+};
+
+std::ostream &operator<<(std::ostream &out,
+                         const ProcessHierarchyInfo &processHierarchyInfo);
+
+}  // namespace cgroup
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

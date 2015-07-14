@@ -2,39 +2,37 @@
 
 #include <yandex/contest/system/cgroup/ResourceCounter.hpp>
 
-namespace yandex{namespace contest{namespace system{namespace cgroup
-{
-    template <typename Config, typename Units_=Count,
-              typename Converter=detail::UnitsConverter<Units_>>
-    class ResourceLimiter:
-        public virtual ResourceCounter<Config, Units_, Converter>
-    {
-    public:
-        typedef typename ResourceCounter<Config>::Units Units;
+namespace yandex {
+namespace contest {
+namespace system {
+namespace cgroup {
 
-    public:
-        Units limit() const
-        {
-            return Converter::countToUnits(this->template readField<Count>(
-                ResourceCounter<Config>::fieldNameInUnits("limit")));
-        }
+template <typename Config, typename Units_ = Count,
+          typename Converter = detail::UnitsConverter<Units_>>
+class ResourceLimiter
+    : public virtual ResourceCounter<Config, Units_, Converter> {
+ public:
+  using Units = typename ResourceCounter<Config>::Units;
 
-        void setLimit(const Units limit) const
-        {
-            const Count limit_ = Converter::unitsToCount(limit);
-            this->template writeField<Units>(
-                ResourceCounter<Config>::fieldNameInUnits("limit"), limit_);
-            // TODO validate? kernel may not set it properly
-        }
+ public:
+  Units limit() const {
+    return Converter::countToUnits(this->template readField<Count>(
+        ResourceCounter<Config>::fieldNameInUnits("limit")));
+  }
 
-        Count failcnt() const
-        {
-            return this->template readField<Count>("failcnt");
-        }
+  void setLimit(const Units limit) const {
+    const Count limit_ = Converter::unitsToCount(limit);
+    this->template writeField<Units>(
+        ResourceCounter<Config>::fieldNameInUnits("limit"), limit_);
+    // TODO validate? kernel may not set it properly
+  }
 
-        void resetFailcnt() const
-        {
-            this->template writeField("failcnt", 0);
-        }
-    };
-}}}}
+  Count failcnt() const { return this->template readField<Count>("failcnt"); }
+
+  void resetFailcnt() const { this->template writeField("failcnt", 0); }
+};
+
+}  // namespace cgroup
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

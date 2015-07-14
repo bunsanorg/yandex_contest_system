@@ -8,55 +8,53 @@
 #include <unordered_set>
 #include <vector>
 
-namespace yandex{namespace contest{namespace system{namespace cgroup
-{
-    struct ProcPidCgroupError: virtual Error {};
-    struct ProcPidCgroupLoadError: virtual ProcPidCgroupError {};
+namespace yandex {
+namespace contest {
+namespace system {
+namespace cgroup {
 
-    struct ProcPidCgroupFormatError:
-        virtual ProcPidCgroupError,
-        virtual FileFormatError {};
-    struct ProcPidCgroupLineFormatError:
-        virtual ProcPidCgroupFormatError,
-        virtual FileLineFormatError {};
-    struct ProcPidCgroupNotEnoughFieldsError:
-        virtual ProcPidCgroupLineFormatError {};
+struct ProcPidCgroupError : virtual Error {};
+struct ProcPidCgroupLoadError : virtual ProcPidCgroupError {};
 
-    struct ProcPidCgroup
-    {
-        struct Entry
-        {
-            std::size_t hierarchyId = 0;
-            std::unordered_set<std::string> subsystems;
-            boost::filesystem::path controlGroup;
-        };
+struct ProcPidCgroupFormatError : virtual ProcPidCgroupError,
+                                  virtual FileFormatError {};
+struct ProcPidCgroupLineFormatError : virtual ProcPidCgroupFormatError,
+                                      virtual FileLineFormatError {};
+struct ProcPidCgroupNotEnoughFieldsError
+    : virtual ProcPidCgroupLineFormatError {};
 
-        std::vector<Entry> entries;
+struct ProcPidCgroup {
+  struct Entry {
+    std::size_t hierarchyId = 0;
+    std::unordered_set<std::string> subsystems;
+    boost::filesystem::path controlGroup;
+  };
 
-        void load(const boost::filesystem::path &path);
-    };
+  std::vector<Entry> entries;
 
-    inline std::vector<ProcPidCgroup::Entry>::iterator begin(
-        ProcPidCgroup &cgroup)
-    {
-        return cgroup.entries.begin();
-    }
+  void load(const boost::filesystem::path &path);
+};
 
-    inline std::vector<ProcPidCgroup::Entry>::const_iterator begin(
-        const ProcPidCgroup &cgroup)
-    {
-        return cgroup.entries.begin();
-    }
+inline std::vector<ProcPidCgroup::Entry>::iterator begin(
+    ProcPidCgroup &cgroup) {
+  return cgroup.entries.begin();
+}
 
-    inline std::vector<ProcPidCgroup::Entry>::iterator end(
-        ProcPidCgroup &cgroup)
-    {
-        return cgroup.entries.end();
-    }
+inline std::vector<ProcPidCgroup::Entry>::const_iterator begin(
+    const ProcPidCgroup &cgroup) {
+  return cgroup.entries.begin();
+}
 
-    inline std::vector<ProcPidCgroup::Entry>::const_iterator end(
-        const ProcPidCgroup &cgroup)
-    {
-        return cgroup.entries.end();
-    }
-}}}}
+inline std::vector<ProcPidCgroup::Entry>::iterator end(ProcPidCgroup &cgroup) {
+  return cgroup.entries.end();
+}
+
+inline std::vector<ProcPidCgroup::Entry>::const_iterator end(
+    const ProcPidCgroup &cgroup) {
+  return cgroup.entries.end();
+}
+
+}  // namespace cgroup
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

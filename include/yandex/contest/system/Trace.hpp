@@ -4,32 +4,33 @@
 
 #include <csignal>
 
-namespace yandex{namespace contest{namespace system
-{
-    class Trace: public std::vector<void *>
-    {
-    public:
-        Trace()=default;
-        Trace(const Trace &)=default;
-        Trace &operator=(const Trace &)=default;
-        Trace(Trace &&)=default;
-        Trace &operator=(Trace &&)=default;
+namespace yandex {
+namespace contest {
+namespace system {
 
-    public:
-        static Trace get(const std::size_t maxSize=1024);
+class Trace : public std::vector<void *> {
+ public:
+  Trace() = default;
+  Trace(const Trace &) = default;
+  Trace &operator=(const Trace &) = default;
+  Trace(Trace &&) = default;
+  Trace &operator=(Trace &&) = default;
 
-        static void handler(int sig, siginfo_t *siginfo, void *context);
+ public:
+  static Trace get(std::size_t maxSize = 1024);
 
-        static void handle(const int sig, void (*h)(int, siginfo_t *, void *));
+  static void handler(int sig, siginfo_t *siginfo, void *context);
 
-        static void handle(const int sig)
-        {
-            handle(sig, &handler);
-        }
+  static void handle(int sig, void (*h)(int, siginfo_t *, void *));
 
-    private:
-        friend std::ostream &operator<<(std::ostream &out, const Trace &trace);
-    };
+  static void handle(const int sig) { handle(sig, &handler); }
 
-    std::ostream &operator<<(std::ostream &out, const Trace &trace);
-}}}
+ private:
+  friend std::ostream &operator<<(std::ostream &out, const Trace &trace);
+};
+
+std::ostream &operator<<(std::ostream &out, const Trace &trace);
+
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

@@ -4,35 +4,36 @@
 
 #include <bunsan/stream_enum.hpp>
 
-namespace yandex{namespace contest{namespace system{namespace cgroup
-{
-    class FreezerBase: public virtual SubsystemBase<FreezerBase>
-    {
-    public:
-        static const std::string SUBSYSTEM_NAME;
+namespace yandex {
+namespace contest {
+namespace system {
+namespace cgroup {
 
-    public:
-        BUNSAN_INCLASS_STREAM_ENUM_CLASS(State,
-        (
-            FROZEN,
-            FREEZING,
-            THAWED
-        ))
+class FreezerBase : public virtual SubsystemBase<FreezerBase> {
+ public:
+  static const std::string SUBSYSTEM_NAME;
 
-    public:
-        State state() const;
+ public:
+  BUNSAN_INCLASS_STREAM_ENUM_CLASS(State, (FROZEN, FREEZING, THAWED))
 
-        void freeze() const;
+ public:
+  State state() const;
 
-        void unfreeze() const;
+  void freeze() const;
 
-    private:
-        /*!
-         * \warning State::FREEZING is not legal.
-         * \note loop until state() == state_
-         */
-        void setState(const State state_) const;
-    };
+  void unfreeze() const;
 
-    typedef Subsystem<FreezerBase> Freezer;
-}}}}
+ private:
+  /*!
+   * \warning State::FREEZING is not legal.
+   * \note loop until state() == state_
+   */
+  void setState(const State state_) const;
+};
+
+using Freezer = Subsystem<FreezerBase>;
+
+}  // namespace cgroup
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

@@ -7,28 +7,34 @@
 
 #include <sys/types.h>
 
-namespace yandex{namespace contest{namespace system{
-    namespace unistd{namespace access
-{
-    struct Id
-    {
-        template <typename Archive>
-        void serialize(Archive &ar, const unsigned int)
-        {
-            ar & BOOST_SERIALIZATION_NVP(uid);
-            ar & BOOST_SERIALIZATION_NVP(gid);
-        }
+namespace yandex {
+namespace contest {
+namespace system {
+namespace unistd {
+namespace access {
 
-        Id()=default;
-        Id(const uid_t uid_, const gid_t gid_): uid(uid_), gid(gid_) {}
-        Id(const Id &)=default;
-        Id &operator=(const Id &)=default;
+struct Id {
+  template <typename Archive>
+  void serialize(Archive &ar, const unsigned int) {
+    ar & BOOST_SERIALIZATION_NVP(uid);
+    ar & BOOST_SERIALIZATION_NVP(gid);
+  }
 
-        bool operator==(const Id &id) const noexcept;
+  Id() = default;
+  Id(const uid_t uid_, const gid_t gid_) : uid(uid_), gid(gid_) {}
+  Id(const Id &) = default;
+  Id &operator=(const Id &) = default;
 
-        uid_t uid = 0;
-        gid_t gid = 0;
-    };
+  bool operator==(const Id &id) const noexcept;
 
-    std::ostream &operator<<(std::ostream &out, const Id &id);
-}}}}}
+  uid_t uid = 0;
+  gid_t gid = 0;
+};
+
+std::ostream &operator<<(std::ostream &out, const Id &id);
+
+}  // namespace access
+}  // namespace unistd
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

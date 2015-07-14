@@ -1,36 +1,33 @@
 #include <yandex/contest/system/cgroup/CpuSet.hpp>
 
-namespace yandex{namespace contest{namespace system{namespace cgroup
-{
-    const std::string CpuSetBase::SUBSYSTEM_NAME("cpuset");
+namespace yandex {
+namespace contest {
+namespace system {
+namespace cgroup {
 
-    std::string CpuSetBase::cpus() const
-    {
-        return readField<std::string>("cpus");
-    }
+const std::string CpuSetBase::SUBSYSTEM_NAME("cpuset");
 
-    void CpuSetBase::setCpus(const std::string &cpus) const
-    {
-        writeField("cpus", cpus);
-    }
+std::string CpuSetBase::cpus() const { return readField<std::string>("cpus"); }
 
-    std::string CpuSetBase::mems() const
-    {
-        return readField<std::string>("mems");
-    }
+void CpuSetBase::setCpus(const std::string &cpus) const {
+  writeField("cpus", cpus);
+}
 
-    void CpuSetBase::setMems(const std::string &mems) const
-    {
-        writeField("mems", mems);
-    }
+std::string CpuSetBase::mems() const { return readField<std::string>("mems"); }
 
-    bool CpuSetBase::memoryMigrate() const
-    {
-        return readField<int>("memory_migrate");
-    }
+void CpuSetBase::setMems(const std::string &mems) const {
+  writeField("mems", mems);
+}
 
-    void CpuSetBase::setMemoryMigrate(const bool memoryMigrate) const
-    {
-        writeField<int>("memory_migrate", memoryMigrate);
-    }
-}}}}
+bool CpuSetBase::memoryMigrate() const {
+  return readField<int>("memory_migrate");
+}
+
+void CpuSetBase::setMemoryMigrate(const bool memoryMigrate) const {
+  writeField<int>("memory_migrate", memoryMigrate);
+}
+
+}  // namespace cgroup
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

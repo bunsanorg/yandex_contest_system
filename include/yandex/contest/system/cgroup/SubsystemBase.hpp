@@ -8,47 +8,47 @@
 
 #include <string>
 
-namespace yandex{namespace contest{namespace system{namespace cgroup
-{
-    template <typename Config>
-    class SubsystemBase
-    {
-    public:
-        virtual ControlGroup &controlGroup() const=0;
+namespace yandex {
+namespace contest {
+namespace system {
+namespace cgroup {
 
-    protected:
-        static std::string fieldName(const std::string &fieldName_)
-        {
-            return Config::SUBSYSTEM_NAME + "." + fieldName_;
-        }
+template <typename Config>
+class SubsystemBase {
+ public:
+  virtual ControlGroup &controlGroup() const = 0;
 
-        boost::filesystem::path field(const std::string &fieldName_) const
-        {
-            return controlGroup().field(fieldName(fieldName_));
-        }
+ protected:
+  static std::string fieldName(const std::string &fieldName_) {
+    return Config::SUBSYSTEM_NAME + "." + fieldName_;
+  }
 
-        template <typename T>
-        void writeField(const std::string &fieldName_, const T &data) const
-        {
-            controlGroup().writeField(fieldName(fieldName_), data);
-        }
+  boost::filesystem::path field(const std::string &fieldName_) const {
+    return controlGroup().field(fieldName(fieldName_));
+  }
 
-        template <typename T>
-        T readField(const std::string &fieldName_) const
-        {
-            return controlGroup().template readField<T>(fieldName(fieldName_));
-        }
+  template <typename T>
+  void writeField(const std::string &fieldName_, const T &data) const {
+    controlGroup().writeField(fieldName(fieldName_), data);
+  }
 
-        void readFieldByReader(const std::string &fieldName_,
-                               const ControlGroup::Reader &reader) const
-        {
-            controlGroup().readFieldByReader(fieldName(fieldName_), reader);
-        }
+  template <typename T>
+  T readField(const std::string &fieldName_) const {
+    return controlGroup().template readField<T>(fieldName(fieldName_));
+  }
 
-        void writeFieldByWriter(const std::string &fieldName_,
-                                const ControlGroup::Writer &writer) const
-        {
-            controlGroup().writeFieldByWriter(fieldName(fieldName_), writer);
-        }
-    };
-}}}}
+  void readFieldByReader(const std::string &fieldName_,
+                         const ControlGroup::Reader &reader) const {
+    controlGroup().readFieldByReader(fieldName(fieldName_), reader);
+  }
+
+  void writeFieldByWriter(const std::string &fieldName_,
+                          const ControlGroup::Writer &writer) const {
+    controlGroup().writeFieldByWriter(fieldName(fieldName_), writer);
+  }
+};
+
+}  // namespace cgroup
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

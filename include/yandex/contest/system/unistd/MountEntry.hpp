@@ -11,80 +11,83 @@
 #include <string>
 #include <vector>
 
-namespace yandex{namespace contest{namespace system{namespace unistd
-{
-    struct MountEntryFormatError: virtual Error {};
+namespace yandex {
+namespace contest {
+namespace system {
+namespace unistd {
 
-    struct MountEntryUninitializedFieldError: virtual MountEntryFormatError
-    {
-        typedef boost::error_info<struct fieldTag, std::string> field;
-    };
+struct MountEntryFormatError : virtual Error {};
 
-    struct MountEntryInvalidRepresentationError: virtual MountEntryFormatError
-    {
-        typedef boost::error_info<struct lineTag, std::string> line;
-    };
+struct MountEntryUninitializedFieldError : virtual MountEntryFormatError {
+  using field = boost::error_info<struct fieldTag, std::string>;
+};
 
-    struct MountEntry
-    {
-        template <typename Archive>
-        void serialize(Archive &ar, const unsigned int)
-        {
-            ar & BOOST_SERIALIZATION_NVP(fsname);
-            ar & BOOST_SERIALIZATION_NVP(dir);
-            ar & BOOST_SERIALIZATION_NVP(type);
-            ar & BOOST_SERIALIZATION_NVP(opts);
-            ar & BOOST_SERIALIZATION_NVP(freq);
-            ar & BOOST_SERIALIZATION_NVP(passno);
-        }
+struct MountEntryInvalidRepresentationError : virtual MountEntryFormatError {
+  using line = boost::error_info<struct lineTag, std::string>;
+};
 
-        MountEntry()=default;
+struct MountEntry {
+  template <typename Archive>
+  void serialize(Archive &ar, const unsigned int) {
+    ar & BOOST_SERIALIZATION_NVP(fsname);
+    ar & BOOST_SERIALIZATION_NVP(dir);
+    ar & BOOST_SERIALIZATION_NVP(type);
+    ar & BOOST_SERIALIZATION_NVP(opts);
+    ar & BOOST_SERIALIZATION_NVP(freq);
+    ar & BOOST_SERIALIZATION_NVP(passno);
+  }
 
-        /// Load from fstab line representation.
-        explicit MountEntry(const std::string &line);
+  MountEntry() = default;
 
-        /// Convert to fstab line representation.
-        explicit operator std::string() const;
+  /// Load from fstab line representation.
+  explicit MountEntry(const std::string &line);
 
-        MountEntry(const MountEntry &)=default;
-        MountEntry &operator=(const MountEntry &)=default;
+  /// Convert to fstab line representation.
+  explicit operator std::string() const;
 
-        /// Device or server for filesystem.
-        std::string fsname;
+  MountEntry(const MountEntry &) = default;
+  MountEntry &operator=(const MountEntry &) = default;
 
-        /// Directory mounted on.
-        std::string dir;
+  /// Device or server for filesystem.
+  std::string fsname;
 
-        /// Type of filesystem: ufs, nfs, etc.
-        std::string type;
+  /// Directory mounted on.
+  std::string dir;
 
-        /// Mount options.
-        std::string opts;
+  /// Type of filesystem: ufs, nfs, etc.
+  std::string type;
 
-        /// Dump frequency (in days).
-        int freq = 0;
+  /// Mount options.
+  std::string opts;
 
-        /// Pass number for `fsck'.
-        int passno = 0;
+  /// Dump frequency (in days).
+  int freq = 0;
 
-        /// If opts containts opt.
-        bool hasOpt(const std::string &opt) const;
+  /// Pass number for `fsck'.
+  int passno = 0;
 
-        /// Replace some space characters by octal codes.
-        static std::string escape(const std::string &field);
+  /// If opts containts opt.
+  bool hasOpt(const std::string &opt) const;
 
-        /// Replace octal codes by characters.
-        static std::string unescape(const std::string &field);
+  /// Replace some space characters by octal codes.
+  static std::string escape(const std::string &field);
 
-        static MountEntry bind(const boost::filesystem::path &from,
-                               const boost::filesystem::path &to,
-                               const std::string &opts=std::string());
+  /// Replace octal codes by characters.
+  static std::string unescape(const std::string &field);
 
-        static MountEntry bindRO(const boost::filesystem::path &from,
-                                 const boost::filesystem::path &to);
+  static MountEntry bind(const boost::filesystem::path &from,
+                         const boost::filesystem::path &to,
+                         const std::string &opts = std::string());
 
-        static MountEntry proc();
-    };
+  static MountEntry bindRO(const boost::filesystem::path &from,
+                           const boost::filesystem::path &to);
 
-    std::ostream &operator<<(std::ostream &out, const MountEntry &entry);
-}}}}
+  static MountEntry proc();
+};
+
+std::ostream &operator<<(std::ostream &out, const MountEntry &entry);
+
+}  // namespace unistd
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

@@ -2,119 +2,98 @@
 
 #include <yandex/contest/system/cgroup/Error.hpp>
 
-namespace yandex{namespace contest{namespace system{namespace cgroup
-{
-    const std::string MemoryBase::SUBSYSTEM_NAME("memory");
-    const boost::optional<std::string> MemoryBase::UNITS("bytes");
+namespace yandex {
+namespace contest {
+namespace system {
+namespace cgroup {
 
-    MemoryBase::MoveChargeAtImmigrateConfig::MoveChargeAtImmigrateConfig(
-        const int mask):
-            anonymous(mask & (1 << 0)),
-            file(mask & (1 << 1)) {}
+const std::string MemoryBase::SUBSYSTEM_NAME("memory");
+const boost::optional<std::string> MemoryBase::UNITS("bytes");
 
-    int MemoryBase::MoveChargeAtImmigrateConfig::mask() const
-    {
-        return (static_cast<int>(anonymous) << 0) | (static_cast<int>(file) << 1);
-    }
+MemoryBase::MoveChargeAtImmigrateConfig::MoveChargeAtImmigrateConfig(
+    const int mask)
+    : anonymous(mask & (1 << 0)), file(mask & (1 << 1)) {}
 
-    MemoryBase::MoveChargeAtImmigrateConfig MemoryBase::moveChargeAtImmigrate() const
-    {
-        return MoveChargeAtImmigrateConfig(
-            readField<int>("move_charge_at_immigrate")
-        );
-    }
+int MemoryBase::MoveChargeAtImmigrateConfig::mask() const {
+  return (static_cast<int>(anonymous) << 0) | (static_cast<int>(file) << 1);
+}
 
-    void MemoryBase::setMoveChargeAtImmigrate(
-        const MoveChargeAtImmigrateConfig &moveChargeAtImmigrate) const
-    {
-        writeField("move_charge_at_immigrate", moveChargeAtImmigrate.mask());
-    }
+MemoryBase::MoveChargeAtImmigrateConfig MemoryBase::moveChargeAtImmigrate()
+    const {
+  return MoveChargeAtImmigrateConfig(
+      readField<int>("move_charge_at_immigrate"));
+}
 
-    void MemoryBase::setMoveChargeAtImmigrate(const bool anonymous,
-                                              const bool file) const
-    {
-        MoveChargeAtImmigrateConfig cfg;
-        cfg.anonymous = anonymous;
-        cfg.file = file;
-        setMoveChargeAtImmigrate(cfg);
-    }
+void MemoryBase::setMoveChargeAtImmigrate(
+    const MoveChargeAtImmigrateConfig &moveChargeAtImmigrate) const {
+  writeField("move_charge_at_immigrate", moveChargeAtImmigrate.mask());
+}
 
-    Count MemoryBase::softLimitInBytes() const
-    {
-        return readField<Count>("soft_limit_in_bytes");
-    }
+void MemoryBase::setMoveChargeAtImmigrate(const bool anonymous,
+                                          const bool file) const {
+  MoveChargeAtImmigrateConfig cfg;
+  cfg.anonymous = anonymous;
+  cfg.file = file;
+  setMoveChargeAtImmigrate(cfg);
+}
 
-    void MemoryBase::setSoftLimitInBytes(const Count limit) const
-    {
-        writeField("soft_limit_in_bytes", limit);
-    }
+Count MemoryBase::softLimitInBytes() const {
+  return readField<Count>("soft_limit_in_bytes");
+}
 
-    namespace
-    {
-        struct KeyNotFoundInFileError: virtual Error
-        {
-            typedef boost::error_info<struct keyTag, std::string> key;
-            typedef boost::error_info<struct fileTag, std::string> file;
-        };
+void MemoryBase::setSoftLimitInBytes(const Count limit) const {
+  writeField("soft_limit_in_bytes", limit);
+}
 
-        template <typename T>
-        T parseKVFile(std::istream &in, const std::string &key)
-        {
-            std::string k;
-            T v;
-            while (in >> k >> v)
-            {
-                if (k == key)
-                    return v;
-            }
-            BOOST_THROW_EXCEPTION(KeyNotFoundInFileError() <<
-                                  KeyNotFoundInFileError::key(key));
-        }
-    }
+namespace {
+struct KeyNotFoundInFileError : virtual Error {
+  using key = boost::error_info<struct keyTag, std::string>;
+  using file = boost::error_info<struct fileTag, std::string>;
+};
 
-    bool MemoryBase::underOom() const
-    {
-        bool underOom_;
-        try
-        {
-            readFieldByReader("oom_control",
-                [&underOom_](std::istream &in)
-                {
-                    underOom_ = parseKVFile<int>(in, "under_oom");
-                });
-        }
-        catch (KeyNotFoundInFileError &e)
-        {
-            e << KeyNotFoundInFileError::file("oom_control");
-        }
-        return underOom_;
-    }
+template <typename T>
+T parseKVFile(std::istream &in, const std::string &key) {
+  std::string k;
+  T v;
+  while (in >> k >> v) {
+    if (k == key) return v;
+  }
+  BOOST_THROW_EXCEPTION(KeyNotFoundInFileError()
+                        << KeyNotFoundInFileError::key(key));
+}
+}  // namespace
 
-    bool MemoryBase::oomKillDisable() const
-    {
-        bool oomKillDisable_;
-        try
-        {
-            readFieldByReader("oom_control",
-                [&oomKillDisable_](std::istream &in)
-                {
-                    oomKillDisable_ = parseKVFile<int>(in, "oom_kill_disable");
-                });
-        }
-        catch (KeyNotFoundInFileError &e)
-        {
-            e << KeyNotFoundInFileError::file("oom_control");
-        }
-        return oomKillDisable_;
-    }
+bool MemoryBase::underOom() const {
+  bool underOom_;
+  try {
+    readFieldByReader("oom_control", [&underOom_](std::istream &in) {
+      underOom_ = parseKVFile<int>(in, "under_oom");
+    });
+  } catch (KeyNotFoundInFileError &e) {
+    e << KeyNotFoundInFileError::file("oom_control");
+  }
+  return underOom_;
+}
 
-    void MemoryBase::setOomKillDisable(const bool oomControl) const
-    {
-        writeField<int>("oom_control", oomControl);
-    }
+bool MemoryBase::oomKillDisable() const {
+  bool oomKillDisable_;
+  try {
+    readFieldByReader("oom_control", [&oomKillDisable_](std::istream &in) {
+      oomKillDisable_ = parseKVFile<int>(in, "oom_kill_disable");
+    });
+  } catch (KeyNotFoundInFileError &e) {
+    e << KeyNotFoundInFileError::file("oom_control");
+  }
+  return oomKillDisable_;
+}
 
-    void MemoryBase::forceEmpty() const
-    {
-        writeField("force_empty", 0);
-    }
-}}}}
+void MemoryBase::setOomKillDisable(const bool oomControl) const {
+  writeField<int>("oom_control", oomControl);
+}
+
+void MemoryBase::forceEmpty() const { writeField("force_empty", 0); }
+
+}  // namespace cgroup
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

@@ -2,15 +2,22 @@
 
 #include <yandex/contest/detail/ForwardHeader.hpp>
 
-namespace yandex{namespace contest{namespace system{namespace cgroup
-{
-    YANDEX_CONTEST_INTRUSIVE_PTR_FWD_DECLARE(ControlGroup);
+namespace yandex {
+namespace contest {
+namespace system {
+namespace cgroup {
 
-    class SingleControlGroup;
-    typedef boost::intrusive_ptr<SingleControlGroup> SingleControlGroupPointer;
+YANDEX_CONTEST_INTRUSIVE_PTR_FWD_DECLARE(ControlGroup);
 
-    class MultipleControlGroup;
-    typedef boost::intrusive_ptr<MultipleControlGroup> MultipleControlGroupPointer;
-}}}}
+class SingleControlGroup;
+using SingleControlGroupPointer = boost::intrusive_ptr<SingleControlGroup>;
+
+class MultipleControlGroup;
+using MultipleControlGroupPointer = boost::intrusive_ptr<MultipleControlGroup>;
+
+}  // namespace cgroup
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex
 
 #include <yandex/contest/detail/ForwardFooter.hpp>

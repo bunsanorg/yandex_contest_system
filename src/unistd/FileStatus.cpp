@@ -2,55 +2,34 @@
 
 #include <fcntl.h>
 
-namespace yandex{namespace contest{namespace system{namespace unistd
-{
-    mode_t FileStatus::accmode() const noexcept
-    {
-        return mode & O_ACCMODE;
-    }
+namespace yandex {
+namespace contest {
+namespace system {
+namespace unistd {
 
-    mode_t FileStatus::type() const noexcept
-    {
-        return mode & S_IFMT;
-    }
+mode_t FileStatus::accmode() const noexcept { return mode & O_ACCMODE; }
 
-    bool FileStatus::isFifo() const noexcept
-    {
-        return mode & S_IFIFO;
-    }
+mode_t FileStatus::type() const noexcept { return mode & S_IFMT; }
 
-    bool FileStatus::isCharDevice() const noexcept
-    {
-        return mode & S_IFCHR;
-    }
+bool FileStatus::isFifo() const noexcept { return mode & S_IFIFO; }
 
-    bool FileStatus::isDirectory() const noexcept
-    {
-        return mode & S_IFDIR;
-    }
+bool FileStatus::isCharDevice() const noexcept { return mode & S_IFCHR; }
 
-    bool FileStatus::isBlockDevice() const noexcept
-    {
-        return mode & S_IFBLK;
-    }
+bool FileStatus::isDirectory() const noexcept { return mode & S_IFDIR; }
 
-    bool FileStatus::isRegularFile() const noexcept
-    {
-        return mode & S_IFREG;
-    }
+bool FileStatus::isBlockDevice() const noexcept { return mode & S_IFBLK; }
 
-    bool FileStatus::isSymbolicLink() const noexcept
-    {
-        return mode & S_IFLNK;
-    }
+bool FileStatus::isRegularFile() const noexcept { return mode & S_IFREG; }
 
-    bool FileStatus::isSocket() const noexcept
-    {
-        return mode & S_IFSOCK;
-    }
+bool FileStatus::isSymbolicLink() const noexcept { return mode & S_IFLNK; }
 
-    mode_t FileStatus::permissions() const noexcept
-    {
-        return mode & (S_IRWXU | S_IRWXG | S_IRWXO);
-    }
-}}}}
+bool FileStatus::isSocket() const noexcept { return mode & S_IFSOCK; }
+
+mode_t FileStatus::permissions() const noexcept {
+  return mode & (S_IRWXU | S_IRWXG | S_IRWXO);
+}
+
+}  // namespace unistd
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

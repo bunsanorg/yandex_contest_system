@@ -5,153 +5,146 @@
 
 #include <unordered_map>
 
-namespace yandex{namespace contest{namespace system{namespace cgroup
-{
-    struct MultipleControlGroupError: virtual ControlGroupError {};
-    struct EmptyMultipleControlGroupError: virtual MultipleControlGroupError {};
+namespace yandex {
+namespace contest {
+namespace system {
+namespace cgroup {
 
-    struct MultipleControlGroupHierarchyError:
-        virtual MultipleControlGroupError {};
-    struct MultipleControlGroupHierarchyConflictError:
-        virtual MultipleControlGroupHierarchyError {};
-    struct MultipleControlGroupHierarchyNotFoundError:
-        virtual MultipleControlGroupHierarchyError {};
+struct MultipleControlGroupError : virtual ControlGroupError {};
+struct EmptyMultipleControlGroupError : virtual MultipleControlGroupError {};
 
-    struct MultipleControlGroupFieldError:
-        virtual MultipleControlGroupError,
-        virtual ControlGroupFieldError {};
-    struct MultipleControlGroupFieldValueError:
-        virtual MultipleControlGroupFieldError {};
-    struct MultipleControlGroupFieldValueConflictError:
-        virtual MultipleControlGroupFieldValueError {};
+struct MultipleControlGroupHierarchyError : virtual MultipleControlGroupError {
+};
+struct MultipleControlGroupHierarchyConflictError
+    : virtual MultipleControlGroupHierarchyError {};
+struct MultipleControlGroupHierarchyNotFoundError
+    : virtual MultipleControlGroupHierarchyError {};
 
-    class MultipleControlGroup: public ControlGroup
-    {
-    public:
-        /// For all available hierarchies.
-        static MultipleControlGroupPointer forPid(const pid_t pid);
+struct MultipleControlGroupFieldError : virtual MultipleControlGroupError,
+                                        virtual ControlGroupFieldError {};
+struct MultipleControlGroupFieldValueError
+    : virtual MultipleControlGroupFieldError {};
+struct MultipleControlGroupFieldValueConflictError
+    : virtual MultipleControlGroupFieldValueError {};
 
-        /// For all available hierarchies.
-        static MultipleControlGroupPointer forSelf();
+class MultipleControlGroup : public ControlGroup {
+ public:
+  /// For all available hierarchies.
+  static MultipleControlGroupPointer forPid(pid_t pid);
 
-        /// For all available hierarchies.
-        static MultipleControlGroupPointer root();
+  /// For all available hierarchies.
+  static MultipleControlGroupPointer forSelf();
 
-        /// For all available hierarchies.
-        static MultipleControlGroupPointer attach(
-            const boost::filesystem::path &controlGroup);
+  /// For all available hierarchies.
+  static MultipleControlGroupPointer root();
 
-        /// Unite specified cgroups.
-        template <typename Iter>
-        static MultipleControlGroupPointer unite(Iter begin, const Iter end)
-        {
-            const MultipleControlGroupPointer cgroup(new MultipleControlGroup);
-            for (; begin != end; ++begin)
-                cgroup->add(*begin);
-            return cgroup;
-        }
+  /// For all available hierarchies.
+  static MultipleControlGroupPointer attach(
+      const boost::filesystem::path &controlGroup);
 
-        /// For specified hierarchies.
-        template <typename Iter>
-        static MultipleControlGroupPointer forPid(
-            const pid_t pid, Iter begin, const Iter end)
-        {
-            const MultipleControlGroupPointer cgroup(new MultipleControlGroup);
-            for (; begin != end; ++begin)
-                cgroup->add(SingleControlGroup::forPid(*begin, pid));
-            return cgroup;
-        }
+  /// Unite specified cgroups.
+  template <typename Iter>
+  static MultipleControlGroupPointer unite(Iter begin, const Iter end) {
+    const MultipleControlGroupPointer cgroup(new MultipleControlGroup);
+    for (; begin != end; ++begin) cgroup->add(*begin);
+    return cgroup;
+  }
 
-        /// For specified hierarchies.
-        template <typename Iter>
-        static MultipleControlGroupPointer forSelf(Iter begin, const Iter end)
-        {
-            const MultipleControlGroupPointer cgroup(new MultipleControlGroup);
-            for (; begin != end; ++begin)
-                cgroup->add(SingleControlGroup::forSelf(*begin));
-            return cgroup;
-        }
+  /// For specified hierarchies.
+  template <typename Iter>
+  static MultipleControlGroupPointer forPid(const pid_t pid, Iter begin,
+                                            const Iter end) {
+    const MultipleControlGroupPointer cgroup(new MultipleControlGroup);
+    for (; begin != end; ++begin)
+      cgroup->add(SingleControlGroup::forPid(*begin, pid));
+    return cgroup;
+  }
 
-        /// For specified hierarchies.
-        template <typename Iter>
-        static MultipleControlGroupPointer root(Iter begin, const Iter end)
-        {
-            const MultipleControlGroupPointer cgroup(new MultipleControlGroup);
-            for (; begin != end; ++begin)
-                cgroup->add(SingleControlGroup::root(*begin));
-            return cgroup;
-        }
+  /// For specified hierarchies.
+  template <typename Iter>
+  static MultipleControlGroupPointer forSelf(Iter begin, const Iter end) {
+    const MultipleControlGroupPointer cgroup(new MultipleControlGroup);
+    for (; begin != end; ++begin)
+      cgroup->add(SingleControlGroup::forSelf(*begin));
+    return cgroup;
+  }
 
-        /// For specified hierarchies.
-        template <typename Iter>
-        static MultipleControlGroupPointer attach(
-            const boost::filesystem::path &controlGroup,
-            Iter begin, const Iter end)
-        {
-            const MultipleControlGroupPointer cgroup(new MultipleControlGroup);
-            for (; begin != end; ++begin)
-                cgroup->add(SingleControlGroup::attach(*begin));
-            return cgroup;
-        }
+  /// For specified hierarchies.
+  template <typename Iter>
+  static MultipleControlGroupPointer root(Iter begin, const Iter end) {
+    const MultipleControlGroupPointer cgroup(new MultipleControlGroup);
+    for (; begin != end; ++begin) cgroup->add(SingleControlGroup::root(*begin));
+    return cgroup;
+  }
 
-    public:
-        /// \throws MultipleControlGroupHierarchyConflictError
-        void add(const SingleControlGroupPointer &cgroup);
+  /// For specified hierarchies.
+  template <typename Iter>
+  static MultipleControlGroupPointer attach(
+      const boost::filesystem::path &controlGroup, Iter begin, const Iter end) {
+    const MultipleControlGroupPointer cgroup(new MultipleControlGroup);
+    for (; begin != end; ++begin)
+      cgroup->add(SingleControlGroup::attach(*begin));
+    return cgroup;
+  }
 
-        /// \throws MultipleControlGroupHierarchyNotFoundError
-        SingleControlGroupPointer replace(const SingleControlGroupPointer &cgroup);
+ public:
+  /// \throws MultipleControlGroupHierarchyConflictError
+  void add(const SingleControlGroupPointer &cgroup);
 
-        /// \throws MultipleControlGroupHierarchyNotFoundError
-        SingleControlGroupPointer remove(const std::size_t hierarchyId);
+  /// \throws MultipleControlGroupHierarchyNotFoundError
+  SingleControlGroupPointer replace(const SingleControlGroupPointer &cgroup);
 
-        /// \return nullptr if not present
-        SingleControlGroupPointer find(const std::size_t hierarchyId) const;
+  /// \throws MultipleControlGroupHierarchyNotFoundError
+  SingleControlGroupPointer remove(std::size_t hierarchyId);
 
-        Tasks tasks() override;
+  /// \return nullptr if not present
+  SingleControlGroupPointer find(std::size_t hierarchyId) const;
 
-        void attachTask(const pid_t pid) override;
+  Tasks tasks() override;
 
-        bool notifyOnRelease() override;
-        void setNotifyOnRelease(const bool notifyOnRelease=true) override;
+  void attachTask(pid_t pid) override;
 
-        std::string releaseAgent() override;
+  bool notifyOnRelease() override;
+  void setNotifyOnRelease(bool notifyOnRelease = true) override;
 
-        void setReleaseAgent(const std::string &releaseAgent) override;
+  std::string releaseAgent() override;
 
-        bool cloneChildren() override;
-        void setCloneChildren(const bool cloneChildren=true) override;
+  void setReleaseAgent(const std::string &releaseAgent) override;
 
-        MultipleControlGroupPointer attachChild(
-            const boost::filesystem::path &childControlGroup);
-        MultipleControlGroupPointer createChild(
-            const boost::filesystem::path &childControlGroup);
-        MultipleControlGroupPointer createChild(
-            const boost::filesystem::path &childControlGroup,
-            const mode_t mode);
-        MultipleControlGroupPointer parent();
+  bool cloneChildren() override;
+  void setCloneChildren(bool cloneChildren = true) override;
 
-    protected:
-        MultipleControlGroup()=default;
+  MultipleControlGroupPointer attachChild(
+      const boost::filesystem::path &childControlGroup);
+  MultipleControlGroupPointer createChild(
+      const boost::filesystem::path &childControlGroup);
+  MultipleControlGroupPointer createChild(
+      const boost::filesystem::path &childControlGroup, mode_t mode);
+  MultipleControlGroupPointer parent();
 
-        ControlGroupPointer attachChild__(
-            const boost::filesystem::path &childControlGroup) override;
-        ControlGroupPointer createChild__(
-            const boost::filesystem::path &childControlGroup,
-            const mode_t mode) override;
-        ControlGroupPointer parent__() override;
+ protected:
+  MultipleControlGroup() = default;
 
-        boost::filesystem::path fieldPath__(
-            const std::string &fieldName) const override;
+  ControlGroupPointer attachChild__(
+      const boost::filesystem::path &childControlGroup) override;
+  ControlGroupPointer createChild__(
+      const boost::filesystem::path &childControlGroup, mode_t mode) override;
+  ControlGroupPointer parent__() override;
 
-        void print(std::ostream &out) const override;
+  boost::filesystem::path fieldPath__(
+      const std::string &fieldName) const override;
 
-    private:
-        std::unordered_map<std::size_t, SingleControlGroupPointer> id2cgroup_;
+  void print(std::ostream &out) const override;
 
-        /// field path cache
-        mutable std::unordered_map<
-            std::string,
-            boost::filesystem::path
-        > fieldName2path_;
-    };
-}}}}
+ private:
+  std::unordered_map<std::size_t, SingleControlGroupPointer> id2cgroup_;
+
+  /// field path cache
+  mutable std::unordered_map<std::string, boost::filesystem::path>
+      fieldName2path_;
+};
+
+}  // namespace cgroup
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

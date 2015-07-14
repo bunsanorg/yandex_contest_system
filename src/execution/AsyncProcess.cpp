@@ -20,211 +20,169 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 
-namespace yandex{namespace contest{namespace system{namespace execution
-{
-    AsyncProcess::AsyncProcess(AsyncProcess &&process) noexcept
-    {
-        swap(process);
-    }
+namespace yandex {
+namespace contest {
+namespace system {
+namespace execution {
 
-    AsyncProcess &AsyncProcess::operator=(AsyncProcess &&process) noexcept
-    {
-        swap(process);
-        return *this;
-    }
+AsyncProcess::AsyncProcess(AsyncProcess &&process) noexcept { swap(process); }
 
-    void AsyncProcess::swap(AsyncProcess &process) noexcept
-    {
-        using boost::swap;
-        swap(in_, process.in_);
-        swap(out_, process.out_);
-        swap(err_, process.err_);
-        swap(pid_, process.pid_);
-        swap(result_, process.result_);
-    }
+AsyncProcess &AsyncProcess::operator=(AsyncProcess &&process) noexcept {
+  swap(process);
+  return *this;
+}
 
-    namespace
-    {
-        void reopenDescriptor(const int descriptor, const int flags,
-                              const boost::filesystem::path &path)
-        {
-            const unistd::Descriptor fd = unistd::open(path, flags);
-            unistd::dup2(fd.get(), descriptor);
-        }
+void AsyncProcess::swap(AsyncProcess &process) noexcept {
+  using boost::swap;
+  swap(in_, process.in_);
+  swap(out_, process.out_);
+  swap(err_, process.err_);
+  swap(pid_, process.pid_);
+  swap(result_, process.result_);
+}
 
-        void prepareChild(const boost::filesystem::path &in,
-                          const boost::filesystem::path &out,
-                          const boost::filesystem::path &err)
-        {
-            reopenDescriptor(STDIN_FILENO, O_RDONLY, in);
-            reopenDescriptor(STDOUT_FILENO, O_WRONLY, out);
-            reopenDescriptor(STDERR_FILENO, O_WRONLY, err);
-        }
-    }
+namespace {
+void reopenDescriptor(const int descriptor, const int flags,
+                      const boost::filesystem::path &path) {
+  const unistd::Descriptor fd = unistd::open(path, flags);
+  unistd::dup2(fd.get(), descriptor);
+}
 
-    AsyncProcess::AsyncProcess(const Options &options):
-        in_(options.in)
-    {
-        // unistd::Exec::Exec() may throw, it should be placed before ::fork()
-        const unistd::Exec exec(options.executable, options.arguments);
-        pid_ = ::fork();
-        if (pid_ < 0)
-        {
-            BOOST_THROW_EXCEPTION(SystemError("fork"));
-        }
-        else if (pid_ > 0)
-        { // parent
-            // does nothing for now
-        }
-        else
-        { // child
-            Log::disableLogging();
-            try
-            {
-                prepareChild(in_.path(), out_.path(), err_.path());
-                if (options.usePath)
-                    exec.execvp();
-                else
-                    exec.execv();
-            }
-            catch (std::exception &e)
-            {
-                BUNSAN_LOG_FATAL_INTO(std::cerr) << "Unable to start due to: " << e.what();
-                std::abort();
-            }
-            catch (...)
-            {
-                BUNSAN_LOG_FATAL_INTO(std::cerr) << "Unable to start due to unknown error";
-                std::abort();
-            }
-        }
-    }
+void prepareChild(const boost::filesystem::path &in,
+                  const boost::filesystem::path &out,
+                  const boost::filesystem::path &err) {
+  reopenDescriptor(STDIN_FILENO, O_RDONLY, in);
+  reopenDescriptor(STDOUT_FILENO, O_WRONLY, out);
+  reopenDescriptor(STDERR_FILENO, O_WRONLY, err);
+}
+}  // namespace
 
-    AsyncProcess::operator bool() const noexcept
-    {
-        return pid_;
+AsyncProcess::AsyncProcess(const Options &options) : in_(options.in) {
+  // unistd::Exec::Exec() may throw, it should be placed before ::fork()
+  const unistd::Exec exec(options.executable, options.arguments);
+  pid_ = ::fork();
+  if (pid_ < 0) {
+    BOOST_THROW_EXCEPTION(SystemError("fork"));
+  } else if (pid_ > 0) {  // parent
+                          // does nothing for now
+  } else {                // child
+    Log::disableLogging();
+    try {
+      prepareChild(in_.path(), out_.path(), err_.path());
+      if (options.usePath) {
+        exec.execvp();
+      } else {
+        exec.execv();
+      }
+    } catch (std::exception &e) {
+      BUNSAN_LOG_FATAL_INTO(std::cerr)
+          << "Unable to start due to: " << e.what();
+      std::abort();
+    } catch (...) {
+      BUNSAN_LOG_FATAL_INTO(std::cerr)
+          << "Unable to start due to unknown error";
+      std::abort();
     }
+  }
+}
 
-    AsyncProcess::Pid AsyncProcess::pid() const noexcept
-    {
-        return pid_;
-    }
+AsyncProcess::operator bool() const noexcept { return pid_; }
 
-    const Result &AsyncProcess::wait()
-    {
-        BOOST_ASSERT_MSG(*this, "Invalid AsyncProcess instance.");
-        while (!result_)
-        {
-            STREAM_DEBUG << "Trying to wait for process " << pid_ << ".";
-            int statLoc;
-            const ::pid_t rpid = ::waitpid(pid_, &statLoc, 0);
-            BOOST_ASSERT_MSG(rpid, "Timeout is impossible.");
-            if (rpid != pid_)
-            {
-                BOOST_ASSERT(rpid < 0);
-                if (errno != EINTR)
-                {
-                    // it is impossible to wait for child
-                    BOOST_THROW_EXCEPTION(SystemError("waitpid"));
-                }
-            }
-            else
-            {
-                // process has terminated
-                result_ = Result(statLoc);
-                collectOutput();
-                STREAM_DEBUG << "Process result was collected for process " <<
-                                pid_ << ".";
-            }
-        }
-        BOOST_ASSERT(result_);
-        return result_.get();
-    }
+AsyncProcess::Pid AsyncProcess::pid() const noexcept { return pid_; }
 
-    const boost::optional<Result> &AsyncProcess::poll()
-    {
-        BOOST_ASSERT_MSG(*this, "Invalid AsyncProcess instance.");
-        if (!result_)
-        {
-            STREAM_DEBUG << "Trying to wait for process " << pid_ << ".";
-            int statLoc;
-            const ::pid_t rpid = ::waitpid(pid_, &statLoc, WNOHANG);
-            if (rpid != 0)
-            {
-                if (rpid == pid_)
-                {
-                    result_ = Result(statLoc);
-                    collectOutput();
-                    STREAM_DEBUG << "Process result was collected "
-                                    "for process " << pid_ << ".";
-                }
-                else
-                {
-                    BOOST_ASSERT(rpid < 0);
-                    BOOST_THROW_EXCEPTION(SystemError("waitpid"));
-                }
-            }
-        }
-        return result_;
+const Result &AsyncProcess::wait() {
+  BOOST_ASSERT_MSG(*this, "Invalid AsyncProcess instance.");
+  while (!result_) {
+    STREAM_DEBUG << "Trying to wait for process " << pid_ << ".";
+    int statLoc;
+    const ::pid_t rpid = ::waitpid(pid_, &statLoc, 0);
+    BOOST_ASSERT_MSG(rpid, "Timeout is impossible.");
+    if (rpid != pid_) {
+      BOOST_ASSERT(rpid < 0);
+      if (errno != EINTR) {
+        // it is impossible to wait for child
+        BOOST_THROW_EXCEPTION(SystemError("waitpid"));
+      }
+    } else {
+      // process has terminated
+      result_ = Result(statLoc);
+      collectOutput();
+      STREAM_DEBUG << "Process result was collected for process " << pid_
+                   << ".";
     }
+  }
+  BOOST_ASSERT(result_);
+  return result_.get();
+}
 
-    namespace
-    {
-        std::string readAll(const boost::filesystem::path &path)
-        {
-            bunsan::filesystem::ifstream fin(path);
-            BUNSAN_FILESYSTEM_FSTREAM_WRAP_BEGIN(fin)
-            {
-                const std::string contents{
-                    std::istreambuf_iterator<char>(fin),
-                    std::istreambuf_iterator<char>()
-                };
-                fin.close();
-                return contents;
-            }
-            BUNSAN_FILESYSTEM_FSTREAM_WRAP_END(fin)
-        }
+const boost::optional<Result> &AsyncProcess::poll() {
+  BOOST_ASSERT_MSG(*this, "Invalid AsyncProcess instance.");
+  if (!result_) {
+    STREAM_DEBUG << "Trying to wait for process " << pid_ << ".";
+    int statLoc;
+    const ::pid_t rpid = ::waitpid(pid_, &statLoc, WNOHANG);
+    if (rpid != 0) {
+      if (rpid == pid_) {
+        result_ = Result(statLoc);
+        collectOutput();
+        STREAM_DEBUG << "Process result was collected "
+                        "for process " << pid_ << ".";
+      } else {
+        BOOST_ASSERT(rpid < 0);
+        BOOST_THROW_EXCEPTION(SystemError("waitpid"));
+      }
     }
+  }
+  return result_;
+}
 
-    void AsyncProcess::collectOutput()
-    {
-        BOOST_ASSERT(result_);
-        STREAM_DEBUG << "Trying to collect data from temporary file at " <<
-                        out_.path() << ".";
-        result_->out = readAll(out_.path());
-        out_.remove();
-        STREAM_DEBUG << "Trying to collect data from temporary file at " <<
-                        err_.path() << ".";
-        result_->err = readAll(err_.path());
-        err_.remove();
-    }
+namespace {
+std::string readAll(const boost::filesystem::path &path) {
+  bunsan::filesystem::ifstream fin(path);
+  BUNSAN_FILESYSTEM_FSTREAM_WRAP_BEGIN(fin) {
+    const std::string contents{std::istreambuf_iterator<char>(fin),
+                               std::istreambuf_iterator<char>()};
+    fin.close();
+    return contents;
+  } BUNSAN_FILESYSTEM_FSTREAM_WRAP_END(fin)
+}
+}  // namespace
 
-    void AsyncProcess::stop()
-    {
-        BOOST_ASSERT_MSG(*this, "Invalid AsyncProcess instance.");
-        if (!poll())
-        {
-            if (!::kill(pid_, SIGKILL) < 0)
-                // FIXME check ESRCH
-                BOOST_THROW_EXCEPTION(SystemError("kill"));
-            wait();
-        }
-    }
+void AsyncProcess::collectOutput() {
+  BOOST_ASSERT(result_);
+  STREAM_DEBUG << "Trying to collect data from temporary file at "
+               << out_.path() << ".";
+  result_->out = readAll(out_.path());
+  out_.remove();
+  STREAM_DEBUG << "Trying to collect data from temporary file at "
+               << err_.path() << ".";
+  result_->err = readAll(err_.path());
+  err_.remove();
+}
 
-    AsyncProcess::~AsyncProcess()
-    {
-        if (*this)
-        {
-            try
-            {
-                stop();
-            }
-            catch (std::exception &e)
-            {
-                STREAM_ERROR << "Unable to terminate process "
-                                "(pid = " << pid_ << ") due to error: \"" <<
-                                e.what() << "\" (ignored).";
-            }
-        }
+void AsyncProcess::stop() {
+  BOOST_ASSERT_MSG(*this, "Invalid AsyncProcess instance.");
+  if (!poll()) {
+    if (!::kill(pid_, SIGKILL) < 0)
+      // FIXME check ESRCH
+      BOOST_THROW_EXCEPTION(SystemError("kill"));
+    wait();
+  }
+}
+
+AsyncProcess::~AsyncProcess() {
+  if (*this) {
+    try {
+      stop();
+    } catch (std::exception &e) {
+      STREAM_ERROR << "Unable to terminate process "
+                      "(pid = " << pid_ << ") due to error: \"" << e.what()
+                   << "\" (ignored).";
     }
-}}}}
+  }
+}
+
+}  // namespace execution
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

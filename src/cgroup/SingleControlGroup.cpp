@@ -13,379 +13,303 @@
 
 #include <iterator>
 
-namespace yandex{namespace contest{namespace system{namespace cgroup
-{
-    SingleControlGroup::SingleControlGroup(
-        const SystemInfoPointer &systemInfo,
-        const std::size_t hierarchyId,
-        const boost::filesystem::path &controlGroup,
-        const SingleControlGroupPointer &parent):
-            systemInfo_(systemInfo),
-            hierarchyInfo_(systemInfo_->byHierarchyId(hierarchyId)),
-            controlGroup_(controlGroup),
-            parent_(parent)
-    {
-        BOOST_ASSERT(parent ?
-            parent->controlGroup() == controlGroup.parent_path() :
-            controlGroup == "/"
-        );
-        if (!hierarchyInfo_.mountpoint)
-            BOOST_THROW_EXCEPTION(
-                SingleControlGroupNotMountedError() <<
-                SingleControlGroupNotMountedError::hierarchyId(hierarchyId));
-        location_ = mountpoint() / controlGroup;
-        BUNSAN_EXCEPTIONS_WRAP_BEGIN()
-        {
-            const boost::filesystem::file_status status =
-                boost::filesystem::symlink_status(location());
-            switch (status.type())
-            {
-            case boost::filesystem::file_not_found:
-            case boost::filesystem::directory_file:
-                // let child decide
-                break;
-            case boost::filesystem::regular_file:
-                BOOST_THROW_EXCEPTION(SingleControlGroupPathToFieldError());
-            default:
-                BOOST_THROW_EXCEPTION(SingleControlGroupPathToUnknownError());
-            }
-        }
-        BUNSAN_EXCEPTIONS_WRAP_END_ERROR_INFO(
-            SingleControlGroupError::hierarchyId(hierarchyId) <<
-            SingleControlGroupError::controlGroupPath(controlGroup) <<
-            SingleControlGroupError::path(location()))
-    }
+namespace yandex {
+namespace contest {
+namespace system {
+namespace cgroup {
 
-    SingleControlGroup::~SingleControlGroup()
-    {
-        if (parent_)
-            parent_->children_.erase(controlGroup_.filename());
+SingleControlGroup::SingleControlGroup(
+    const SystemInfoPointer &systemInfo, const std::size_t hierarchyId,
+    const boost::filesystem::path &controlGroup,
+    const SingleControlGroupPointer &parent)
+    : systemInfo_(systemInfo),
+      hierarchyInfo_(systemInfo_->byHierarchyId(hierarchyId)),
+      controlGroup_(controlGroup),
+      parent_(parent) {
+  BOOST_ASSERT(parent ? parent->controlGroup() == controlGroup.parent_path()
+                      : controlGroup == "/");
+  if (!hierarchyInfo_.mountpoint)
+    BOOST_THROW_EXCEPTION(
+        SingleControlGroupNotMountedError()
+        << SingleControlGroupNotMountedError::hierarchyId(hierarchyId));
+  location_ = mountpoint() / controlGroup;
+  BUNSAN_EXCEPTIONS_WRAP_BEGIN() {
+    const boost::filesystem::file_status status =
+        boost::filesystem::symlink_status(location());
+    switch (status.type()) {
+      case boost::filesystem::file_not_found:
+      case boost::filesystem::directory_file:
+        // let child decide
+        break;
+      case boost::filesystem::regular_file:
+        BOOST_THROW_EXCEPTION(SingleControlGroupPathToFieldError());
+      default:
+        BOOST_THROW_EXCEPTION(SingleControlGroupPathToUnknownError());
     }
+  } BUNSAN_EXCEPTIONS_WRAP_END_ERROR_INFO(
+        SingleControlGroupError::hierarchyId(hierarchyId)
+        << SingleControlGroupError::controlGroupPath(controlGroup)
+        << SingleControlGroupError::path(location()))
+}
 
-    const SystemInfoPointer &SingleControlGroup::systemInfo() const
-    {
-        return systemInfo_;
-    }
+SingleControlGroup::~SingleControlGroup() {
+  if (parent_) parent_->children_.erase(controlGroup_.filename());
+}
 
-    const HierarchyInfo &SingleControlGroup::hierarchyInfo() const
-    {
-        return hierarchyInfo_;
-    }
+const SystemInfoPointer &SingleControlGroup::systemInfo() const {
+  return systemInfo_;
+}
 
-    std::size_t SingleControlGroup::hierarchyId() const
-    {
-        return hierarchyInfo().id;
-    }
+const HierarchyInfo &SingleControlGroup::hierarchyInfo() const {
+  return hierarchyInfo_;
+}
 
-    const boost::filesystem::path &SingleControlGroup::mountpoint() const
-    {
-        BOOST_ASSERT(hierarchyInfo().mountpoint);
-        return hierarchyInfo().mountpoint.get();
-    }
+std::size_t SingleControlGroup::hierarchyId() const {
+  return hierarchyInfo().id;
+}
 
-    const boost::filesystem::path &SingleControlGroup::controlGroup() const
-    {
-        return controlGroup_;
-    }
+const boost::filesystem::path &SingleControlGroup::mountpoint() const {
+  BOOST_ASSERT(hierarchyInfo().mountpoint);
+  return hierarchyInfo().mountpoint.get();
+}
 
-    const boost::filesystem::path &SingleControlGroup::location() const
-    {
-        return location_;
-    }
+const boost::filesystem::path &SingleControlGroup::controlGroup() const {
+  return controlGroup_;
+}
 
-    ControlGroup::Tasks SingleControlGroup::tasks()
-    {
-        Tasks tasks_;
-        readFieldByReader("tasks",
-            [&tasks_](std::istream &in)
-            {
-                tasks_.insert(std::istream_iterator<pid_t>(in),
-                              std::istream_iterator<pid_t>());
-            });
-        return tasks_;
-    }
+const boost::filesystem::path &SingleControlGroup::location() const {
+  return location_;
+}
 
-    void SingleControlGroup::attachTask(const pid_t pid)
-    {
-        STREAM_TRACE << "Attempt to attach " << pid << " to " << *this << ".";
-        writeField("tasks", pid);
-    }
+ControlGroup::Tasks SingleControlGroup::tasks() {
+  Tasks tasks_;
+  readFieldByReader("tasks", [&tasks_](std::istream &in) {
+    tasks_.insert(std::istream_iterator<pid_t>(in),
+                  std::istream_iterator<pid_t>());
+  });
+  return tasks_;
+}
 
-    bool SingleControlGroup::notifyOnRelease()
-    {
-        return readField<int>("notify_on_release");
-    }
+void SingleControlGroup::attachTask(const pid_t pid) {
+  STREAM_TRACE << "Attempt to attach " << pid << " to " << *this << ".";
+  writeField("tasks", pid);
+}
 
-    void SingleControlGroup::setNotifyOnRelease(const bool notifyOnRelease)
-    {
-        writeField<int>("notify_on_release", notifyOnRelease);
-    }
+bool SingleControlGroup::notifyOnRelease() {
+  return readField<int>("notify_on_release");
+}
 
-    std::string SingleControlGroup::releaseAgent()
-    {
-        return readFieldAllRtrimmed<std::string>("release_agent");
-    }
+void SingleControlGroup::setNotifyOnRelease(const bool notifyOnRelease) {
+  writeField<int>("notify_on_release", notifyOnRelease);
+}
 
-    void SingleControlGroup::setReleaseAgent(const std::string &releaseAgent)
-    {
-        writeField("release_agent", releaseAgent);
-    }
+std::string SingleControlGroup::releaseAgent() {
+  return readFieldAllRtrimmed<std::string>("release_agent");
+}
 
-    bool SingleControlGroup::cloneChildren()
-    {
-        return readField<int>("cgroup.clone_children");
-    }
+void SingleControlGroup::setReleaseAgent(const std::string &releaseAgent) {
+  writeField("release_agent", releaseAgent);
+}
 
-    void SingleControlGroup::setCloneChildren(const bool cloneChildren)
-    {
-        return writeField<int>("cgroup.clone_children", cloneChildren);
-    }
+bool SingleControlGroup::cloneChildren() {
+  return readField<int>("cgroup.clone_children");
+}
 
-    namespace
-    {
-        void checkChildControlGroup(const boost::filesystem::path &childControlGroup)
-        {
-            if (childControlGroup.is_absolute())
-                BOOST_THROW_EXCEPTION(
-                    SingleControlGroupAbsoluteControlGroupPathError() <<
-                    SingleControlGroupAbsoluteControlGroupPathError::controlGroupPath(
-                        childControlGroup));
-        }
-    }
+void SingleControlGroup::setCloneChildren(const bool cloneChildren) {
+  return writeField<int>("cgroup.clone_children", cloneChildren);
+}
 
-    SingleControlGroupPointer SingleControlGroup::attachChild(
-        const boost::filesystem::path &childControlGroup)
-    {
-        checkChildControlGroup(childControlGroup);
-        SingleControlGroupPointer current(this);
-        for (const boost::filesystem::path &i: childControlGroup)
-            current = current->attachDirectChild(i);
-        return current;
-    }
+namespace {
+void checkChildControlGroup(const boost::filesystem::path &childControlGroup) {
+  if (childControlGroup.is_absolute())
+    BOOST_THROW_EXCEPTION(
+        SingleControlGroupAbsoluteControlGroupPathError()
+        << SingleControlGroupAbsoluteControlGroupPathError::controlGroupPath(
+            childControlGroup));
+}
+}  // namespace
 
-    SingleControlGroupPointer SingleControlGroup::createChild(
-        const boost::filesystem::path &childControlGroup)
-    {
-        return createChild(childControlGroup, 0777);
-    }
+SingleControlGroupPointer SingleControlGroup::attachChild(
+    const boost::filesystem::path &childControlGroup) {
+  checkChildControlGroup(childControlGroup);
+  SingleControlGroupPointer current(this);
+  for (const boost::filesystem::path &i : childControlGroup)
+    current = current->attachDirectChild(i);
+  return current;
+}
 
-    SingleControlGroupPointer SingleControlGroup::createChild(
-        const boost::filesystem::path &childControlGroup, const mode_t mode)
-    {
-        checkChildControlGroup(childControlGroup);
-        SingleControlGroupPointer current(this);
-        for (const boost::filesystem::path &i: childControlGroup)
-            current = current->createDirectChild(i, mode);
-        return current;
-    }
+SingleControlGroupPointer SingleControlGroup::createChild(
+    const boost::filesystem::path &childControlGroup) {
+  return createChild(childControlGroup, 0777);
+}
 
-    SingleControlGroupPointer SingleControlGroup::parent()
-    {
-        return parent_;
-    }
+SingleControlGroupPointer SingleControlGroup::createChild(
+    const boost::filesystem::path &childControlGroup, const mode_t mode) {
+  checkChildControlGroup(childControlGroup);
+  SingleControlGroupPointer current(this);
+  for (const boost::filesystem::path &i : childControlGroup)
+    current = current->createDirectChild(i, mode);
+  return current;
+}
 
-    ControlGroupPointer SingleControlGroup::attachChild__(
-        const boost::filesystem::path &childControlGroup)
-    {
-        return boost::static_pointer_cast<ControlGroup>(
-            attachChild(childControlGroup)
-        );
-    }
+SingleControlGroupPointer SingleControlGroup::parent() { return parent_; }
 
-    ControlGroupPointer SingleControlGroup::createChild__(
-        const boost::filesystem::path &childControlGroup, const mode_t mode)
-    {
-        return boost::static_pointer_cast<ControlGroup>(
-            createChild(childControlGroup, mode)
-        );
-    }
+ControlGroupPointer SingleControlGroup::attachChild__(
+    const boost::filesystem::path &childControlGroup) {
+  return boost::static_pointer_cast<ControlGroup>(
+      attachChild(childControlGroup));
+}
 
-    ControlGroupPointer SingleControlGroup::parent__()
-    {
-        return boost::static_pointer_cast<ControlGroup>(parent());
-    }
+ControlGroupPointer SingleControlGroup::createChild__(
+    const boost::filesystem::path &childControlGroup, const mode_t mode) {
+  return boost::static_pointer_cast<ControlGroup>(
+      createChild(childControlGroup, mode));
+}
 
-    SingleControlGroupPointer SingleControlGroup::forProcessHierarchyInfo(
-        const ProcessHierarchyInfo &processHierarchyInfo)
-    {
-        return attach(processHierarchyInfo.hierarchy.id, processHierarchyInfo.controlGroup);
-    }
+ControlGroupPointer SingleControlGroup::parent__() {
+  return boost::static_pointer_cast<ControlGroup>(parent());
+}
 
-    SingleControlGroupPointer SingleControlGroup::forProcessInfo(
-        const std::size_t hierarchyId, const ProcessInfo &processInfo)
-    {
-        return forProcessHierarchyInfo(processInfo.byHierarchyId(hierarchyId));
-    }
+SingleControlGroupPointer SingleControlGroup::forProcessHierarchyInfo(
+    const ProcessHierarchyInfo &processHierarchyInfo) {
+  return attach(processHierarchyInfo.hierarchy.id,
+                processHierarchyInfo.controlGroup);
+}
 
-    SingleControlGroupPointer SingleControlGroup::forProcessInfo(
-        const std::string &subsystem, const ProcessInfo &processInfo)
-    {
-        return forProcessHierarchyInfo(processInfo.bySubsystem(subsystem));
-    }
+SingleControlGroupPointer SingleControlGroup::forProcessInfo(
+    const std::size_t hierarchyId, const ProcessInfo &processInfo) {
+  return forProcessHierarchyInfo(processInfo.byHierarchyId(hierarchyId));
+}
 
-    SingleControlGroupPointer SingleControlGroup::forPid(
-        const std::size_t hierarchyId, const pid_t pid)
-    {
-        return forProcessInfo(hierarchyId, ProcessInfo::forPid(pid));
-    }
+SingleControlGroupPointer SingleControlGroup::forProcessInfo(
+    const std::string &subsystem, const ProcessInfo &processInfo) {
+  return forProcessHierarchyInfo(processInfo.bySubsystem(subsystem));
+}
 
-    SingleControlGroupPointer SingleControlGroup::forPid(
-        const std::string &subsystem, const pid_t pid)
-    {
-        return forProcessInfo(subsystem, ProcessInfo::forPid(pid));
-    }
+SingleControlGroupPointer SingleControlGroup::forPid(
+    const std::size_t hierarchyId, const pid_t pid) {
+  return forProcessInfo(hierarchyId, ProcessInfo::forPid(pid));
+}
 
-    SingleControlGroupPointer SingleControlGroup::forSelf(const std::size_t hierarchyId)
-    {
-        return forProcessInfo(hierarchyId, ProcessInfo::forSelf());
-    }
+SingleControlGroupPointer SingleControlGroup::forPid(
+    const std::string &subsystem, const pid_t pid) {
+  return forProcessInfo(subsystem, ProcessInfo::forPid(pid));
+}
 
-    SingleControlGroupPointer SingleControlGroup::forSelf(const std::string &subsystem)
-    {
-        return forProcessInfo(subsystem, ProcessInfo::forSelf());
-    }
+SingleControlGroupPointer SingleControlGroup::forSelf(
+    const std::size_t hierarchyId) {
+  return forProcessInfo(hierarchyId, ProcessInfo::forSelf());
+}
 
-    SingleControlGroupPointer SingleControlGroup::root(const std::size_t hierarchyId)
-    {
-        return SingleControlGroupPointer(
-            new detail::AttachedControlGroup(
-                SystemInfo::instance(),
-                hierarchyId,
-                "/",
-                SingleControlGroupPointer()
-            )
-        );
-    }
+SingleControlGroupPointer SingleControlGroup::forSelf(
+    const std::string &subsystem) {
+  return forProcessInfo(subsystem, ProcessInfo::forSelf());
+}
 
-    SingleControlGroupPointer SingleControlGroup::root(const std::string &subsystem)
-    {
-        return root(
-            SystemInfo::instance()->bySubsystem(subsystem).id
-        );
-    }
+SingleControlGroupPointer SingleControlGroup::root(
+    const std::size_t hierarchyId) {
+  return SingleControlGroupPointer(new detail::AttachedControlGroup(
+      SystemInfo::instance(), hierarchyId, "/", SingleControlGroupPointer()));
+}
 
-    SingleControlGroupPointer SingleControlGroup::attach(
-        const std::size_t hierarchyId,
-        const boost::filesystem::path &controlGroup)
-    {
-        if (controlGroup.is_relative())
-            BOOST_THROW_EXCEPTION(
-                SingleControlGroupRelativeControlGroupError() <<
-                SingleControlGroupRelativeControlGroupError::controlGroupPath(
-                    controlGroup));
-        return root(hierarchyId)->attachChild(controlGroup.relative_path());
-    }
+SingleControlGroupPointer SingleControlGroup::root(
+    const std::string &subsystem) {
+  return root(SystemInfo::instance()->bySubsystem(subsystem).id);
+}
 
-    SingleControlGroupPointer SingleControlGroup::attach(
-        const std::string &subsystem,
-        const boost::filesystem::path &controlGroup)
-    {
-        return attach(
-            SystemInfo::instance()->bySubsystem(subsystem).id,
-            controlGroup
-        );
-    }
+SingleControlGroupPointer SingleControlGroup::attach(
+    const std::size_t hierarchyId,
+    const boost::filesystem::path &controlGroup) {
+  if (controlGroup.is_relative())
+    BOOST_THROW_EXCEPTION(
+        SingleControlGroupRelativeControlGroupError()
+        << SingleControlGroupRelativeControlGroupError::controlGroupPath(
+            controlGroup));
+  return root(hierarchyId)->attachChild(controlGroup.relative_path());
+}
 
-    boost::filesystem::path SingleControlGroup::fieldPath__(
-        const std::string &fieldName) const
-    {
-        return hierarchyInfo().mountpoint.get() / controlGroup() / fieldName;
-    }
+SingleControlGroupPointer SingleControlGroup::attach(
+    const std::string &subsystem, const boost::filesystem::path &controlGroup) {
+  return attach(SystemInfo::instance()->bySubsystem(subsystem).id,
+                controlGroup);
+}
 
-    void SingleControlGroup::print(std::ostream &out) const
-    {
-        out << "{ ";
-        out << "hierarchy = " << hierarchyInfo() << ", ";
-        out << "cgroup = " << controlGroup() << ", ";
-        printSingle(out);
-        out << " }";
-    }
+boost::filesystem::path SingleControlGroup::fieldPath__(
+    const std::string &fieldName) const {
+  return hierarchyInfo().mountpoint.get() / controlGroup() / fieldName;
+}
 
-    SingleControlGroupPointer SingleControlGroup::attachDirectChild(
-        const boost::filesystem::path &childControlGroup)
-    {
-        BOOST_ASSERT(childControlGroup.is_relative());
-        BOOST_ASSERT(childControlGroup == childControlGroup.filename());
-        if (childControlGroup.empty() || childControlGroup == ".")
-        {
-            return SingleControlGroupPointer(this);
-        }
-        else if (childControlGroup == "..")
-        {
-            SingleControlGroupPointer ret = parent();
-            if (!ret)
-                ret.reset(this);
-            return ret;
-        }
-        else
-        {
-            auto iter = children_.find(childControlGroup);
-            if (iter == children_.end())
-            {
-                const SingleControlGroupPointer cgroup(
-                    new detail::AttachedControlGroup(
-                        systemInfo(),
-                        hierarchyId(),
-                        controlGroup() / childControlGroup,
-                        SingleControlGroupPointer(this)
-                    )
-                );
-                const auto iter_inserted =
-                    children_.emplace(childControlGroup, cgroup.get());
-                BOOST_ASSERT(iter_inserted.second);
-                return cgroup;
-            }
-            else
-            {
-                return SingleControlGroupPointer(iter->second);
-            }
-        }
-    }
+void SingleControlGroup::print(std::ostream &out) const {
+  out << "{ ";
+  out << "hierarchy = " << hierarchyInfo() << ", ";
+  out << "cgroup = " << controlGroup() << ", ";
+  printSingle(out);
+  out << " }";
+}
 
-    SingleControlGroupPointer SingleControlGroup::createDirectChild(
-        const boost::filesystem::path &childControlGroup, const mode_t mode)
-    {
-        BOOST_ASSERT(childControlGroup.is_relative());
-        BOOST_ASSERT(childControlGroup == childControlGroup.filename());
-        if (childControlGroup == "." || childControlGroup == "..")
-            BOOST_THROW_EXCEPTION(
-                SingleControlGroupPathError() <<
-                SingleControlGroupPathError::controlGroupPath(
-                    controlGroup() / childControlGroup) <<
-                SingleControlGroupPathError::message("Invalid path."));
-        if (childControlGroup.empty())
-            BOOST_THROW_EXCEPTION(
-                SingleControlGroupEmptyControlGroupPathError() <<
-                SingleControlGroupEmptyControlGroupPathError::controlGroupPath(
-                    controlGroup()));
-        if (children_.find(childControlGroup) != children_.end())
-            BOOST_THROW_EXCEPTION(
-                SingleControlGroupExistsError() <<
-                SingleControlGroupExistsError::controlGroupPath(
-                    controlGroup() / childControlGroup));
-        const SingleControlGroupPointer cgroup(
-            new detail::CreatedControlGroup(
-                systemInfo(),
-                hierarchyId(),
-                controlGroup() / childControlGroup, mode,
-                SingleControlGroupPointer(this)
-            )
-        );
-        // if we create child we want it to be able to attach tasks by default
-        // note: we do not alter attached children
-        if (cgroup->hierarchyInfo().subsystems.find(CpuSet::SUBSYSTEM_NAME) !=
-            cgroup->hierarchyInfo().subsystems.end())
-        {
-            const SingleControlGroupPointer root_ = root(hierarchyId());
-            CpuSet cpuset(cgroup), rootCpuset(root_);
-            if (cpuset.mems().empty())
-                cpuset.setMems(rootCpuset.mems());
-            if (cpuset.cpus().empty())
-                cpuset.setCpus(rootCpuset.cpus());
-        }
-        const auto iter_inserted =
-            children_.emplace(childControlGroup, cgroup.get());
-        BOOST_ASSERT(iter_inserted.second);
-        return cgroup;
+SingleControlGroupPointer SingleControlGroup::attachDirectChild(
+    const boost::filesystem::path &childControlGroup) {
+  BOOST_ASSERT(childControlGroup.is_relative());
+  BOOST_ASSERT(childControlGroup == childControlGroup.filename());
+  if (childControlGroup.empty() || childControlGroup == ".") {
+    return SingleControlGroupPointer(this);
+  } else if (childControlGroup == "..") {
+    SingleControlGroupPointer ret = parent();
+    if (!ret) ret.reset(this);
+    return ret;
+  } else {
+    auto iter = children_.find(childControlGroup);
+    if (iter == children_.end()) {
+      const SingleControlGroupPointer cgroup(new detail::AttachedControlGroup(
+          systemInfo(), hierarchyId(), controlGroup() / childControlGroup,
+          SingleControlGroupPointer(this)));
+      const auto iter_inserted =
+          children_.emplace(childControlGroup, cgroup.get());
+      BOOST_ASSERT(iter_inserted.second);
+      return cgroup;
+    } else {
+      return SingleControlGroupPointer(iter->second);
     }
-}}}}
+  }
+}
+
+SingleControlGroupPointer SingleControlGroup::createDirectChild(
+    const boost::filesystem::path &childControlGroup, const mode_t mode) {
+  BOOST_ASSERT(childControlGroup.is_relative());
+  BOOST_ASSERT(childControlGroup == childControlGroup.filename());
+  if (childControlGroup == "." || childControlGroup == "..")
+    BOOST_THROW_EXCEPTION(
+        SingleControlGroupPathError()
+        << SingleControlGroupPathError::controlGroupPath(controlGroup() /
+                                                         childControlGroup)
+        << SingleControlGroupPathError::message("Invalid path."));
+  if (childControlGroup.empty())
+    BOOST_THROW_EXCEPTION(
+        SingleControlGroupEmptyControlGroupPathError()
+        << SingleControlGroupEmptyControlGroupPathError::controlGroupPath(
+            controlGroup()));
+  if (children_.find(childControlGroup) != children_.end())
+    BOOST_THROW_EXCEPTION(SingleControlGroupExistsError()
+                          << SingleControlGroupExistsError::controlGroupPath(
+                              controlGroup() / childControlGroup));
+  const SingleControlGroupPointer cgroup(new detail::CreatedControlGroup(
+      systemInfo(), hierarchyId(), controlGroup() / childControlGroup, mode,
+      SingleControlGroupPointer(this)));
+  // if we create child we want it to be able to attach tasks by default
+  // note: we do not alter attached children
+  if (cgroup->hierarchyInfo().subsystems.find(CpuSet::SUBSYSTEM_NAME) !=
+      cgroup->hierarchyInfo().subsystems.end()) {
+    const SingleControlGroupPointer root_ = root(hierarchyId());
+    CpuSet cpuset(cgroup), rootCpuset(root_);
+    if (cpuset.mems().empty()) cpuset.setMems(rootCpuset.mems());
+    if (cpuset.cpus().empty()) cpuset.setCpus(rootCpuset.cpus());
+  }
+  const auto iter_inserted = children_.emplace(childControlGroup, cgroup.get());
+  BOOST_ASSERT(iter_inserted.second);
+  return cgroup;
+}
+
+}  // namespace cgroup
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

@@ -20,534 +20,341 @@
 // internal defines
 
 #define YANDEX_UNISTD_WRAP_X(X, INFO) \
-    if ((X) < 0) BOOST_THROW_EXCEPTION(SystemError(__func__) INFO)
+  if ((X) < 0) BOOST_THROW_EXCEPTION(SystemError(__func__) INFO)
 
 #define YANDEX_UNISTD_WRAP(X, INFO) YANDEX_UNISTD_WRAP_X(X, << INFO)
 #define YANDEX_UNISTD_WRAP_NO_INFO(X) YANDEX_UNISTD_WRAP_X(X, )
 
-#define YANDEX_UNISTD_RETURN_X(X, INFO) \
-    const auto ret = X; \
-    if (ret < 0) \
-        BOOST_THROW_EXCEPTION(SystemError(__func__) INFO); \
-    else \
-        return ret
+#define YANDEX_UNISTD_RETURN_X(X, INFO)                \
+  const auto ret = X;                                  \
+  if (ret < 0)                                         \
+    BOOST_THROW_EXCEPTION(SystemError(__func__) INFO); \
+  else                                                 \
+  return ret
 
 #define YANDEX_UNISTD_RETURN(X, INFO) YANDEX_UNISTD_RETURN_X(X, << INFO)
 #define YANDEX_UNISTD_RETURN_NO_INFO(X) YANDEX_UNISTD_RETURN_X(X, )
 
-#define YANDEX_UNISTD_ASSIGN_X(X, OBJ, INFO) \
-    const auto ret = X; \
-    if (ret < 0) \
-        BOOST_THROW_EXCEPTION(SystemError(__func__) INFO); \
-    else \
-        OBJ.assign(ret);
+#define YANDEX_UNISTD_ASSIGN_X(X, OBJ, INFO)           \
+  const auto ret = X;                                  \
+  if (ret < 0)                                         \
+    BOOST_THROW_EXCEPTION(SystemError(__func__) INFO); \
+  else                                                 \
+    OBJ.assign(ret);
 
 #define YANDEX_UNISTD_ASSIGN(X, OBJ, INFO) \
-    YANDEX_UNISTD_ASSIGN_X(X, OBJ, << INFO)
-#define YANDEX_UNISTD_ASSIGN_NO_INFO(X, OBJ) \
-    YANDEX_UNISTD_ASSIGN_X(X, OBJ, )
+  YANDEX_UNISTD_ASSIGN_X(X, OBJ, << INFO)
+#define YANDEX_UNISTD_ASSIGN_NO_INFO(X, OBJ) YANDEX_UNISTD_ASSIGN_X(X, OBJ, )
 
-namespace yandex{namespace contest{namespace system{namespace unistd
-{
-    void chmod(const boost::filesystem::path &path, const mode_t mode)
-    {
-        YANDEX_UNISTD_WRAP(
-            ::chmod(path.c_str(), mode),
-            info::path(path) << info::mode(mode)
-        );
-    }
+namespace yandex {
+namespace contest {
+namespace system {
+namespace unistd {
 
-    void chown(const boost::filesystem::path &path, const access::Id &id)
-    {
-        YANDEX_UNISTD_WRAP(
-            ::chown(path.c_str(), id.uid, id.gid),
-            info::path(path) << info::accessId(id)
-        );
-    }
+void chmod(const boost::filesystem::path &path, const mode_t mode) {
+  YANDEX_UNISTD_WRAP(::chmod(path.c_str(), mode), info::path(path)
+                                                      << info::mode(mode));
+}
 
-    void lchown(const boost::filesystem::path &path, const access::Id &id)
-    {
-        YANDEX_UNISTD_WRAP(
-            ::lchown(path.c_str(), id.uid, id.gid),
-            info::path(path) << info::accessId(id)
-        );
-    }
+void chown(const boost::filesystem::path &path, const access::Id &id) {
+  YANDEX_UNISTD_WRAP(::chown(path.c_str(), id.uid, id.gid),
+                     info::path(path) << info::accessId(id));
+}
 
-    void mkdir(const boost::filesystem::path &path, const mode_t mode)
-    {
-        YANDEX_UNISTD_WRAP(
-            ::mkdir(path.c_str(), mode),
-            info::path(path) << info::mode(mode)
-        );
-    }
+void lchown(const boost::filesystem::path &path, const access::Id &id) {
+  YANDEX_UNISTD_WRAP(::lchown(path.c_str(), id.uid, id.gid),
+                     info::path(path) << info::accessId(id));
+}
 
-    bool create_directory(const boost::filesystem::path &path, const mode_t mode)
-    {
-        const int ret = ::mkdir(path.c_str(), mode);
-        if (ret < 0)
-        {
-            if (errno == EEXIST)
-                return false;
-            BOOST_THROW_EXCEPTION(SystemError(__func__) <<
-                                  info::path(path) << info::mode(mode));
-        }
-        else
-        {
-            return true;
-        }
-    }
+void mkdir(const boost::filesystem::path &path, const mode_t mode) {
+  YANDEX_UNISTD_WRAP(::mkdir(path.c_str(), mode), info::path(path)
+                                                      << info::mode(mode));
+}
 
-    void rmdir(const boost::filesystem::path &path)
-    {
-        YANDEX_UNISTD_WRAP(
-            ::rmdir(path.c_str()),
-            info::path(path)
-        );
-    }
+bool create_directory(const boost::filesystem::path &path, const mode_t mode) {
+  const int ret = ::mkdir(path.c_str(), mode);
+  if (ret < 0) {
+    if (errno == EEXIST) return false;
+    BOOST_THROW_EXCEPTION(SystemError(__func__) << info::path(path)
+                                                << info::mode(mode));
+  } else {
+    return true;
+  }
+}
 
-    void mknod(const boost::filesystem::path &path,
-               const mode_t mode,
-               const dev_t dev)
-    {
-        YANDEX_UNISTD_WRAP(
-            ::mknod(path.c_str(), mode, dev),
-            info::path(path) <<
-            info::mode(mode) <<
-            info::devMajor(major(dev)) <<
-            info::devMinor(minor(dev))
-        );
-    }
+void rmdir(const boost::filesystem::path &path) {
+  YANDEX_UNISTD_WRAP(::rmdir(path.c_str()), info::path(path));
+}
 
-    dev_t makedev(const int major, const int minor)
-    {
-        return ::makedev(major, minor);
-    }
+void mknod(const boost::filesystem::path &path, const mode_t mode,
+           const dev_t dev) {
+  YANDEX_UNISTD_WRAP(::mknod(path.c_str(), mode, dev),
+                     info::path(path) << info::mode(mode)
+                                      << info::devMajor(major(dev))
+                                      << info::devMinor(minor(dev)));
+}
 
-    void symlink(const boost::filesystem::path &value,
-                 const boost::filesystem::path &path)
-    {
-        YANDEX_UNISTD_WRAP(
-            ::symlink(value.c_str(), path.c_str()),
-            info::path(path) << info::symLinkValue(value)
-        );
-    }
+dev_t makedev(const int major, const int minor) {
+  return ::makedev(major, minor);
+}
 
-    void mkfifo(const boost::filesystem::path &path, const mode_t mode)
-    {
-        YANDEX_UNISTD_WRAP(
-            ::mkfifo(path.c_str(), mode),
-            info::path(path) << info::mode(mode)
-        );
-    }
+void symlink(const boost::filesystem::path &value,
+             const boost::filesystem::path &path) {
+  YANDEX_UNISTD_WRAP(::symlink(value.c_str(), path.c_str()),
+                     info::path(path) << info::symLinkValue(value));
+}
 
-    namespace
-    {
-        struct StatusType: stat
-        {
-            operator FileStatus() const
-            {
-                return {
-                    st_dev,
-                    st_ino,
-                    st_mode,
-                    st_nlink,
-                    {st_uid, st_gid},
-                    st_rdev,
-                    st_size,
-                    st_blksize,
-                    st_blocks,
-                    st_atime,
-                    st_mtime,
-                    st_ctime
-                };
-            }
-        };
-    }
+void mkfifo(const boost::filesystem::path &path, const mode_t mode) {
+  YANDEX_UNISTD_WRAP(::mkfifo(path.c_str(), mode), info::path(path)
+                                                       << info::mode(mode));
+}
 
-    FileStatus stat(const boost::filesystem::path &path)
-    {
-        StatusType buf;
-        YANDEX_UNISTD_WRAP(
-            ::stat(path.c_str(), &buf),
-            info::path(path)
-        );
-        return buf;
-    }
+namespace {
+struct StatusType : stat {
+  operator FileStatus() const {
+    return {st_dev,
+            st_ino,
+            st_mode,
+            st_nlink,
+            {st_uid, st_gid},
+            st_rdev,
+            st_size,
+            st_blksize,
+            st_blocks,
+            st_atime,
+            st_mtime,
+            st_ctime};
+  }
+};
+}  // namespace
 
-    boost::optional<FileStatus> statOptional(
-        const boost::filesystem::path &path)
-    {
-        StatusType buf;
-        if (::stat(path.c_str(), &buf) < 0)
-        {
-            if (errno == ENOENT || errno == ENOTDIR)
-                return boost::optional<FileStatus>();
-            else
-                BOOST_THROW_EXCEPTION(
-                    SystemError(__func__) <<
-                    info::path(path));
-        }
-        else
-        {
-            return static_cast<FileStatus>(buf);
-        }
-    }
+FileStatus stat(const boost::filesystem::path &path) {
+  StatusType buf;
+  YANDEX_UNISTD_WRAP(::stat(path.c_str(), &buf), info::path(path));
+  return buf;
+}
 
-    FileStatus fstat(int fd)
-    {
-        StatusType buf;
-        YANDEX_UNISTD_WRAP(
-            ::fstat(fd, &buf),
-            info::fd(fd)
-        );
-        return buf;
+boost::optional<FileStatus> statOptional(const boost::filesystem::path &path) {
+  StatusType buf;
+  if (::stat(path.c_str(), &buf) < 0) {
+    if (errno == ENOENT || errno == ENOTDIR) {
+      return boost::optional<FileStatus>();
+    } else {
+      BOOST_THROW_EXCEPTION(SystemError(__func__) << info::path(path));
     }
+  } else {
+    return static_cast<FileStatus>(buf);
+  }
+}
 
-    FileStatus lstat(const boost::filesystem::path &path)
-    {
-        StatusType buf;
-        YANDEX_UNISTD_WRAP(
-            ::lstat(path.c_str(), &buf),
-            info::path(path)
-        );
-        return buf;
-    }
+FileStatus fstat(int fd) {
+  StatusType buf;
+  YANDEX_UNISTD_WRAP(::fstat(fd, &buf), info::fd(fd));
+  return buf;
+}
 
-    uid_t getuid() noexcept
-    {
-        return ::getuid();
-    }
+FileStatus lstat(const boost::filesystem::path &path) {
+  StatusType buf;
+  YANDEX_UNISTD_WRAP(::lstat(path.c_str(), &buf), info::path(path));
+  return buf;
+}
 
-    gid_t getgid() noexcept
-    {
-        return ::getgid();
-    }
+uid_t getuid() noexcept { return ::getuid(); }
 
-    uid_t geteuid() noexcept
-    {
-        return ::geteuid();
-    }
+gid_t getgid() noexcept { return ::getgid(); }
 
-    gid_t getegid() noexcept
-    {
-        return ::getegid();
-    }
+uid_t geteuid() noexcept { return ::geteuid(); }
 
-    void getresuid(uid_t &ruid, uid_t &euid, uid_t &suid) noexcept
-    {
-        BOOST_VERIFY(::getresuid(&ruid, &euid, &suid) == 0);
-    }
+gid_t getegid() noexcept { return ::getegid(); }
 
-    void getresgid(gid_t &rgid, gid_t &egid, gid_t &sgid) noexcept
-    {
-        BOOST_VERIFY(::getresgid(&rgid, &egid, &sgid) == 0);
-    }
+void getresuid(uid_t &ruid, uid_t &euid, uid_t &suid) noexcept {
+  BOOST_VERIFY(::getresuid(&ruid, &euid, &suid) == 0);
+}
 
-    void setuid(const uid_t uid)
-    {
-        YANDEX_UNISTD_WRAP(
-            ::setuid(uid),
-            info::uid(uid)
-        );
-    }
+void getresgid(gid_t &rgid, gid_t &egid, gid_t &sgid) noexcept {
+  BOOST_VERIFY(::getresgid(&rgid, &egid, &sgid) == 0);
+}
 
-    void setgid(const gid_t gid)
-    {
-        YANDEX_UNISTD_WRAP(
-            ::setgid(gid),
-            info::gid(gid)
-        );
-    }
+void setuid(const uid_t uid) {
+  YANDEX_UNISTD_WRAP(::setuid(uid), info::uid(uid));
+}
 
-    void seteuid(const uid_t uid)
-    {
-        YANDEX_UNISTD_WRAP(
-            ::seteuid(uid),
-            info::euid(uid)
-        );
-    }
+void setgid(const gid_t gid) {
+  YANDEX_UNISTD_WRAP(::setgid(gid), info::gid(gid));
+}
 
-    void setegid(const gid_t gid)
-    {
-        YANDEX_UNISTD_WRAP(
-            ::setegid(gid),
-            info::egid(gid)
-        );
-    }
+void seteuid(const uid_t uid) {
+  YANDEX_UNISTD_WRAP(::seteuid(uid), info::euid(uid));
+}
 
-    void setreuid(const uid_t ruid, const uid_t euid)
-    {
-        YANDEX_UNISTD_WRAP(
-            ::setreuid(ruid, euid),
-            info::ruid(ruid) << info::euid(euid)
-        );
-    }
+void setegid(const gid_t gid) {
+  YANDEX_UNISTD_WRAP(::setegid(gid), info::egid(gid));
+}
 
-    void setregid(const gid_t rgid, const gid_t egid)
-    {
-        YANDEX_UNISTD_WRAP(
-            ::setregid(rgid, egid),
-            info::rgid(rgid) << info::egid(egid)
-        );
-    }
+void setreuid(const uid_t ruid, const uid_t euid) {
+  YANDEX_UNISTD_WRAP(::setreuid(ruid, euid), info::ruid(ruid)
+                                                 << info::euid(euid));
+}
 
-    void setresuid(const uid_t ruid, const uid_t euid, const uid_t suid)
-    {
-        YANDEX_UNISTD_WRAP(
-            ::setresuid(ruid, euid, suid),
-            info::ruid(ruid) << info::euid(euid) << info::suid(suid)
-        );
-    }
+void setregid(const gid_t rgid, const gid_t egid) {
+  YANDEX_UNISTD_WRAP(::setregid(rgid, egid), info::rgid(rgid)
+                                                 << info::egid(egid));
+}
 
-    void setresgid(const gid_t rgid, const gid_t egid, const gid_t sgid)
-    {
-        YANDEX_UNISTD_WRAP(
-            ::setresgid(rgid, egid, sgid),
-            info::rgid(rgid) << info::egid(egid) << info::sgid(sgid)
-        );
-    }
+void setresuid(const uid_t ruid, const uid_t euid, const uid_t suid) {
+  YANDEX_UNISTD_WRAP(::setresuid(ruid, euid, suid),
+                     info::ruid(ruid) << info::euid(euid) << info::suid(suid));
+}
 
-    pid_t fork()
-    {
-        YANDEX_UNISTD_RETURN_NO_INFO(::fork());
-    }
+void setresgid(const gid_t rgid, const gid_t egid, const gid_t sgid) {
+  YANDEX_UNISTD_WRAP(::setresgid(rgid, egid, sgid),
+                     info::rgid(rgid) << info::egid(egid) << info::sgid(sgid));
+}
 
-    Descriptor open(const boost::filesystem::path &path,
-                    const int oflag,
-                    const mode_t mode)
-    {
-        Descriptor retFd;
-        YANDEX_UNISTD_ASSIGN(
-            ::open(path.c_str(), oflag, mode),
-            retFd,
-            info::path(path) << info::openFlags(oflag) << info::mode(mode)
-        );
-        return retFd;
-    }
+pid_t fork() { YANDEX_UNISTD_RETURN_NO_INFO(::fork()); }
 
-    void close(const int fd)
-    {
-        YANDEX_UNISTD_WRAP(
-            ::close(fd),
-            info::fd(fd)
-        );
-    }
+Descriptor open(const boost::filesystem::path &path, const int oflag,
+                const mode_t mode) {
+  Descriptor retFd;
+  YANDEX_UNISTD_ASSIGN(::open(path.c_str(), oflag, mode), retFd,
+                       info::path(path) << info::openFlags(oflag)
+                                        << info::mode(mode));
+  return retFd;
+}
 
-    Descriptor dup(const int fd)
-    {
-        Descriptor retFd;
-        YANDEX_UNISTD_ASSIGN(
-            ::dup(fd),
-            retFd,
-            info::fd(fd)
-        );
-        return retFd;
-    }
+void close(const int fd) { YANDEX_UNISTD_WRAP(::close(fd), info::fd(fd)); }
 
-    void dup2(const int oldFd, const int newFd)
-    {
-        int retFd;
-        YANDEX_UNISTD_WRAP(
-            retFd = ::dup2(oldFd, newFd),
-            info::oldFd(oldFd) << info::newFd(newFd)
-        );
-        BOOST_ASSERT(newFd == retFd);
-    }
+Descriptor dup(const int fd) {
+  Descriptor retFd;
+  YANDEX_UNISTD_ASSIGN(::dup(fd), retFd, info::fd(fd));
+  return retFd;
+}
 
-    std::size_t sendfile(const int outFd,
-                         const int inFd,
-                         off_t &offset,
-                         const std::size_t count)
-    {
-        YANDEX_UNISTD_RETURN(
-            ::sendfile(outFd, inFd, &offset, count),
-            info::outFd(outFd) << info::inFd(inFd)
-        );
-    }
+void dup2(const int oldFd, const int newFd) {
+  int retFd;
+  YANDEX_UNISTD_WRAP(retFd = ::dup2(oldFd, newFd), info::oldFd(oldFd)
+                                                       << info::newFd(newFd));
+  BOOST_ASSERT(newFd == retFd);
+}
 
-    std::size_t sendfile(const int outFd, const int inFd, off_t &offset)
-    {
-        return sendfile(outFd, inFd, offset, BUFSIZ);
-    }
+std::size_t sendfile(const int outFd, const int inFd, off_t &offset,
+                     const std::size_t count) {
+  YANDEX_UNISTD_RETURN(::sendfile(outFd, inFd, &offset, count),
+                       info::outFd(outFd) << info::inFd(inFd));
+}
 
-    std::size_t sendfile(const int outFd,
-                         const int inFd,
-                         const std::size_t count)
-    {
-        YANDEX_UNISTD_RETURN(
-            ::sendfile(outFd, inFd, nullptr, count),
-            info::outFd(outFd) << info::inFd(inFd)
-        );
-    }
+std::size_t sendfile(const int outFd, const int inFd, off_t &offset) {
+  return sendfile(outFd, inFd, offset, BUFSIZ);
+}
 
-    std::size_t sendfile(const int outFd, const int inFd)
-    {
-        return sendfile(outFd, inFd, BUFSIZ);
-    }
+std::size_t sendfile(const int outFd, const int inFd, const std::size_t count) {
+  YANDEX_UNISTD_RETURN(::sendfile(outFd, inFd, nullptr, count),
+                       info::outFd(outFd) << info::inFd(inFd));
+}
 
-    unsigned getdtablesize()
-    {
-        YANDEX_UNISTD_RETURN_NO_INFO(::getdtablesize());
-    }
+std::size_t sendfile(const int outFd, const int inFd) {
+  return sendfile(outFd, inFd, BUFSIZ);
+}
 
-    void getrlimit(const int resource, struct rlimit &rlp)
-    {
-        YANDEX_UNISTD_WRAP(
-            ::getrlimit(resource, &rlp),
-            info::resource(resource)
-        );
-    }
+unsigned getdtablesize() { YANDEX_UNISTD_RETURN_NO_INFO(::getdtablesize()); }
 
-    void setrlimit(const int resource, const struct rlimit &rlp)
-    {
-        YANDEX_UNISTD_WRAP(
-            ::setrlimit(resource, &rlp),
-            info::resource(resource)
-        );
-    }
+void getrlimit(const int resource, struct rlimit &rlp) {
+  YANDEX_UNISTD_WRAP(::getrlimit(resource, &rlp), info::resource(resource));
+}
 
-    void getitimer(const int which, ::itimerval &curr_value)
-    {
-        YANDEX_UNISTD_WRAP_NO_INFO(::getitimer(which, &curr_value));
-    }
+void setrlimit(const int resource, const struct rlimit &rlp) {
+  YANDEX_UNISTD_WRAP(::setrlimit(resource, &rlp), info::resource(resource));
+}
 
-    void setitimer(const int which, const ::itimerval &new_value)
-    {
-        YANDEX_UNISTD_WRAP_NO_INFO(
-            ::setitimer(which, &new_value, nullptr)
-        );
-    }
+void getitimer(const int which, ::itimerval &curr_value) {
+  YANDEX_UNISTD_WRAP_NO_INFO(::getitimer(which, &curr_value));
+}
 
-    void setitimer(const int which,
-                   const ::itimerval &new_value,
-                   ::itimerval &old_value)
-    {
-        YANDEX_UNISTD_WRAP_NO_INFO(
-            ::setitimer(which, &new_value, &old_value)
-        );
-    }
+void setitimer(const int which, const ::itimerval &new_value) {
+  YANDEX_UNISTD_WRAP_NO_INFO(::setitimer(which, &new_value, nullptr));
+}
 
-    void kill(const pid_t pid, const int sig)
-    {
-        YANDEX_UNISTD_WRAP(
-            ::kill(pid, sig),
-            info::pid(pid) << info::signal(sig)
-        );
-    }
+void setitimer(const int which, const ::itimerval &new_value,
+               ::itimerval &old_value) {
+  YANDEX_UNISTD_WRAP_NO_INFO(::setitimer(which, &new_value, &old_value));
+}
 
-    std::error_code kill0(const pid_t pid) noexcept
-    {
-        if (::kill(pid, 0) < 0)
-            return std::error_code(errno, std::system_category());
-        else
-            return std::error_code();
-    }
+void kill(const pid_t pid, const int sig) {
+  YANDEX_UNISTD_WRAP(::kill(pid, sig), info::pid(pid) << info::signal(sig));
+}
 
-    pid_t getpid() noexcept
-    {
-        return ::getpid();
-    }
+std::error_code kill0(const pid_t pid) noexcept {
+  if (::kill(pid, 0) < 0) {
+    return std::error_code(errno, std::system_category());
+  } else {
+    return std::error_code();
+  }
+}
 
-    pid_t gettid() noexcept
-    {
-        return ::syscall(SYS_gettid);
-    }
+pid_t getpid() noexcept { return ::getpid(); }
 
-    long sysconf(const int name)
-    {
-        YANDEX_UNISTD_RETURN(
-            ::sysconf(name),
-            info::sysconfName(name)
-        );
-    }
+pid_t gettid() noexcept { return ::syscall(SYS_gettid); }
 
-    Descriptor epoll_create1(const int flags)
-    {
-        Descriptor retFd;
-        YANDEX_UNISTD_ASSIGN(
-            ::epoll_create1(flags),
-            retFd,
-            info::openFlags(flags)
-        );
-        return retFd;
-    }
+long sysconf(const int name) {
+  YANDEX_UNISTD_RETURN(::sysconf(name), info::sysconfName(name));
+}
 
-    void epoll_ctl(const int epfd,
-                   const int op,
-                   const int fd,
-                   ::epoll_event &event)
-    {
-        YANDEX_UNISTD_WRAP(
-            ::epoll_ctl(epfd, op, fd, &event),
-            info::epfd(epfd) << info::op(op) << info::fd(fd)
-        );
-    }
+Descriptor epoll_create1(const int flags) {
+  Descriptor retFd;
+  YANDEX_UNISTD_ASSIGN(::epoll_create1(flags), retFd, info::openFlags(flags));
+  return retFd;
+}
 
-    void epoll_ctl_add(const int epfd, const int fd, ::epoll_event &event)
-    {
-        YANDEX_UNISTD_WRAP(
-            ::epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &event),
-            info::epfd(epfd) << info::fd(fd)
-        );
-    }
+void epoll_ctl(const int epfd, const int op, const int fd,
+               ::epoll_event &event) {
+  YANDEX_UNISTD_WRAP(::epoll_ctl(epfd, op, fd, &event),
+                     info::epfd(epfd) << info::op(op) << info::fd(fd));
+}
 
-    void epoll_ctl_mod(const int epfd, const int fd, ::epoll_event &event)
-    {
-        YANDEX_UNISTD_WRAP(
-            ::epoll_ctl(epfd, EPOLL_CTL_MOD, fd, &event),
-            info::epfd(epfd) << info::fd(fd)
-        );
-    }
+void epoll_ctl_add(const int epfd, const int fd, ::epoll_event &event) {
+  YANDEX_UNISTD_WRAP(::epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &event),
+                     info::epfd(epfd) << info::fd(fd));
+}
 
-    void epoll_ctl_del(const int epfd, const int fd)
-    {
-        YANDEX_UNISTD_WRAP(
-            ::epoll_ctl(epfd, EPOLL_CTL_DEL, fd, nullptr),
-            info::epfd(epfd) << info::fd(fd)
-        );
-    }
+void epoll_ctl_mod(const int epfd, const int fd, ::epoll_event &event) {
+  YANDEX_UNISTD_WRAP(::epoll_ctl(epfd, EPOLL_CTL_MOD, fd, &event),
+                     info::epfd(epfd) << info::fd(fd));
+}
 
-    unsigned epoll_wait(const int epfd,
-                        ::epoll_event *const events,
-                        const unsigned maxevents)
-    {
-        YANDEX_UNISTD_RETURN(
-            ::epoll_wait(epfd, events, maxevents, -1),
-            info::epfd(epfd) << info::maxevents(maxevents)
-        );
-    }
+void epoll_ctl_del(const int epfd, const int fd) {
+  YANDEX_UNISTD_WRAP(::epoll_ctl(epfd, EPOLL_CTL_DEL, fd, nullptr),
+                     info::epfd(epfd) << info::fd(fd));
+}
 
-    unsigned epoll_wait(const int epfd,
-                        ::epoll_event *const events,
-                        const unsigned maxevents,
-                        const std::chrono::milliseconds &timeout)
-    {
-        YANDEX_UNISTD_RETURN(
-            ::epoll_wait(epfd, events, maxevents, timeout.count()),
-            info::epfd(epfd) << info::maxevents(maxevents)
-        );
-    }
+unsigned epoll_wait(const int epfd, ::epoll_event *const events,
+                    const unsigned maxevents) {
+  YANDEX_UNISTD_RETURN(::epoll_wait(epfd, events, maxevents, -1),
+                       info::epfd(epfd) << info::maxevents(maxevents));
+}
 
-    unsigned epoll_pwait(const int epfd,
-                         ::epoll_event *const events,
-                         const unsigned maxevents,
-                         const sigset_t &sigmask)
-    {
-        YANDEX_UNISTD_RETURN(
-            ::epoll_pwait(epfd, events, maxevents, -1, &sigmask),
-            info::epfd(epfd) << info::maxevents(maxevents)
-        );
-    }
+unsigned epoll_wait(const int epfd, ::epoll_event *const events,
+                    const unsigned maxevents,
+                    const std::chrono::milliseconds &timeout) {
+  YANDEX_UNISTD_RETURN(::epoll_wait(epfd, events, maxevents, timeout.count()),
+                       info::epfd(epfd) << info::maxevents(maxevents));
+}
 
-    unsigned epoll_pwait(const int epfd,
-                         ::epoll_event *const events,
-                         const unsigned maxevents,
-                         const std::chrono::milliseconds &timeout,
-                         const sigset_t &sigmask)
-    {
-        YANDEX_UNISTD_RETURN(
-            ::epoll_pwait(epfd, events, maxevents, timeout.count(), &sigmask),
-            info::epfd(epfd) << info::maxevents(maxevents)
-        );
-    }
-}}}}
+unsigned epoll_pwait(const int epfd, ::epoll_event *const events,
+                     const unsigned maxevents, const sigset_t &sigmask) {
+  YANDEX_UNISTD_RETURN(::epoll_pwait(epfd, events, maxevents, -1, &sigmask),
+                       info::epfd(epfd) << info::maxevents(maxevents));
+}
+
+unsigned epoll_pwait(const int epfd, ::epoll_event *const events,
+                     const unsigned maxevents,
+                     const std::chrono::milliseconds &timeout,
+                     const sigset_t &sigmask) {
+  YANDEX_UNISTD_RETURN(
+      ::epoll_pwait(epfd, events, maxevents, timeout.count(), &sigmask),
+      info::epfd(epfd) << info::maxevents(maxevents));
+}
+
+}  // namespace unistd
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

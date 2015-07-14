@@ -10,122 +10,130 @@
 
 #include <sys/types.h>
 
-namespace yandex{namespace contest{namespace system{namespace cgroup
-{
-    struct SingleControlGroupError: virtual ControlGroupError {};
+namespace yandex {
+namespace contest {
+namespace system {
+namespace cgroup {
 
-    struct SingleControlGroupAttachError: virtual SingleControlGroupError {};
-    struct SingleControlGroupNotExistsError: virtual SingleControlGroupAttachError {};
+struct SingleControlGroupError : virtual ControlGroupError {};
 
-    struct SingleControlGroupCreateError: virtual SingleControlGroupError {};
-    struct SingleControlGroupExistsError: virtual SingleControlGroupCreateError {};
+struct SingleControlGroupAttachError : virtual SingleControlGroupError {};
+struct SingleControlGroupNotExistsError
+    : virtual SingleControlGroupAttachError {};
 
-    struct SingleControlGroupNotMountedError: virtual SingleControlGroupError {};
+struct SingleControlGroupCreateError : virtual SingleControlGroupError {};
+struct SingleControlGroupExistsError : virtual SingleControlGroupCreateError {};
 
-    struct SingleControlGroupPathError: virtual SingleControlGroupError {};
-    struct SingleControlGroupEmptyControlGroupPathError: virtual SingleControlGroupPathError {};
-    struct SingleControlGroupAbsoluteControlGroupPathError: virtual SingleControlGroupPathError {};
-    struct SingleControlGroupRelativeControlGroupError: virtual SingleControlGroupPathError {};
-    struct SingleControlGroupPathToFieldError: virtual SingleControlGroupPathError{};
-    struct SingleControlGroupPathToUnknownError: virtual SingleControlGroupPathError{};
+struct SingleControlGroupNotMountedError : virtual SingleControlGroupError {};
 
-    class SingleControlGroup: public ControlGroup
-    {
-    public:
-        ~SingleControlGroup() override;
+struct SingleControlGroupPathError : virtual SingleControlGroupError {};
+struct SingleControlGroupEmptyControlGroupPathError
+    : virtual SingleControlGroupPathError {};
+struct SingleControlGroupAbsoluteControlGroupPathError
+    : virtual SingleControlGroupPathError {};
+struct SingleControlGroupRelativeControlGroupError
+    : virtual SingleControlGroupPathError {};
+struct SingleControlGroupPathToFieldError
+    : virtual SingleControlGroupPathError {};
+struct SingleControlGroupPathToUnknownError
+    : virtual SingleControlGroupPathError {};
 
-        static SingleControlGroupPointer forProcessHierarchyInfo(
-            const ProcessHierarchyInfo &processHierarchyInfo);
+class SingleControlGroup : public ControlGroup {
+ public:
+  ~SingleControlGroup() override;
 
-        static SingleControlGroupPointer forProcessInfo(
-            const std::size_t hierarchyId, const ProcessInfo &processInfo);
-        static SingleControlGroupPointer forProcessInfo(
-            const std::string &subsystem, const ProcessInfo &processInfo);
+  static SingleControlGroupPointer forProcessHierarchyInfo(
+      const ProcessHierarchyInfo &processHierarchyInfo);
 
-        static SingleControlGroupPointer forPid(
-            const std::size_t hierarchyId, const pid_t pid);
-        static SingleControlGroupPointer forPid(
-            const std::string &subsystem, const pid_t pid);
+  static SingleControlGroupPointer forProcessInfo(
+      const std::size_t hierarchyId, const ProcessInfo &processInfo);
+  static SingleControlGroupPointer forProcessInfo(
+      const std::string &subsystem, const ProcessInfo &processInfo);
 
-        static SingleControlGroupPointer forSelf(const std::size_t hierarchyId);
-        static SingleControlGroupPointer forSelf(const std::string &hierarchy);
+  static SingleControlGroupPointer forPid(std::size_t hierarchyId, pid_t pid);
+  static SingleControlGroupPointer forPid(const std::string &subsystem,
+                                          pid_t pid);
 
-        static SingleControlGroupPointer root(const std::size_t hierarchyId);
-        static SingleControlGroupPointer root(const std::string &subsystem);
+  static SingleControlGroupPointer forSelf(std::size_t hierarchyId);
+  static SingleControlGroupPointer forSelf(const std::string &hierarchy);
 
-        static SingleControlGroupPointer attach(
-            const std::size_t hierarchyId,
-            const boost::filesystem::path &controlGroup);
-        static SingleControlGroupPointer attach(
-            const std::string &subsystem,
-            const boost::filesystem::path &controlGroup);
+  static SingleControlGroupPointer root(std::size_t hierarchyId);
+  static SingleControlGroupPointer root(const std::string &subsystem);
 
-    public:
-        const SystemInfoPointer &systemInfo() const;
-        const HierarchyInfo &hierarchyInfo() const;
-        std::size_t hierarchyId() const;
-        const boost::filesystem::path &mountpoint() const;
-        const boost::filesystem::path &controlGroup() const;
-        const boost::filesystem::path &location() const;
+  static SingleControlGroupPointer attach(
+      const std::size_t hierarchyId,
+      const boost::filesystem::path &controlGroup);
+  static SingleControlGroupPointer attach(
+      const std::string &subsystem,
+      const boost::filesystem::path &controlGroup);
 
-        Tasks tasks() override;
+ public:
+  const SystemInfoPointer &systemInfo() const;
+  const HierarchyInfo &hierarchyInfo() const;
+  std::size_t hierarchyId() const;
+  const boost::filesystem::path &mountpoint() const;
+  const boost::filesystem::path &controlGroup() const;
+  const boost::filesystem::path &location() const;
 
-        void attachTask(const pid_t pid) override;
+  Tasks tasks() override;
 
-        bool notifyOnRelease() override;
-        void setNotifyOnRelease(const bool notifyOnRelease=true) override;
+  void attachTask(pid_t pid) override;
 
-        std::string releaseAgent() override;
+  bool notifyOnRelease() override;
+  void setNotifyOnRelease(bool notifyOnRelease = true) override;
 
-        void setReleaseAgent(const std::string &releaseAgent) override;
+  std::string releaseAgent() override;
 
-        bool cloneChildren() override;
-        void setCloneChildren(const bool cloneChildren=true) override;
+  void setReleaseAgent(const std::string &releaseAgent) override;
 
-        SingleControlGroupPointer attachChild(
-            const boost::filesystem::path &childControlGroup);
-        SingleControlGroupPointer createChild(
-            const boost::filesystem::path &childControlGroup);
-        SingleControlGroupPointer createChild(
-            const boost::filesystem::path &childControlGroup,
-            const mode_t mode);
-        SingleControlGroupPointer parent();
+  bool cloneChildren() override;
+  void setCloneChildren(bool cloneChildren = true) override;
 
-    protected:
-        /// \throws SingleControlGroupPathError if location() is neither
-        /// directory nor not_found.
-        SingleControlGroup(const SystemInfoPointer &systemInfo,
-                           const std::size_t hierarchyId,
-                           const boost::filesystem::path &controlGroup,
-                           const SingleControlGroupPointer &parent);
+  SingleControlGroupPointer attachChild(
+      const boost::filesystem::path &childControlGroup);
+  SingleControlGroupPointer createChild(
+      const boost::filesystem::path &childControlGroup);
+  SingleControlGroupPointer createChild(
+      const boost::filesystem::path &childControlGroup, mode_t mode);
+  SingleControlGroupPointer parent();
 
-        ControlGroupPointer attachChild__(
-            const boost::filesystem::path &childControlGroup) override;
-        ControlGroupPointer createChild__(
-            const boost::filesystem::path &childControlGroup,
-            const mode_t mode) override;
-        ControlGroupPointer parent__() override;
+ protected:
+  /// \throws SingleControlGroupPathError if location() is neither
+  /// directory nor not_found.
+  SingleControlGroup(const SystemInfoPointer &systemInfo,
+                     std::size_t hierarchyId,
+                     const boost::filesystem::path &controlGroup,
+                     const SingleControlGroupPointer &parent);
 
-        boost::filesystem::path fieldPath__(
-            const std::string &fieldName) const override;
+  ControlGroupPointer attachChild__(
+      const boost::filesystem::path &childControlGroup) override;
+  ControlGroupPointer createChild__(
+      const boost::filesystem::path &childControlGroup, mode_t mode) override;
+  ControlGroupPointer parent__() override;
 
-        void print(std::ostream &out) const override;
+  boost::filesystem::path fieldPath__(
+      const std::string &fieldName) const override;
 
-        virtual void printSingle(std::ostream &out) const=0;
+  void print(std::ostream &out) const override;
 
-    private:
-        SingleControlGroupPointer attachDirectChild(
-            const boost::filesystem::path &childControlGroup);
-        SingleControlGroupPointer createDirectChild(
-            const boost::filesystem::path &childControlGroup,
-            const mode_t mode);
+  virtual void printSingle(std::ostream &out) const = 0;
 
-    private:
-        const SystemInfoPointer systemInfo_;
-        const HierarchyInfo &hierarchyInfo_;
-        const boost::filesystem::path controlGroup_;
-        const SingleControlGroupPointer parent_;
-        boost::unordered_map<boost::filesystem::path, SingleControlGroup *> children_;
-        boost::filesystem::path location_;
-    };
-}}}}
+ private:
+  SingleControlGroupPointer attachDirectChild(
+      const boost::filesystem::path &childControlGroup);
+  SingleControlGroupPointer createDirectChild(
+      const boost::filesystem::path &childControlGroup, mode_t mode);
+
+ private:
+  const SystemInfoPointer systemInfo_;
+  const HierarchyInfo &hierarchyInfo_;
+  const boost::filesystem::path controlGroup_;
+  const SingleControlGroupPointer parent_;
+  boost::unordered_map<boost::filesystem::path, SingleControlGroup *> children_;
+  boost::filesystem::path location_;
+};
+
+}  // namespace cgroup
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

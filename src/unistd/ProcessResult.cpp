@@ -2,27 +2,25 @@
 
 #include <sys/wait.h>
 
-namespace yandex{namespace contest{namespace system{namespace unistd
-{
-    ProcessResult::ProcessResult(const int statLoc)
-    {
-        assign(statLoc);
-    }
+namespace yandex {
+namespace contest {
+namespace system {
+namespace unistd {
 
-    void ProcessResult::assign(const int statLoc)
-    {
-        if (WIFEXITED(statLoc))
-            exitStatus = WEXITSTATUS(statLoc);
-        if (WIFSIGNALED(statLoc))
-            termSig = WTERMSIG(statLoc);
-    }
+ProcessResult::ProcessResult(const int statLoc) { assign(statLoc); }
 
-    ProcessResult::operator bool() const
-    {
-        if (termSig)
-            return false;
-        if (!exitStatus)
-            return false;
-        return exitStatus.get() == 0;
-    }
-}}}}
+void ProcessResult::assign(const int statLoc) {
+  if (WIFEXITED(statLoc)) exitStatus = WEXITSTATUS(statLoc);
+  if (WIFSIGNALED(statLoc)) termSig = WTERMSIG(statLoc);
+}
+
+ProcessResult::operator bool() const {
+  if (termSig) return false;
+  if (!exitStatus) return false;
+  return exitStatus.get() == 0;
+}
+
+}  // namespace unistd
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

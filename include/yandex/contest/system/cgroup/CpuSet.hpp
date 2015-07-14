@@ -2,23 +2,29 @@
 
 #include <yandex/contest/system/cgroup/SubsystemBase.hpp>
 
-namespace yandex{namespace contest{namespace system{namespace cgroup
-{
-    class CpuSetBase: virtual public SubsystemBase<CpuSetBase>
-    {
-    public:
-        static const std::string SUBSYSTEM_NAME;
+namespace yandex {
+namespace contest {
+namespace system {
+namespace cgroup {
 
-    public:
-        std::string cpus() const;
-        void setCpus(const std::string &cpus) const;
+class CpuSetBase : virtual public SubsystemBase<CpuSetBase> {
+ public:
+  static const std::string SUBSYSTEM_NAME;
 
-        std::string mems() const;
-        void setMems(const std::string &mems) const;
+ public:
+  std::string cpus() const;
+  void setCpus(const std::string &cpus) const;
 
-        bool memoryMigrate() const;
-        void setMemoryMigrate(const bool memoryMigrate=true) const;
-    };
+  std::string mems() const;
+  void setMems(const std::string &mems) const;
 
-    typedef Subsystem<CpuSetBase> CpuSet;
-}}}}
+  bool memoryMigrate() const;
+  void setMemoryMigrate(bool memoryMigrate = true) const;
+};
+
+using CpuSet = Subsystem<CpuSetBase>;
+
+}  // namespace cgroup
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

@@ -7,26 +7,31 @@
 
 struct rusage;
 
-namespace yandex{namespace contest{namespace system{namespace unistd
-{
-    struct ResourceUsage
-    {
-        template <typename Archive>
-        void serialize(Archive &ar, const unsigned int)
-        {
-            ar & BOOST_SERIALIZATION_NVP(timeUsageMillis);
-            ar & BOOST_SERIALIZATION_NVP(memoryUsageBytes);
-        }
+namespace yandex {
+namespace contest {
+namespace system {
+namespace unistd {
 
-        explicit ResourceUsage(const ::rusage &rusage);
+struct ResourceUsage {
+  template <typename Archive>
+  void serialize(Archive &ar, const unsigned int) {
+    ar & BOOST_SERIALIZATION_NVP(timeUsageMillis);
+    ar & BOOST_SERIALIZATION_NVP(memoryUsageBytes);
+  }
 
-        ResourceUsage()=default;
-        ResourceUsage(const ResourceUsage &)=default;
-        ResourceUsage &operator=(const ResourceUsage &)=default;
+  explicit ResourceUsage(const ::rusage &rusage);
 
-        void assign(const ::rusage &rusage);
+  ResourceUsage() = default;
+  ResourceUsage(const ResourceUsage &) = default;
+  ResourceUsage &operator=(const ResourceUsage &) = default;
 
-        std::uint64_t timeUsageMillis = 0;
-        std::uint64_t memoryUsageBytes = 0;
-    };
-}}}}
+  void assign(const ::rusage &rusage);
+
+  std::uint64_t timeUsageMillis = 0;
+  std::uint64_t memoryUsageBytes = 0;
+};
+
+}  // namespace unistd
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

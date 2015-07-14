@@ -9,77 +9,79 @@
 
 #include <sys/types.h>
 
-namespace yandex{namespace contest{namespace system{namespace execution
-{
-    class AsyncProcess
-    {
-    public:
-        typedef ::pid_t Pid;
+namespace yandex {
+namespace contest {
+namespace system {
+namespace execution {
 
-        struct Options
-        {
-            boost::filesystem::path executable;
-            ProcessArguments arguments;
-            std::string in; ///< Will be used as data for stdin.
-            bool usePath = true;
-        };
+class AsyncProcess {
+ public:
+  using Pid = ::pid_t;
 
-    public:
-        /// Invalid AsyncProcess instance.
-        AsyncProcess()=default;
+  struct Options {
+    boost::filesystem::path executable;
+    ProcessArguments arguments;
+    std::string in;  ///< Will be used as data for stdin.
+    bool usePath = true;
+  };
 
-        explicit AsyncProcess(const Options &options);
-        AsyncProcess(const AsyncProcess &)=delete;
-        AsyncProcess(AsyncProcess &&) noexcept;
-        AsyncProcess &operator=(const AsyncProcess &)=delete;
-        AsyncProcess &operator=(AsyncProcess &&) noexcept;
+ public:
+  /// Invalid AsyncProcess instance.
+  AsyncProcess() = default;
 
-        /// If AsyncProcess is valid.
-        explicit operator bool() const noexcept;
+  explicit AsyncProcess(const Options &options);
+  AsyncProcess(const AsyncProcess &) = delete;
+  AsyncProcess(AsyncProcess &&) noexcept;
+  AsyncProcess &operator=(const AsyncProcess &) = delete;
+  AsyncProcess &operator=(AsyncProcess &&) noexcept;
 
-        /// Calls stop().
-        ~AsyncProcess();
+  /// If AsyncProcess is valid.
+  explicit operator bool() const noexcept;
 
-        /*!
-         * \brief Wait for process termination.
-         *
-         * Set execution result.
-         */
-        const Result &wait();
+  /// Calls stop().
+  ~AsyncProcess();
 
-        /*!
-         * \brief Check if process has terminated.
-         *
-         * Set execution result if terminated.
-         *
-         * \return Initialized execution result if process
-         * has terminated.
-         */
-        const boost::optional<Result> &poll();
+  /*!
+   * \brief Wait for process termination.
+   *
+   * Set execution result.
+   */
+  const Result &wait();
 
-        /// If process has not terminated try to kill and wait.
-        void stop();
+  /*!
+   * \brief Check if process has terminated.
+   *
+   * Set execution result if terminated.
+   *
+   * \return Initialized execution result if process
+   * has terminated.
+   */
+  const boost::optional<Result> &poll();
 
-        /*!
-         * \brief Get process id.
-         *
-         * \warning Value is unspecified if !(*this).
-         */
-        Pid pid() const noexcept;
+  /// If process has not terminated try to kill and wait.
+  void stop();
 
-        void swap(AsyncProcess &process) noexcept;
+  /*!
+   * \brief Get process id.
+   *
+   * \warning Value is unspecified if !(*this).
+   */
+  Pid pid() const noexcept;
 
-    private:
-        void collectOutput();
+  void swap(AsyncProcess &process) noexcept;
 
-    private:
-        Tempfile in_, out_, err_;
-        Pid pid_ = 0;
-        boost::optional<Result> result_;
-    };
+ private:
+  void collectOutput();
 
-    inline void swap(AsyncProcess &a, AsyncProcess &b) noexcept
-    {
-        a.swap(b);
-    }
-}}}}
+ private:
+  Tempfile in_, out_, err_;
+  Pid pid_ = 0;
+  boost::optional<Result> result_;
+};
+
+inline void swap(AsyncProcess &a, AsyncProcess &b) noexcept { a.swap(b); }
+
+}  // namespace execution
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

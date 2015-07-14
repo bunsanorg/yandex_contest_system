@@ -6,53 +6,47 @@
 
 #include <utility>
 
-namespace yandex{namespace contest{namespace system{namespace execution
-{
-    struct CollectHelper
-    {
-        static void collectTo(ProcessArguments &/*arguments*/)
-        {
-            /*does nothing*/
-        }
+namespace yandex {
+namespace contest {
+namespace system {
+namespace execution {
 
-        static const std::string &toString(const std::string &arg)
-        {
-            return arg;
-        }
+struct CollectHelper {
+  static void collectTo(ProcessArguments & /*arguments*/) {
+    // does nothing
+  }
 
-        static std::string toString(const boost::filesystem::path &arg)
-        {
-            return arg.string();
-        }
+  static const std::string &toString(const std::string &arg) { return arg; }
 
-        static std::string toString(const char *const arg)
-        {
-            return arg;
-        }
+  static std::string toString(const boost::filesystem::path &arg) {
+    return arg.string();
+  }
 
-        template <typename T, typename ... Args>
-        static void collectTo(ProcessArguments &arguments,
-                                     const T &arg, Args &&...args)
-        {
-            arguments.push_back(toString(arg));
-            collectTo(arguments, std::forward<Args>(args)...);
-        }
+  static std::string toString(const char *const arg) { return arg; }
 
-        template <typename ... Args>
-        static void collectTo(
-            ProcessArguments &arguments,
-            const std::vector<std::string> &arg, Args &&...args)
-        {
-            arguments.insert(arguments.end(), arg.begin(), arg.end());
-            collectTo(arguments, std::forward<Args>(args)...);
-        }
-    };
+  template <typename T, typename... Args>
+  static void collectTo(ProcessArguments &arguments, const T &arg,
+                        Args &&... args) {
+    arguments.push_back(toString(arg));
+    collectTo(arguments, std::forward<Args>(args)...);
+  }
 
-    template <typename ... Args>
-    static inline ProcessArguments collect(Args &&...args)
-    {
-        ProcessArguments arguments;
-        CollectHelper::collectTo(arguments, std::forward<Args>(args)...);
-        return arguments;
-    }
-}}}}
+  template <typename... Args>
+  static void collectTo(ProcessArguments &arguments,
+                        const std::vector<std::string> &arg, Args &&... args) {
+    arguments.insert(arguments.end(), arg.begin(), arg.end());
+    collectTo(arguments, std::forward<Args>(args)...);
+  }
+};
+
+template <typename... Args>
+static inline ProcessArguments collect(Args &&... args) {
+  ProcessArguments arguments;
+  CollectHelper::collectTo(arguments, std::forward<Args>(args)...);
+  return arguments;
+}
+
+}  // namespace execution
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

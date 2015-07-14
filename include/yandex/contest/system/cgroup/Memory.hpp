@@ -5,44 +5,47 @@
 
 #include <boost/optional.hpp>
 
-namespace yandex{namespace contest{namespace system{namespace cgroup
-{
-    class MemoryBase:
-        public virtual ResourceLimiter<MemoryBase, Count>,
-        public virtual Stat<MemoryBase, Count>
-    {
-    public:
-        static const std::string SUBSYSTEM_NAME;
-        static const boost::optional<std::string> UNITS;
+namespace yandex {
+namespace contest {
+namespace system {
+namespace cgroup {
 
-    public:
-        struct MoveChargeAtImmigrateConfig
-        {
-            MoveChargeAtImmigrateConfig()=default;
+class MemoryBase : public virtual ResourceLimiter<MemoryBase, Count>,
+                   public virtual Stat<MemoryBase, Count> {
+ public:
+  static const std::string SUBSYSTEM_NAME;
+  static const boost::optional<std::string> UNITS;
 
-            explicit MoveChargeAtImmigrateConfig(const int mask);
+ public:
+  struct MoveChargeAtImmigrateConfig {
+    MoveChargeAtImmigrateConfig() = default;
 
-            int mask() const;
+    explicit MoveChargeAtImmigrateConfig(int mask);
 
-            bool anonymous = false;
-            bool file = false;
-        };
+    int mask() const;
 
-        MoveChargeAtImmigrateConfig moveChargeAtImmigrate() const;
-        void setMoveChargeAtImmigrate(
-            const MoveChargeAtImmigrateConfig &moveChargeAtImmigrate) const;
-        void setMoveChargeAtImmigrate(
-            const bool anonymous=true, const bool file=true) const;
+    bool anonymous = false;
+    bool file = false;
+  };
 
-        Count softLimitInBytes() const;
-        void setSoftLimitInBytes(const Count limit) const;
+  MoveChargeAtImmigrateConfig moveChargeAtImmigrate() const;
+  void setMoveChargeAtImmigrate(
+      const MoveChargeAtImmigrateConfig &moveChargeAtImmigrate) const;
+  void setMoveChargeAtImmigrate(bool anonymous = true, bool file = true) const;
 
-        bool underOom() const;
-        bool oomKillDisable() const;
-        void setOomKillDisable(const bool oomControl=true) const;
+  Count softLimitInBytes() const;
+  void setSoftLimitInBytes(const Count limit) const;
 
-        void forceEmpty() const;
-    };
+  bool underOom() const;
+  bool oomKillDisable() const;
+  void setOomKillDisable(bool oomControl = true) const;
 
-    typedef Subsystem<MemoryBase> Memory;
-}}}}
+  void forceEmpty() const;
+};
+
+using Memory = Subsystem<MemoryBase>;
+
+}  // namespace cgroup
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex

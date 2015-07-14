@@ -4,43 +4,46 @@
 
 #include <system_error>
 
-namespace yandex{namespace contest{namespace system{namespace unistd
-{
-    class Descriptor
-    {
-    public:
-        Descriptor()=default;
-        explicit Descriptor(const int fd) noexcept;
-        Descriptor(Descriptor &&) noexcept;
-        Descriptor &operator=(Descriptor &&) noexcept;
+namespace yandex {
+namespace contest {
+namespace system {
+namespace unistd {
 
-        Descriptor(const Descriptor &)=delete;
-        Descriptor &operator=(const Descriptor &)=delete;
+class Descriptor {
+ public:
+  Descriptor() = default;
+  explicit Descriptor(int fd) noexcept;
+  Descriptor(Descriptor &&) noexcept;
+  Descriptor &operator=(Descriptor &&) noexcept;
 
-        ~Descriptor();
+  Descriptor(const Descriptor &) = delete;
+  Descriptor &operator=(const Descriptor &) = delete;
 
-        void assign(const int fd) noexcept;
+  ~Descriptor();
 
-        int get() const noexcept;
+  void assign(int fd) noexcept;
 
-        void close();
-        void close(std::error_code &ec) noexcept;
+  int get() const noexcept;
 
-        int release() noexcept;
+  void close();
+  void close(std::error_code &ec) noexcept;
 
-        explicit operator bool() const noexcept;
+  int release() noexcept;
 
-        void swap(Descriptor &descriptor) noexcept;
+  explicit operator bool() const noexcept;
 
-    private:
-        void closeNoExcept() noexcept;
+  void swap(Descriptor &descriptor) noexcept;
 
-    private:
-        boost::optional<int> fd_;
-    };
+ private:
+  void closeNoExcept() noexcept;
 
-    inline void swap(Descriptor &a, Descriptor &b) noexcept
-    {
-        a.swap(b);
-    }
-}}}}
+ private:
+  boost::optional<int> fd_;
+};
+
+inline void swap(Descriptor &a, Descriptor &b) noexcept { a.swap(b); }
+
+}  // namespace unistd
+}  // namespace system
+}  // namespace contest
+}  // namespace yandex
