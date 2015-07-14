@@ -71,6 +71,7 @@ bool MemoryBase::underOom() const {
     });
   } catch (KeyNotFoundInFileError &e) {
     e << KeyNotFoundInFileError::file("oom_control");
+    throw;
   }
   return underOom_;
 }
@@ -83,6 +84,7 @@ bool MemoryBase::oomKillDisable() const {
     });
   } catch (KeyNotFoundInFileError &e) {
     e << KeyNotFoundInFileError::file("oom_control");
+    throw;
   }
   return oomKillDisable_;
 }
