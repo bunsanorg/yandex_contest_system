@@ -7,7 +7,6 @@
 
 #include <yandex/contest/system/cgroup/ControlGroup.hpp>
 #include <yandex/contest/system/cgroup/CpuAccounting.hpp>
-#include <yandex/contest/system/cgroup/MountPoint.hpp>
 #include <yandex/contest/system/cgroup/ProcessInfo.hpp>
 #include <yandex/contest/system/cgroup/SystemInfo.hpp>
 

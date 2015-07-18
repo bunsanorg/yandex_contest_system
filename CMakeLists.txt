@@ -44,7 +44,6 @@ bunsan_add_library(${PROJECT_NAME}
     src/cgroup/MultipleControlGroup.cpp
     src/cgroup/ProcessHierarchyInfo.cpp
     src/cgroup/ProcessInfo.cpp
-    src/cgroup/MountPoint.cpp
     src/cgroup/Freezer.cpp
     src/cgroup/CpuSet.cpp
     src/cgroup/CpuAccounting.cpp
