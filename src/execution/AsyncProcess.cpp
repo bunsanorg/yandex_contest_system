@@ -51,6 +51,11 @@ void reopenDescriptor(const int descriptor, const int flags,
 void prepareChild(const boost::filesystem::path &in,
                   const boost::filesystem::path &out,
                   const boost::filesystem::path &err) {
+  // clear parent's sigprocmask
+  sigset_t sset;
+  sigemptyset(&sset);
+  sigprocmask(SIG_SETMASK, &sset, nullptr);
+
   reopenDescriptor(STDIN_FILENO, O_RDONLY, in);
   reopenDescriptor(STDOUT_FILENO, O_WRONLY, out);
   reopenDescriptor(STDERR_FILENO, O_WRONLY, err);
